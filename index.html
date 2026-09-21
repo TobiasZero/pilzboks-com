@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pilzboks – Bio-Pilze direkt vom Hof</title>
+  <meta name="description" content="Pilzboks verbindet Biohöfe mit dem Lebensmittelhandel. Wir garantieren Abnahme – Landwirte liefern frische Bio-Pilze aus klimatisierten Containern." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green-dark: #1a3a2a;
+      --green-mid: #2d5e3f;
+      --green-light: #4a8f5e;
+      --amber: #c8963e;
+      --amber-light: #e8b45a;
+      --cream: #f5f0e8;
+      --cream-dark: #ede6d8;
+      --white: #ffffff;
+      --text-dark: #1a1a1a;
+      --text-mid: #3d3d3d;
+      --text-light: #666;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text-dark);
+      background: var(--cream);
+      line-height: 1.6;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(26,58,42,0.95);
+      backdrop-filter: blur(8px);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--cream);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--amber-light); }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(245,240,232,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--amber-light); }
+
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 60%, #3a7050 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-inner { position: relative; max-width: 800px; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(200,150,62,0.2);
+      border: 1px solid rgba(200,150,62,0.4);
+      color: var(--amber-light);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 em { font-style: normal; color: var(--amber-light); }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(245,240,232,0.85);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--amber);
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--cream);
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      border: 1.5px solid rgba(245,240,232,0.4);
+      transition: border-color 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { border-color: var(--cream); transform: translateY(-1px); }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: clamp(24px, 5vw, 60px);
+      margin-top: 60px;
+      flex-wrap: wrap;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--amber-light);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.65);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    section { padding: 80px 24px; }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green-light);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: var(--green-dark);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--text-light);
+      max-width: 600px;
+      margin-bottom: 56px;
+    }
+
+    #wie-es-funktioniert { background: var(--white); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+    }
+
+    .step {
+      position: relative;
+      padding: 32px 28px;
+      background: var(--cream);
+      border-radius: 16px;
+      border: 1px solid var(--cream-dark);
+    }
+
+    .step-num {
+      width: 40px; height: 40px;
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .step h3 { font-size: 1.05rem; font-weight: 700; color: var(--green-dark); margin-bottom: 10px; }
+    .step p { font-size: 0.92rem; color: var(--text-light); line-height: 1.65; }
+
+    #pilze { background: var(--cream); }
+
+    .mushroom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    .mushroom-card {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--cream-dark);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+
+    .mushroom-card:hover { box-shadow: 0 12px 40px rgba(26,58,42,0.12); transform: translateY(-3px); }
+
+    .mushroom-icon {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+
+    .mushroom-card:nth-child(1) .mushroom-icon { background: linear-gradient(135deg, #e8f4e8, #c5e0c5); }
+    .mushroom-card:nth-child(2) .mushroom-icon { background: linear-gradient(135deg, #f4ede0, #e0ccaa); }
+    .mushroom-card:nth-child(3) .mushroom-icon { background: linear-gradient(135deg, #e8ede8, #ccd5cc); }
+
+    .mushroom-body { padding: 24px; }
+    .mushroom-body h3 { font-size: 1.2rem; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
+    .mushroom-latin { font-size: 0.82rem; color: var(--text-light); font-style: italic; margin-bottom: 12px; }
+    .mushroom-body p { font-size: 0.92rem; color: var(--text-mid); line-height: 1.65; }
+
+    #fuer-landwirte { background: var(--green-dark); color: var(--cream); }
+    #fuer-landwirte .section-label { color: var(--amber-light); }
+    #fuer-landwirte .section-title { color: var(--white); }
+    #fuer-landwirte .section-sub { color: rgba(245,240,232,0.75); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .benefit {
+      padding: 28px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+    }
+
+    .benefit-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+    .benefit h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .benefit p { font-size: 0.9rem; color: rgba(245,240,232,0.7); line-height: 1.65; }
+
+    .farmer-highlight {
+      margin-top: 56px;
+      background: rgba(200,150,62,0.15);
+      border: 1px solid rgba(200,150,62,0.3);
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+    }
+
+    .farmer-highlight p { font-size: 1.1rem; color: var(--amber-light); font-style: italic; line-height: 1.7; }
+    .farmer-highlight cite { display: block; margin-top: 12px; font-size: 0.85rem; font-style: normal; color: rgba(245,240,232,0.6); }
+
+    #kontakt { background: var(--white); }
+
+    .contact-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) { .contact-inner { grid-template-columns: 1fr; gap: 40px; } }
+
+    .contact-text p { color: var(--text-light); margin-bottom: 28px; font-size: 1rem; line-height: 1.7; }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: var(--text-mid);
+    }
+
+    .contact-detail span:first-child { font-size: 1.2rem; }
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; }
+
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--cream-dark);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      background: var(--cream);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--green-light); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    footer {
+      background: var(--green-dark);
+      color: rgba(245,240,232,0.6);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    footer a { color: var(--amber-light); text-decoration: none; }
+    footer strong { color: var(--cream); }
+
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 12px; }
+
+    @media (max-width: 600px) { .nav-links { display: none; } .hero-stats { gap: 20px; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Pilz<span>boks</span></div>
+    <ul class="nav-links">
+      <li><a href="#wie-es-funktioniert">Konzept</a></li>
+      <li><a href="#pilze">Produkte</a></li>
+      <li><a href="#fuer-landwirte">Fuer Landwirte</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Bio-Pilze aus Vorarlberg</div>
+      <h1>Frische Bio-Pilze --<br /><em>direkt vom Partnerhof.</em></h1>
+      <p>
+        Pilzboks verbindet Biobauern und den Lebensmittelhandel.
+        Wir garantieren Abnahme zu Festpreisen -- Landwirte liefern
+        Premium-Speisepilze aus klimatisierten Wachstumscontainern.
+      </p>
+      <div class="hero-cta">
+        <a href="#fuer-landwirte" class="btn-primary">Partnerinfos fuer Landwirte</a>
+        <a href="#kontakt" class="btn-secondary">Kontakt aufnehmen</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-value">3</span><span class="stat-label">Pilzarten</span></div>
+        <div class="stat"><span class="stat-value">100%</span><span class="stat-label">Bio-zertifiziert</span></div>
+        <div class="stat"><span class="stat-value">22,5 m2</span><span class="stat-label">Container-Footprint</span></div>
+        <div class="stat"><span class="stat-value">Vorarlberg</span><span class="stat-label">& DACH-Region</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="wie-es-funktioniert">
+    <div class="container">
+      <p class="section-label">Unser Modell</p>
+      <h2 class="section-title">Wie Pilzboks funktioniert</h2>
+      <p class="section-sub">Wir uebernehmen Vermarktung, Logistik und Vertrieb -- Landwirte konzentrieren sich auf die Produktion.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Container auf dem Hof</h3>
+          <p>Der Biohof betreibt einen klimatisierten Wachstumscontainer (9 x 2,5 m) mit Substraten aus regionalen Nebenstromen.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Garantierte Abnahme</h3>
+          <p>Pilzboks kauft die gesamte Ernte zu garantierten Festpreisen. Kein Vermarktungsrisiko fuer den Hof.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Verarbeitung & Branding</h3>
+          <p>Wir uebernehmen Verarbeitung, Verpackung und die Platzierung in Biolaeden, Reformhaeusern und weiteren Kanaelen.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Regionale Kreislaufwirtschaft</h3>
+          <p>Verbrauchtes Substrat geht als hochwertiger Duenger auf die Felder des Hofes zurueck -- ein echter Kreislauf.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MUSHROOMS -->
+  <section id="pilze">
+    <div class="container">
+      <p class="section-label">Sortiment</p>
+      <h2 class="section-title">Unsere Bio-Pilze</h2>
+      <p class="section-sub">Drei hochwertige Speisepilzarten, nachhaltig in Wachstumscontainern kultiviert -- frisch, regional, zertifiziert bio.</p>
+      <div class="mushroom-grid">
+        <div class="mushroom-card">
+          <div class="mushroom-icon">&#129409;</div>
+          <div class="mushroom-body">
+            <h3>Igelstachelbart</h3>
+            <p class="mushroom-latin">Hericium erinaceus - Lion's Mane</p>
+            <p>Seltene Delikatesse mit feinem, krabbenaehnlichem Geschmack. Besonders gefragt im Premiumsegment und bei Ernaehrungsbewussten.</p>
+          </div>
+        </div>
+        <div class="mushroom-card">
+          <div class="mushroom-icon">&#127812;</div>
+          <div class="mushroom-body">
+            <h3>Shiitake</h3>
+            <p class="mushroom-latin">Lentinula edodes</p>
+            <p>Der Klassiker der Asia-Kueche -- aromatisch, vielseitig und bei Biolaeden stark nachgefragt. Unser Bestseller im Absatz.</p>
+          </div>
+        </div>
+        <div class="mushroom-card">
+          <div class="mushroom-icon">&#127824;</div>
+          <div class="mushroom-body">
+            <h3>Austernpilz</h3>
+            <p class="mushroom-latin">Pleurotus ostreatus</p>
+            <p>Mild, zart und ideal fuer die Alltagskueche. Hohe Ertraege und breite Kundennachfrage -- perfekt fuer regelmaessige Lieferungen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR FARMERS -->
+  <section id="fuer-landwirte">
+    <div class="container">
+      <p class="section-label">Fuer Landwirte</p>
+      <h2 class="section-title">Ein neues Standbein<br />auf Ihrem Hof</h2>
+      <p class="section-sub">Nur 22,5 m2 Stellflaeche, keine Tierhaltung, keine Saisonabhaengigkeit -- und eine gesicherte Abnahme.</p>
+      <div class="benefits-grid">
+        <div class="benefit">
+          <span class="benefit-icon">&#128230;</span>
+          <h3>Kleiner Footprint</h3>
+          <p>Ein Container benoetigt nur 22,5 m2 (9 x 2,5 m) -- kein Stall, kein Umbau. Laesst sich in bestehende Hofstrukturen integrieren.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon">&#128182;</span>
+          <h3>Planungssicherheit</h3>
+          <p>Wir kaufen Ihre gesamte Ernte zu fixen Preisen -- monatlich, verlaesslich. Kein Marktrisiko, keine Preisschwankungen.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon">&#127806;</span>
+          <h3>Foerderung moeglich</h3>
+          <p>Die Containerinvestition kann ueber die GAP-Massnahme 73-08 (Diversifizierung) gefoerdert werden -- wir unterstuetzen bei der Antragstellung.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon">&#9851;&#65039;</span>
+          <h3>Kreislaufwirtschaft</h3>
+          <p>Verbrauchte Substratbloecke werden als organischer Duenger auf Ihren Feldern eingesetzt -- keine Abfallentsorgung notwendig.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon">&#128295;</span>
+          <h3>Technischer Support</h3>
+          <p>Unser Team aus Elektrotechnikern uebernimmt Wartung, Fehlerdiagnose und technische Schulung -- Sie sind nie allein.</p>
+        </div>
+        <div class="benefit">
+          <span class="benefit-icon">&#128203;</span>
+          <h3>Bio-Integration</h3>
+          <p>Das Pilz-System ist bio-zertifizierbar und fuegt sich nahtlos in bestehende Bio-Betriebe ein -- gleiche Standards, gleiche Philosophie.</p>
+        </div>
+      </div>
+      <div class="farmer-highlight">
+        <p>"Als Biohof wollte ich meine Flaeche effizienter nutzen. Mit Pilzboks habe ich ein verlaessliches zusaetzliches Einkommen -- ohne den Container kaufen und vermarkten zu muessen."</p>
+        <cite>-- Juergen Feurle, Biohof Langen bei Bregenz (Pilotbetrieb)</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="kontakt">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="contact-text">
+          <p class="section-label">Kontakt</p>
+          <h2 class="section-title">Gespraech starten</h2>
+          <p>Ob als Biobauer, Haendler oder Investor -- sprechen Sie uns an. Wir freuen uns ueber jede Anfrage und melden uns innerhalb von 48 Stunden.</p>
+          <div class="contact-detail"><span>&#128205;</span><span>Vorarlberg, Oesterreich</span></div>
+          <div class="contact-detail"><span>&#9989;</span><span>hallo@pilzboks.com</span></div>
+          <div class="contact-detail"><span>&#127757;</span><span>pilzboks.com</span></div>
+        </div>
+        <form class="contact-form" action="mailto:hallo@pilzboks.com" method="POST" enctype="text/plain">
+          <div class="form-group"><label>Ihr Name</label><input type="text" name="name" placeholder="Max Muster" required /></div>
+          <div class="form-group"><label>E-Mail-Adresse</label><input type="email" name="email" placeholder="max@beispiel.at" required /></div>
+          <div class="form-group">
+            <label>Ich bin ...</label>
+            <select name="rolle">
+              <option value="">Bitte auswaehlen</option>
+              <option>Landwirt / Biobauer</option>
+              <option>Lebensmittelhaendler / Kaeufer</option>
+              <option>Investor / Foerderstelle</option>
+              <option>Sonstiges</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Ihre Nachricht</label><textarea name="nachricht" placeholder="Wie koennen wir Ihnen helfen?" required></textarea></div>
+          <button type="submit" class="btn-primary" style="width:100%; border:none; cursor:pointer;">Nachricht senden</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <strong>Pilzboks</strong> -- Bio-Pilze aus Vorarlberg
+    <div class="footer-links">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="mailto:hallo@pilzboks.com">Kontakt</a>
+    </div>
+    <p style="margin-top:12px;">2026 Pilzboks. Alle Rechte vorbehalten.</p>
+  </footer>
+
+</body>
+</html>
