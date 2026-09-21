@@ -291,6 +291,53 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   70%,100%{transform:scale(3.4);opacity:0}
 }
 
+/* pulsierender Standort-Marker auf dem Globus (Vorarlberg) */
+.globe-marker{
+  position:absolute;left:0;top:0;width:10px;height:10px;z-index:4;
+  pointer-events:none;opacity:0;transition:opacity 0.35s;
+  will-change:transform;
+}
+.globe-marker .gm-dot{
+  position:absolute;inset:2px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px rgba(74,222,128,0.9),0 0 24px rgba(74,222,128,0.5);
+}
+.globe-marker .gm-ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(74,222,128,0.55);
+  animation:pulseRing 2.2s var(--ease-soft) infinite;
+}
+
+/* pulsierender Rahmen um die DACH-Region (erscheint beim Reinzoomen) */
+.globe-frame{
+  position:absolute;left:0;top:0;width:110px;height:110px;z-index:3;
+  pointer-events:none;opacity:0;transition:opacity 0.6s var(--ease-soft);
+  will-change:transform;
+}
+.hero-globe.zoomed .globe-frame{opacity:1}
+.globe-frame .gf-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid rgba(74,222,128,0.7);
+  box-shadow:0 0 24px rgba(74,222,128,0.35),inset 0 0 24px rgba(74,222,128,0.12);
+}
+.globe-frame .gf-pulse{
+  position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid var(--green);
+  animation:framePulse 2.4s var(--ease-soft) infinite;
+}
+@keyframes framePulse{
+  0%{transform:scale(0.85);opacity:0.9}
+  70%,100%{transform:scale(1.45);opacity:0}
+}
+.globe-frame .gf-label{
+  position:absolute;left:50%;bottom:-1.9rem;transform:translateX(-50%);
+  font-size:0.58rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--green-light);white-space:nowrap;
+  padding:0.3rem 0.7rem;border-radius:100px;
+  border:1px solid rgba(74,222,128,0.3);
+  background:rgba(5,13,7,0.55);backdrop-filter:blur(6px);
+}
+
 .hero-h1{
   font-size:clamp(2.3rem,7.5vw,5.1rem);
   font-weight:700;line-height:1.04;
@@ -357,7 +404,8 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 .btn:hover .btn-arrow{transform:translateX(5px)}
 
 /* peripheral labels */
-.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3}
+.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3;transition:opacity 0.5s var(--ease-soft)}
+.hero-globe.zoomed .globe-labels{opacity:0}
 .hero-globe .label{font-size:0.64rem}
 .label{
   position:absolute;
@@ -1033,6 +1081,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
   <div class="hero-globe">
     <canvas id="globe-canvas"></canvas>
+    <div class="globe-marker" id="globe-marker" aria-hidden="true">
+      <span class="gm-ring"></span>
+      <span class="gm-dot"></span>
+    </div>
+    <div class="globe-frame" id="globe-frame" aria-hidden="true">
+      <span class="gf-ring"></span>
+      <span class="gf-pulse"></span>
+      <span class="gf-label">DACH-Region</span>
+    </div>
     <div class="globe-labels">
       <div class="label float l1">Klimaneutral</div>
       <div class="label float l2">100% Bio</div>
@@ -1553,6 +1610,18 @@ if(!isTouch && !reduce){
   var visible = true, ready = false;
   var AUTO = 0.0005, DIST = 4.2;   // gemäßigte Drehung (~1,7°/s) — Mitte zwischen Original und Slow-Modus; Kugel bei ~78% geframed
 
+  /* Standort-Marker: Vorarlberg, Österreich (47.25°N, 9.9°O) + DACH-Rahmen */
+  var globeHost = canvas.parentElement;
+  var markerEl = document.getElementById('globe-marker');
+  var frameEl  = document.getElementById('globe-frame');
+  var M_LAT = 47.25 * Math.PI/180, M_LON = 9.9 * Math.PI/180;
+  var M_CL = Math.cos(M_LAT), M_SL = Math.sin(M_LAT);
+  var M_X = M_CL*Math.sin(M_LON), M_Y = M_SL, M_Z = M_CL*Math.cos(M_LON);
+
+  /* Scroll-Zoom auf die DACH-Region */
+  var dist = DIST;
+  var ZOOM_DIST = 2.8, ZOOM_PITCH = 0.44;
+
   /* ── sphere mesh ── */
   function buildSphere(slices, stacks){
     var pos = [], uv = [], idx = [];
@@ -1704,14 +1773,26 @@ if(!isTouch && !reduce){
   }
 
   function draw(){
-    if(!dragging){
-      yaw += AUTO + velY; pitch += velP;
-      velY *= 0.94; velP *= 0.94;
-      if(Math.abs(velY) < 1e-5) velY = 0;
-      if(Math.abs(velP) < 1e-5) velP = 0;
+    /* ab ~60px Scroll: Auto-Rotation parken und sanft auf DACH zoomen */
+    var zoomed = window.scrollY > 60;
+    if(zoomed && !dragging){
+      var k = reduce ? 1 : 0.055;
+      var dYaw = (((-HOME_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
+      yaw   += dYaw * k;
+      pitch += (ZOOM_PITCH - pitch) * k;
+      dist  += (ZOOM_DIST - dist) * k;
+    } else {
+      dist += (DIST - dist) * (reduce ? 1 : 0.05);
+      if(!dragging){
+        yaw += AUTO + velY; pitch += velP;
+        velY *= 0.94; velP *= 0.94;
+        if(Math.abs(velY) < 1e-5) velY = 0;
+        if(Math.abs(velP) < 1e-5) velP = 0;
+      }
     }
     if(pitch >  0.9) pitch =  0.9;
     if(pitch < -0.9) pitch = -0.9;
+    globeHost.classList.toggle('zoomed', zoomed && dist < 3.4);
 
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1719,7 +1800,7 @@ if(!isTouch && !reduce){
     var proj = perspective(0.62, 1, 0.1, 100);
     var rot  = rotMat(yaw, pitch);
     gl.useProgram(prog);
-    gl.uniformMatrix4fv(uMVP, false, mvp(proj, rot, DIST));
+    gl.uniformMatrix4fv(uMVP, false, mvp(proj, rot, dist));
     gl.uniformMatrix3fv(uRot, false, rot);
     /* light from upper-left-front, so the terminator falls on the lower right */
     gl.uniform3f(uLight, -0.45, 0.35, 0.82);
@@ -1730,6 +1811,26 @@ if(!isTouch && !reduce){
     gl.bindBuffer(gl.ARRAY_BUFFER, bufU); gl.enableVertexAttribArray(aUV);  gl.vertexAttribPointer(aUV, 2,gl.FLOAT,false,0,0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufI);
     gl.drawElements(gl.TRIANGLES, nIdx, gl.UNSIGNED_SHORT, 0);
+
+    /* Marker + DACH-Rahmen auf die sichtbare Kugel projizieren */
+    if(markerEl){
+      /* Welt -> Kamera: rot ist spaltenweise (column-major), Zeile r = rot[r], rot[3+r], rot[6+r] */
+      var vx = rot[0]*M_X + rot[3]*M_Y + rot[6]*M_Z;
+      var vy = rot[1]*M_X + rot[4]*M_Y + rot[7]*M_Z;
+      var vz = rot[2]*M_X + rot[5]*M_Y + rot[8]*M_Z;
+      var f = 1/Math.tan(0.62/2);              // gleiche Brennweite wie perspective(0.62,...)
+      var wClip = dist - vz;                   // clip.w der perspektivischen Projektion
+      var sx = canvas.offsetLeft + (f*vx/wClip * 0.5 + 0.5) * w;
+      var sy = canvas.offsetTop  + (1 - (f*vy/wClip * 0.5 + 0.5)) * h;
+      var pos = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-50%)';
+      var front = vz > 0.12;                   // Vorderseite der Kugel?
+      markerEl.style.transform = pos;
+      markerEl.style.opacity = front ? 1 : 0;
+      if(frameEl){
+        frameEl.style.transform = pos;
+        frameEl.style.opacity = (front && zoomed) ? 1 : 0;
+      }
+    }
   }
 
   function loop(){ if(visible && ready) draw(); requestAnimationFrame(loop); }
@@ -1779,7 +1880,15 @@ if(!isTouch && !reduce){
   window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(sizeIt,180); });
 
   sizeIt(); loadTexture();
-  if(reduce){ AUTO = 0; (function wait(){ ready ? draw() : setTimeout(wait,120); })(); }
+  if(reduce){
+    AUTO = 0;
+    (function wait(){ ready ? draw() : setTimeout(wait,120); })();
+    /* ohne Dauer-Loop: Zoom bei Scroll direkt rendern */
+    var st;
+    window.addEventListener('scroll', function(){
+      clearTimeout(st); st = setTimeout(function(){ if(ready && visible) draw(); }, 80);
+    }, {passive:true});
+  }
   else loop();
 })();
 
