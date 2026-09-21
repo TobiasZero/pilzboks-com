@@ -846,6 +846,45 @@ footer{
   padding:0.42rem 0.9rem;border-radius:100px;
   background:rgba(74,222,128,0.04);
 }
+.footer-links{display:flex;align-items:center;gap:1.2rem}
+.footer-links a{
+  font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em;
+  text-decoration:none;transition:color 0.3s;
+}
+.footer-links a:hover{color:var(--green)}
+
+/* ══ IMPRESSUM ══ */
+#impressum{
+  position:relative;z-index:2;
+  border-top:1px solid var(--border);
+  padding:clamp(3.2rem,6vw,5rem) var(--gut);
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+}
+.impressum-inner{max-width:860px;margin:0 auto}
+.impressum-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1.1rem;margin-top:2.2rem;
+}
+.impressum-block{
+  border:1px solid var(--border);border-radius:14px;
+  padding:1.3rem 1.5rem;background:var(--green-glow2);
+  transition:border-color 0.35s,background 0.35s;
+}
+.impressum-block:hover{border-color:var(--border-bright);background:var(--green-glow)}
+.impressum-block h3{
+  font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--green);font-weight:600;margin-bottom:0.7rem;
+}
+.impressum-block p{font-size:0.86rem;color:var(--text-muted);line-height:1.75}
+.impressum-block a{color:var(--green-light);text-decoration:none;border-bottom:1px solid var(--border-bright);transition:color 0.3s}
+.impressum-block a:hover{color:var(--green)}
+.impressum-note{
+  margin-top:1.8rem;font-size:0.72rem;color:var(--text-dim);
+  letter-spacing:0.03em;line-height:1.7;
+}
+@media(max-width:640px){
+  .impressum-grid{grid-template-columns:1fr}
+}
 
 /* ══ BACK TO TOP ══ */
 #to-top{
@@ -1272,12 +1311,44 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   </div>
 </section>
 
+<!-- ═══ IMPRESSUM ═══ -->
+<section id="impressum">
+  <div class="impressum-inner" data-reveal>
+    <p class="section-eyebrow">Rechtliches</p>
+    <div class="section-divider"></div>
+    <h2 class="section-title">Impressum</h2>
+    <p class="section-body">Angaben gemäß § 5 E-Commerce-Gesetz (ECG), § 14 Unternehmensgesetzbuch (UGB) und § 25 Mediengesetz (MedienG).</p>
+    <div class="impressum-grid">
+      <div class="impressum-block">
+        <h3>Diensteanbieter</h3>
+        <p>Pilzboks GmbH<br>Musterstraße 12<br>6850 Dornbirn<br>Vorarlberg, Österreich</p>
+      </div>
+      <div class="impressum-block">
+        <h3>Kontakt</h3>
+        <p>E-Mail: <a href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a><br>Web: <a href="https://pilzboks.com">pilzboks.com</a></p>
+      </div>
+      <div class="impressum-block">
+        <h3>Unternehmensangaben</h3>
+        <p>Firmenbuchnummer: FN 123456a<br>Firmenbuchgericht: Landesgericht Feldkirch<br>UID-Nummer: ATU 12345678</p>
+      </div>
+      <div class="impressum-block">
+        <h3>Geschäftsführung &amp; Aufsicht</h3>
+        <p>Geschäftsführung: Tobias Willi<br>Aufsichtsbehörde: Bezirkshauptmannschaft Dornbirn<br>Mitglied der Wirtschaftskammer Vorarlberg</p>
+      </div>
+    </div>
+    <p class="impressum-note">Hinweis: Dies ist ein Muster-Impressum mit fiktiven Beispieldaten (Demonstrations-Website). Alle Angaben ohne Gewähr.</p>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <a href="#hero" class="footer-logo" aria-label="Nach oben">
     <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
   </a>
   <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
+  <div class="footer-links" aria-label="Rechtliches">
+    <a href="#impressum">Impressum</a>
+  </div>
   <span class="footer-badge">🌿 100% Bio</span>
 </footer>
 
