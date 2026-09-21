@@ -291,6 +291,23 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   70%,100%{transform:scale(3.4);opacity:0}
 }
 
+/* pulsierender Standort-Marker auf dem Globus (Vorarlberg) */
+.globe-marker{
+  position:absolute;left:0;top:0;width:10px;height:10px;z-index:4;
+  pointer-events:none;opacity:0;transition:opacity 0.35s;
+  will-change:transform;
+}
+.globe-marker .gm-dot{
+  position:absolute;inset:2px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px rgba(74,222,128,0.9),0 0 24px rgba(74,222,128,0.5);
+}
+.globe-marker .gm-ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(74,222,128,0.55);
+  animation:pulseRing 2.2s var(--ease-soft) infinite;
+}
+
 .hero-h1{
   font-size:clamp(2.3rem,7.5vw,5.1rem);
   font-weight:700;line-height:1.04;
@@ -1044,6 +1061,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
   <div class="hero-globe">
     <canvas id="globe-canvas"></canvas>
+    <div class="globe-marker" id="globe-marker" aria-hidden="true">
+      <span class="gm-ring"></span>
+      <span class="gm-dot"></span>
+    </div>
     <div class="globe-labels">
       <div class="label float l1">Klimaneutral</div>
       <div class="label float l2">100% Bio</div>
@@ -1555,11 +1576,20 @@ if(!isTouch && !reduce){
 
   /* ── state ── */
   var w, h, dpr, box;
-  var yaw = -0.17, pitch = 0.30;
+  /* Startrotation: Zentraleuropa / DACH mittig — die Meridiankonstante
+     steuert, welcher Längengrad der Kamera zugewandt ist (+ = ostwärts) */
+  var HOME_LON = 10 * Math.PI/180;              // 10°O ≈ Mitte DACH
+  var yaw = -HOME_LON, pitch = 0.30;
   var velY = 0, velP = 0;
   var dragging = false, lastX = 0, lastY = 0, lastT = 0;
   var visible = true, ready = false;
-  var AUTO = 0.0009, DIST = 4.2;   // frames the sphere at ~78% so the glow has room
+  var AUTO = 0.00022, DIST = 4.2;   // langsame Drehung (~0,8°/s): Europa bleibt lange im Blick; Kugel bei ~78% geframed
+
+  /* Standort-Marker: Vorarlberg, Österreich (47.25°N, 9.9°O) */
+  var markerEl = document.getElementById('globe-marker');
+  var M_LAT = 47.25 * Math.PI/180, M_LON = 9.9 * Math.PI/180;
+  var M_CL = Math.cos(M_LAT), M_SL = Math.sin(M_LAT);
+  var M_X = M_CL*Math.sin(M_LON), M_Y = M_SL, M_Z = M_CL*Math.cos(M_LON);
 
   /* ── sphere mesh ── */
   function buildSphere(slices, stacks){
@@ -1738,6 +1768,20 @@ if(!isTouch && !reduce){
     gl.bindBuffer(gl.ARRAY_BUFFER, bufU); gl.enableVertexAttribArray(aUV);  gl.vertexAttribPointer(aUV, 2,gl.FLOAT,false,0,0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufI);
     gl.drawElements(gl.TRIANGLES, nIdx, gl.UNSIGNED_SHORT, 0);
+
+    /* Standort-Marker auf die sichtbare Kugel projizieren */
+    if(markerEl){
+      /* Welt -> Kamera: rot ist spaltenweise (column-major), Zeile r = rot[r], rot[3+r], rot[6+r] */
+      var vx = rot[0]*M_X + rot[3]*M_Y + rot[6]*M_Z;
+      var vy = rot[1]*M_X + rot[4]*M_Y + rot[7]*M_Z;
+      var vz = rot[2]*M_X + rot[5]*M_Y + rot[8]*M_Z;
+      var f = 1/Math.tan(0.62/2);              // gleiche Brennweite wie perspective(0.62,...)
+      var wClip = DIST - vz;                   // clip.w der perspektivischen Projektion
+      var sx = canvas.offsetLeft + (f*vx/wClip * 0.5 + 0.5) * w;
+      var sy = canvas.offsetTop  + (1 - (f*vy/wClip * 0.5 + 0.5)) * h;
+      markerEl.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-50%)';
+      markerEl.style.opacity = (vz > 0.12) ? 1 : 0;   // ausblenden, sobald der Punkt auf der Rückseite liegt
+    }
   }
 
   function loop(){ if(visible && ready) draw(); requestAnimationFrame(loop); }
