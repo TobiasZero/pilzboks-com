@@ -263,6 +263,16 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   text-shadow:0 2px 20px rgba(5,13,7,0.95);
 }
 .hero-step .hero-actions{margin-top:2.2rem;justify-content:flex-start}
+.hero-step-media{
+  width:100%;
+  margin:0 0 1.7rem;border-radius:16px;overflow:hidden;
+  border:1px solid var(--border-bright);
+  box-shadow:0 24px 60px rgba(0,0,0,0.45),0 0 40px rgba(74,222,128,0.08);
+}
+.hero-step-media img{
+  width:100%;height:auto;display:block;
+  aspect-ratio:3/2;object-fit:cover;
+}
 #hero.zoomed .scroll-cue{opacity:0 !important;transition:opacity 0.4s}
 /* soft atmosphere behind the earth */
 .hero-globe::before{
@@ -1133,21 +1143,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     </div>
 
     <div class="hero-step" data-reveal>
+      <figure class="hero-step-media">
+        <img src="container-hof.png" alt="Pilzanbau-Container mit grüner Beleuchtung auf einem Biohof in den Alpen" loading="lazy">
+      </figure>
       <p class="hero-eyebrow"><span class="pulse-dot"></span>Unsere Heimat</p>
       <h2 class="hero-step-title">Mitten in der <em>DACH-Region</em></h2>
-      <p class="hero-step-sub">Unsere Container stehen dort, wo gegessen wird: Von Vorarlberg aus erreichen wir Höfe, Märkte und Küchen in Österreich, Deutschland und der Schweiz — ohne Umwege, ohne Langstrecke.</p>
-    </div>
-
-    <div class="hero-step" data-reveal>
-      <p class="hero-eyebrow"><span class="pulse-dot"></span>Kurze Wege</p>
-      <h2 class="hero-step-title">Geerntet heute, <em>geliefert morgen</em></h2>
-      <p class="hero-step-sub">Weil Produktion und Absatz in derselben Region liegen, sind unsere Pilze innerhalb von 24 bis 48 Stunden vom Container in der Küche — frischer geht es nicht.</p>
-    </div>
-
-    <div class="hero-step" data-reveal>
-      <p class="hero-eyebrow"><span class="pulse-dot"></span>Gemeinsam stark</p>
-      <h2 class="hero-step-title">Partnerbetriebe <em>in ganz DACH</em></h2>
-      <p class="hero-step-sub">Ob Biohof im Bregenzerwald oder Genossenschaft in Bayern: Unser Netzwerk wächst mit jedem Betrieb, der dazukommt. Der Standort ist der Vorteil — die Region ist das Prinzip.</p>
+      <p class="hero-step-sub">Von Vorarlberg aus erreichen wir Höfe, Märkte und Küchen in Österreich, Deutschland und der Schweiz — geerntet heute, geliefert morgen, ohne Umwege, ohne Langstrecke.</p>
       <div class="hero-actions">
         <a href="#contact" class="btn btn-primary"><span>Jetzt Hof werden</span><span class="btn-arrow">→</span></a>
         <a href="#how" class="btn btn-ghost"><span>So funktioniert's</span></a>
@@ -1833,8 +1834,8 @@ if(!isTouch && !reduce){
       p = window.scrollY / total;
       if(p < 0) p = 0; if(p > 1) p = 1;
     }
-    /* Zoom läuft über die ersten ~45% der Strecke, mit smoothstep geglättet */
-    var z = (p - 0.05) / 0.40;
+    /* Zoom läuft über die mittlere Strecke des einen Swipes, smoothstep-geglättet */
+    var z = (p - 0.08) / 0.62;
     if(z < 0) z = 0; if(z > 1) z = 1;
     z = z*z*(3 - 2*z);
     zoomZ = z;
