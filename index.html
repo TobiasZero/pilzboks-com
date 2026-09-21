@@ -3,465 +3,1040 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050d07">
+<meta name="description" content="Pilzboks – Bio-Pilzanbau im Container-System. Für Höfe, die Verantwortung übernehmen. Vorarlberg, Österreich.">
 <title>Pilzboks – Bio-Pilze direkt vom Hof</title>
+<link rel="icon" href="pilzboks-logo-transparent.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
 :root{
   --bg:#050d07;
   --bg2:#091410;
   --bg3:#0d1f12;
+  --bg-card:rgba(13,31,18,0.5);
   --green:#4ade80;
+  --green-light:#86efac;
+  --green-deep:#16a34a;
   --green-dim:#2d7a4a;
-  --green-glow:rgba(74,222,128,0.15);
-  --green-glow2:rgba(74,222,128,0.06);
+  --green-glow:rgba(74,222,128,0.14);
+  --green-glow2:rgba(74,222,128,0.05);
   --text:#e8f5ec;
-  --text-muted:rgba(232,245,236,0.45);
-  --text-dim:rgba(232,245,236,0.25);
+  --text-muted:rgba(232,245,236,0.48);
+  --text-dim:rgba(232,245,236,0.26);
   --border:rgba(74,222,128,0.12);
-  --border-bright:rgba(74,222,128,0.3);
+  --border-bright:rgba(74,222,128,0.32);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease-soft:cubic-bezier(0.4,0,0.2,1);
+  --nav-h:72px;
+  --gut:clamp(1.15rem,5vw,2.5rem);
 }
-html{scroll-behavior:smooth;height:100%}
+
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+  scroll-padding-top:var(--nav-h);
+  overflow-x:clip;
+}
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:'Space Grotesk',sans-serif;
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   font-weight:400;
   line-height:1.6;
-  overflow-x:hidden;
-  min-height:100%;
+  overflow-x:clip;
+  width:100%;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+img{max-width:100%;display:block}
+button,input,textarea,a{font-family:inherit}
+::selection{background:var(--green);color:var(--bg)}
+
+/* ══ AMBIENT BACKGROUND GLOW ══ */
+.ambient{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(74,222,128,0.07),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 40%,rgba(22,163,74,0.05),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(74,222,128,0.04),transparent 60%);
+}
+/* subtle grid texture */
+.grid-tex{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  background-image:
+    linear-gradient(rgba(74,222,128,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,222,128,0.025) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
 }
 
-/* ─── NAV ─── */
+/* ══ SCROLL PROGRESS ══ */
+#progress{
+  position:fixed;top:0;left:0;height:2px;width:0%;
+  background:linear-gradient(90deg,var(--green-deep),var(--green),var(--green-light));
+  z-index:200;transition:width 0.1s linear;
+  box-shadow:0 0 12px var(--green-glow);
+}
+
+/* ══ CURSOR GLOW (desktop only) ══ */
+#cursor-glow{
+  position:fixed;width:460px;height:460px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,0.055),transparent 65%);
+  pointer-events:none;z-index:1;transform:translate(-50%,-50%);
+  transition:opacity 0.5s;opacity:0;will-change:transform;
+}
+
+/* ══ NAV ══ */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
+  position:fixed;top:0;left:0;right:0;z-index:160;
   display:flex;align-items:center;justify-content:space-between;
-  padding:1.25rem 2.5rem;
-  background:linear-gradient(to bottom,rgba(5,13,7,0.95) 0%,rgba(5,13,7,0) 100%);
+  padding:1.1rem var(--gut);
+  height:var(--nav-h);
+  transition:background 0.45s var(--ease-soft),
+             backdrop-filter 0.45s var(--ease-soft),
+             border-color 0.45s var(--ease-soft),
+             height 0.45s var(--ease-soft);
+  border-bottom:1px solid transparent;
+}
+nav.scrolled{
+  background:rgba(5,13,7,0.78);
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border-bottom-color:var(--border);
+  height:62px;
 }
 .nav-logo{
-  font-size:1.05rem;font-weight:700;letter-spacing:0.08em;
-  color:var(--green);text-transform:uppercase;text-decoration:none;
+  display:flex;align-items:center;text-decoration:none;
+  transition:transform 0.4s var(--ease),opacity 0.3s;
+  flex-shrink:0;
 }
-.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-logo:hover{transform:scale(1.04)}
+.nav-logo img{
+  height:40px;width:auto;
+  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
+  transition:height 0.45s var(--ease-soft),filter 0.35s;
+}
+nav.scrolled .nav-logo img{height:33px}
+
+.nav-links{display:flex;gap:2.2rem;list-style:none;align-items:center}
 .nav-links a{
-  font-size:0.72rem;font-weight:500;letter-spacing:0.12em;
+  position:relative;
+  font-size:0.72rem;font-weight:500;letter-spacing:0.13em;
   text-transform:uppercase;color:var(--text-muted);text-decoration:none;
-  transition:color 0.2s;
+  transition:color 0.3s;padding:0.4rem 0;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:100%;height:1px;background:var(--green);
+  transform:scaleX(0);transform-origin:right;
+  transition:transform 0.45s var(--ease);
 }
 .nav-links a:hover{color:var(--green)}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+
+.nav-right{display:flex;align-items:center;gap:1rem}
 .nav-cta{
-  font-size:0.72rem;font-weight:600;letter-spacing:0.12em;
+  position:relative;overflow:hidden;
+  font-size:0.7rem;font-weight:600;letter-spacing:0.13em;
   text-transform:uppercase;color:var(--bg);background:var(--green);
-  border:none;padding:0.55rem 1.25rem;cursor:pointer;
-  text-decoration:none;transition:opacity 0.2s;
+  border:none;padding:0.7rem 1.4rem;cursor:pointer;
+  text-decoration:none;display:inline-block;
+  transition:transform 0.35s var(--ease),box-shadow 0.35s;
+  border-radius:2px;
 }
-.nav-cta:hover{opacity:0.85}
+.nav-cta span{position:relative;z-index:2}
+.nav-cta::after{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,0.55) 50%,transparent 75%);
+  transform:translateX(-130%);transition:transform 0.75s var(--ease);
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(74,222,128,0.28)}
+.nav-cta:hover::after{transform:translateX(130%)}
 
-/* ─── HERO ─── */
-#hero{
-  position:relative;min-height:100vh;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
+/* hamburger */
+.burger{
+  display:none;position:relative;z-index:2;
+  width:44px;height:44px;border:none;background:transparent;
+  cursor:pointer;align-items:center;justify-content:center;
+  flex-direction:column;gap:5px;
 }
-#globe-canvas{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;z-index:1;
+.burger span{
+  display:block;width:22px;height:1.5px;background:var(--text);
+  transition:transform 0.45s var(--ease),opacity 0.3s,width 0.45s var(--ease);
+  border-radius:2px;
 }
-#particles-canvas{
-  position:absolute;inset:0;pointer-events:none;z-index:0;
-}
-.hero-content{
-  position:relative;z-index:2;
-  text-align:center;padding:0 1rem;
-  display:flex;flex-direction:column;align-items:center;
-}
-.hero-eyebrow{
-  font-size:0.68rem;font-weight:500;letter-spacing:0.22em;
-  text-transform:uppercase;color:var(--green);
-  margin-bottom:1.5rem;
-}
-.hero-h1{
-  font-size:clamp(2.4rem,6vw,5rem);
-  font-weight:700;line-height:1.05;
-  letter-spacing:-0.02em;
-  margin-bottom:1.25rem;
-  max-width:700px;
-}
-.hero-h1 em{color:var(--green);font-style:normal}
-.hero-sub{
-  font-size:1rem;font-weight:300;
-  color:var(--text-muted);max-width:480px;
-  margin-bottom:2.5rem;
-}
-.hero-btn{
-  display:inline-block;
-  font-size:0.78rem;font-weight:600;letter-spacing:0.14em;
-  text-transform:uppercase;text-decoration:none;
-  color:var(--bg);background:var(--green);
-  padding:0.85rem 2.2rem;
-  transition:opacity 0.2s,transform 0.2s;
-}
-.hero-btn:hover{opacity:0.88;transform:translateY(-1px)}
+.burger span:nth-child(2){width:16px}
+body.menu-open nav{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent}
+body.menu-open .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+body.menu-open .burger span:nth-child(2){opacity:0;width:22px}
+body.menu-open .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 
-/* peripheral labels around globe */
-.globe-labels{
-  position:absolute;inset:0;pointer-events:none;z-index:3;
+/* mobile overlay menu */
+#mobile-menu{
+  position:fixed;inset:0;z-index:155;
+  background:rgba(5,13,7,0.97);
+  backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--nav-h) var(--gut) 3rem;
+  opacity:0;visibility:hidden;
+  transition:opacity 0.5s var(--ease-soft),visibility 0.5s;
 }
-.label{
-  position:absolute;
-  font-size:0.62rem;font-weight:500;letter-spacing:0.16em;
-  text-transform:uppercase;color:var(--text-dim);
-  display:flex;align-items:center;gap:0.5rem;
-}
-.label::before{
-  content:'';width:24px;height:1px;
-  background:var(--border-bright);flex-shrink:0;
-}
-.label.right::before{display:none}
-.label.right::after{
-  content:'';width:24px;height:1px;
-  background:var(--border-bright);flex-shrink:0;
-}
-.l1{top:28%;left:4%}
-.l2{top:40%;left:4%}
-.l3{top:52%;left:4%}
-.l4{top:28%;right:4%;justify-content:flex-end}
-.l5{top:40%;right:4%;justify-content:flex-end}
-.l6{top:52%;right:4%;justify-content:flex-end}
-
-/* ─── STATS BAR ─── */
-.stats-bar{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  border-top:1px solid var(--border);
+body.menu-open #mobile-menu{opacity:1;visibility:visible}
+#mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:0.25rem}
+#mobile-menu li{
+  opacity:0;transform:translateY(24px);
+  transition:opacity 0.6s var(--ease),transform 0.6s var(--ease);
   border-bottom:1px solid var(--border);
 }
-.stat{
-  padding:2rem 1.5rem;
-  border-right:1px solid var(--border);
-  text-align:center;
+body.menu-open #mobile-menu li{opacity:1;transform:none}
+body.menu-open #mobile-menu li:nth-child(1){transition-delay:0.09s}
+body.menu-open #mobile-menu li:nth-child(2){transition-delay:0.15s}
+body.menu-open #mobile-menu li:nth-child(3){transition-delay:0.21s}
+body.menu-open #mobile-menu li:nth-child(4){transition-delay:0.27s}
+body.menu-open #mobile-menu li:nth-child(5){transition-delay:0.33s}
+#mobile-menu a{
+  display:flex;align-items:baseline;gap:1rem;
+  padding:1.15rem 0;text-decoration:none;
+  font-size:1.6rem;font-weight:500;color:var(--text);
+  letter-spacing:-0.01em;transition:color 0.3s,padding-left 0.4s var(--ease);
+  min-height:56px;
 }
-.stat:last-child{border-right:none}
-.stat-val{
-  font-size:2rem;font-weight:700;
-  color:var(--green);letter-spacing:-0.03em;line-height:1;
-  margin-bottom:0.35rem;
+#mobile-menu a:active,#mobile-menu a:hover{color:var(--green);padding-left:0.6rem}
+#mobile-menu a i{
+  font-style:normal;font-size:0.65rem;color:var(--green);
+  letter-spacing:0.15em;font-weight:600;opacity:0.65;
 }
-.stat-label{
-  font-size:0.68rem;font-weight:400;letter-spacing:0.1em;
-  text-transform:uppercase;color:var(--text-muted);
+.mm-foot{
+  margin-top:2.5rem;display:flex;flex-direction:column;gap:0.7rem;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.6s var(--ease) 0.4s,transform 0.6s var(--ease) 0.4s;
 }
+body.menu-open .mm-foot{opacity:1;transform:none}
+.mm-foot a{
+  font-size:0.95rem;color:var(--green);text-decoration:none;
+  letter-spacing:0.02em;
+}
+.mm-foot span{font-size:0.72rem;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase}
 
-/* ─── SECTIONS ─── */
-section{padding:5rem 0}
-.container{max-width:1100px;margin:0 auto;padding:0 2rem}
-.section-eyebrow{
-  font-size:0.65rem;font-weight:500;letter-spacing:0.22em;
-  text-transform:uppercase;color:var(--green);
-  margin-bottom:1rem;
-}
-.section-title{
-  font-size:clamp(1.8rem,4vw,2.8rem);
-  font-weight:700;line-height:1.1;letter-spacing:-0.02em;
-  margin-bottom:1rem;
-}
-.section-body{
-  font-size:1rem;font-weight:300;color:var(--text-muted);
-  max-width:520px;line-height:1.7;
-}
-
-/* ─── MISSION ─── */
-#mission{background:var(--bg2)}
-.mission-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:5rem;
-  align-items:center;
-}
-.mission-visual{
-  position:relative;display:flex;align-items:center;justify-content:center;
-}
-.mission-ring{
-  width:320px;height:320px;border-radius:50%;
-  border:1px solid var(--border-bright);
+/* ══ HERO ══ */
+#hero{
+  position:relative;
+  min-height:100svh;
   display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding:calc(var(--nav-h) + 2rem) var(--gut) 5rem;
+  z-index:2;
+}
+.hero-inner{
+  position:relative;z-index:4;
+  width:100%;max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1.02fr 0.98fr;
+  align-items:center;gap:clamp(1.5rem,4vw,3rem);
+}
+.hero-globe{
   position:relative;
+  display:grid;place-items:center;
+  min-height:min(70vh,560px);
+  min-width:0;
 }
-.mission-ring::before{
-  content:'';position:absolute;inset:20px;border-radius:50%;
-  border:1px solid var(--border);
+#globe-canvas{
+  display:block;
+  touch-action:pan-y;
+  will-change:transform;
 }
-.mission-ring-inner{
-  font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;
-  color:var(--text-dim);text-align:center;line-height:2;
-}
-.mission-ring-inner strong{display:block;font-size:1.6rem;font-weight:700;color:var(--green);letter-spacing:-0.02em;margin-bottom:0.25rem}
+#particles-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 
-/* ─── HOW IT WORKS ─── */
-#how{background:var(--bg)}
-.steps{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
-  margin-top:3.5rem;
+.hero-content{
+  position:relative;z-index:5;
+  text-align:left;
+  display:flex;flex-direction:column;align-items:flex-start;
+  width:100%;max-width:620px;min-width:0;
 }
-.step{
-  padding:1.75rem;
-  border:1px solid var(--border);
-  position:relative;
-  transition:border-color 0.3s;
+/* scrim only exists on mobile, where the globe sits behind the copy */
+.hero-content::before{content:none}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:0.65rem;
+  font-size:0.66rem;font-weight:500;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--green);
+  margin-bottom:1.6rem;
+  padding:0.45rem 1rem;
+  border:1px solid var(--border);border-radius:100px;
+  background:rgba(74,222,128,0.04);
+  backdrop-filter:blur(8px);
 }
-.step:hover{border-color:var(--border-bright)}
-.step-num{
-  font-size:0.62rem;font-weight:600;letter-spacing:0.18em;
-  color:var(--green);text-transform:uppercase;margin-bottom:1rem;
+.pulse-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  position:relative;flex-shrink:0;
 }
-.step-title{
-  font-size:1rem;font-weight:600;line-height:1.3;
-  margin-bottom:0.5rem;
+.pulse-dot::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:var(--green);animation:pulseRing 2.4s var(--ease-soft) infinite;
 }
-.step-body{font-size:0.85rem;color:var(--text-muted);line-height:1.65}
-.step-line{
-  position:absolute;top:50%;right:-1px;
-  width:1px;height:40%;background:var(--green-dim);
-  transform:translateY(-50%);
+@keyframes pulseRing{
+  0%{transform:scale(1);opacity:0.8}
+  70%,100%{transform:scale(3.4);opacity:0}
 }
-.step:last-child .step-line{display:none}
 
-/* ─── MUSHROOMS ─── */
-#mushrooms{background:var(--bg2)}
-.mushroom-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
-  margin-top:3.5rem;
+.hero-h1{
+  font-size:clamp(2.3rem,7.5vw,5.1rem);
+  font-weight:700;line-height:1.04;
+  letter-spacing:-0.03em;
+  margin-bottom:1.4rem;
+  text-wrap:balance;
+  text-shadow:0 2px 34px rgba(5,13,7,0.95),0 0 14px rgba(5,13,7,0.8);
 }
-.mushroom-card{
-  border:1px solid var(--border);
-  padding:2rem;
-  transition:border-color 0.3s,background 0.3s;
+.hero-h1 em{font-style:normal}
+/* gradient applied to the innermost text box so it survives the word-split */
+.hero-h1 em,.hero-h1 em .w>i{
+  background-image:linear-gradient(120deg,var(--green-light),var(--green) 45%,var(--green-deep));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:var(--green);
+}
+/* word mask reveal */
+.w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.08em}
+.w>i{
+  display:inline-block;font-style:inherit;
+  transform:translateY(110%);
+  animation:wUp 1s var(--ease) forwards;
+}
+@keyframes wUp{to{transform:translateY(0)}}
+
+.hero-sub{
+  font-size:clamp(0.95rem,2.4vw,1.1rem);font-weight:300;
+  color:var(--text-muted);max-width:500px;
+  margin-bottom:2.4rem;text-wrap:balance;
+  text-shadow:0 2px 20px rgba(5,13,7,0.95);
+}
+.hero-actions{display:flex;gap:0.9rem;flex-wrap:wrap;justify-content:center}
+.btn{
+  position:relative;overflow:hidden;
+  display:inline-flex;align-items:center;gap:0.6rem;
+  font-size:0.76rem;font-weight:600;letter-spacing:0.14em;
+  text-transform:uppercase;text-decoration:none;
+  padding:0.95rem 2rem;border-radius:2px;
+  transition:transform 0.4s var(--ease),box-shadow 0.4s,border-color 0.4s,background 0.4s;
+  min-height:48px;cursor:pointer;border:1px solid transparent;
+}
+.btn>*{position:relative;z-index:2}
+.btn::after{
+  content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,0.5) 50%,transparent 75%);
+  transform:translateX(-130%);transition:transform 0.8s var(--ease);
+}
+.btn:hover::after{transform:translateX(130%)}
+.btn-primary{color:var(--bg);background:var(--green)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 38px rgba(74,222,128,0.3)}
+.btn-ghost{
+  color:var(--text);background:rgba(74,222,128,0.04);
+  border-color:var(--border-bright);
+}
+.btn-ghost:hover{
+  transform:translateY(-3px);border-color:var(--green);
+  background:rgba(74,222,128,0.1);
+}
+.btn-arrow{
+  display:inline-block;transition:transform 0.4s var(--ease);
+  font-size:1.05em;line-height:1;
+}
+.btn:hover .btn-arrow{transform:translateX(5px)}
+
+/* peripheral labels */
+.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3}
+.hero-globe .label{font-size:0.58rem}
+.label{
+  position:absolute;
+  font-size:0.6rem;font-weight:500;letter-spacing:0.17em;
+  text-transform:uppercase;color:var(--text-dim);
+  display:flex;align-items:center;gap:0.55rem;
+  white-space:nowrap;
+  opacity:0;
+  animation:labelIn 1.1s var(--ease) forwards;
+}
+@keyframes labelIn{to{opacity:1}}
+.label::before{
+  content:'';width:26px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green-dim));
+  animation:lineGrow 1.2s var(--ease) forwards;transform-origin:left;
+}
+.label.right{flex-direction:row-reverse}
+.label.right::before{
+  background:linear-gradient(270deg,transparent,var(--green-dim));
+  transform-origin:right;
+}
+@keyframes lineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.label.float{animation:labelIn 1.1s var(--ease) forwards,floaty 7s ease-in-out infinite}
+@keyframes floaty{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+.l1{top:14%;left:-2%;animation-delay:1.1s,0s}
+.l2{top:34%;left:-8%;animation-delay:1.25s,0.9s}
+.l3{top:78%;left:2%;animation-delay:1.4s,1.8s}
+.l4{top:20%;right:-2%;animation-delay:1.55s,0.5s}
+.l5{top:48%;right:-7%;animation-delay:1.7s,1.4s}
+.l6{top:72%;right:0%;animation-delay:1.85s,2.2s}
+
+/* scroll cue */
+.scroll-cue{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:4;display:flex;flex-direction:column;align-items:center;gap:0.6rem;
+  opacity:0;animation:labelIn 1s var(--ease) 2.1s forwards;
+}
+.scroll-cue span{
+  font-size:0.58rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--text-dim);
+}
+.scroll-line{
+  width:1px;height:38px;background:linear-gradient(var(--green),transparent);
   position:relative;overflow:hidden;
 }
-.mushroom-card:hover{border-color:var(--border-bright);background:var(--bg3)}
+.scroll-line::after{
+  content:'';position:absolute;top:-38px;left:0;width:1px;height:38px;
+  background:linear-gradient(transparent,var(--green-light));
+  animation:scrollDot 2.2s var(--ease-soft) infinite;
+}
+@keyframes scrollDot{0%{top:-38px}100%{top:38px}}
+
+/* ══ MARQUEE TICKER ══ */
+.ticker{
+  position:relative;z-index:2;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:rgba(9,20,16,0.55);
+  overflow:hidden;padding:0.95rem 0;
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.ticker-track{
+  display:flex;width:max-content;
+  animation:tick 38s linear infinite;
+}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ticker-item{
+  display:flex;align-items:center;gap:2.4rem;
+  padding:0 1.2rem;
+  font-size:0.7rem;font-weight:500;letter-spacing:0.19em;
+  text-transform:uppercase;color:var(--text-dim);
+  white-space:nowrap;
+}
+.ticker-item b{color:var(--green);font-weight:500}
+.ticker-sep{color:var(--green-dim);font-size:0.5rem}
+
+/* ══ STATS ══ */
+.stats-bar{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid var(--border);
+  background:rgba(9,20,16,0.35);
+}
+.stat{
+  padding:2.3rem 1.2rem;text-align:center;
+  border-right:1px solid var(--border);
+  transition:background 0.45s;position:relative;overflow:hidden;
+}
+.stat:last-child{border-right:none}
+.stat::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 120%,var(--green-glow),transparent 70%);
+  opacity:0;transition:opacity 0.5s;
+}
+.stat:hover::before{opacity:1}
+.stat-val{
+  font-size:clamp(1.55rem,4.5vw,2.3rem);font-weight:700;
+  color:var(--green);letter-spacing:-0.025em;line-height:1;
+  margin-bottom:0.5rem;font-variant-numeric:tabular-nums;
+  position:relative;
+}
+.stat-label{
+  font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--text-dim);position:relative;
+}
+
+/* ══ SECTION SHELL ══ */
+section{position:relative;z-index:2}
+.container{max-width:1180px;margin:0 auto;padding:0 var(--gut);width:100%}
+#mission,#how,#mushrooms,#farmers,#team,#contact{
+  padding:clamp(4.5rem,11vw,8rem) 0;
+}
+#quote{padding:clamp(4rem,9vw,6.5rem) 0}
+.section-eyebrow{
+  font-size:0.64rem;font-weight:600;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--green);margin-bottom:1.1rem;
+}
+.section-divider{
+  width:40px;height:1px;background:var(--green);margin-bottom:1.8rem;
+  transform-origin:left;transform:scaleX(0);
+  transition:transform 0.9s var(--ease) 0.15s;
+}
+.in .section-divider,.section-divider.in{transform:scaleX(1)}
+.section-title{
+  font-size:clamp(1.85rem,5vw,3.1rem);font-weight:700;
+  line-height:1.1;letter-spacing:-0.028em;margin-bottom:1.5rem;
+  text-wrap:balance;
+}
+.section-body{
+  font-size:clamp(0.92rem,2.2vw,1.02rem);font-weight:300;
+  color:var(--text-muted);max-width:56ch;
+}
+.section-head{margin-bottom:clamp(2.5rem,6vw,4rem)}
+
+/* ══ REVEAL SYSTEM ══ */
+[data-reveal]{
+  opacity:0;transform:translateY(30px);
+  transition:opacity 1s var(--ease),transform 1s var(--ease);
+  will-change:opacity,transform;
+}
+[data-reveal].in{opacity:1;transform:none}
+[data-reveal="left"]{transform:translateX(-34px)}
+[data-reveal="right"]{transform:translateX(34px)}
+[data-reveal="scale"]{transform:scale(0.94)}
+[data-reveal="left"].in,[data-reveal="right"].in,[data-reveal="scale"].in{transform:none}
+
+/* ══ MISSION ══ */
+.mission-grid{
+  display:grid;grid-template-columns:1.15fr 0.85fr;
+  gap:clamp(2.5rem,6vw,5rem);align-items:center;
+}
+.mission-visual{display:flex;justify-content:center;align-items:center}
+.mission-ring{
+  position:relative;width:min(300px,72vw);aspect-ratio:1;
+  border:1px solid var(--border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.mission-ring::before,.mission-ring::after{
+  content:'';position:absolute;border-radius:50%;
+  border:1px solid var(--border);
+}
+.mission-ring::before{
+  inset:13%;
+  animation:spinSlow 26s linear infinite;
+  border-style:dashed;border-color:rgba(74,222,128,0.16);
+}
+.mission-ring::after{
+  inset:26%;
+  border-color:rgba(74,222,128,0.09);
+  animation:breathe 5s ease-in-out infinite;
+}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@keyframes breathe{
+  0%,100%{transform:scale(1);opacity:0.6}
+  50%{transform:scale(1.07);opacity:1}
+}
+/* orbiting dot */
+.orbit{
+  position:absolute;inset:0;animation:spinSlow 16s linear infinite;
+}
+.orbit::after{
+  content:'';position:absolute;top:-4px;left:50%;
+  width:7px;height:7px;margin-left:-3.5px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 14px var(--green);
+}
+.mission-ring-inner{
+  text-align:center;font-size:0.78rem;color:var(--text-muted);
+  line-height:1.8;letter-spacing:0.05em;z-index:2;padding:1rem;
+}
+.mission-ring-inner strong{
+  display:block;color:var(--green);font-size:1.15rem;
+  font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:0.5rem;
+}
+
+/* ══ STEPS ══ */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.step{
+  position:relative;padding:2.2rem 1.6rem;
+  background:var(--bg);
+  transition:background 0.5s var(--ease-soft),transform 0.5s var(--ease);
+  overflow:hidden;
+}
+.step::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--green),transparent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.6s var(--ease);
+}
+.step:hover{background:var(--bg3)}
+.step:hover::before{transform:scaleX(1)}
+.step-num{
+  font-size:0.6rem;font-weight:600;letter-spacing:0.17em;
+  text-transform:uppercase;color:var(--green);margin-bottom:1.3rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.step-num b{
+  font-size:1.9rem;font-weight:700;line-height:1;
+  color:rgba(74,222,128,0.18);letter-spacing:-0.03em;
+  transition:color 0.5s;
+}
+.step:hover .step-num b{color:rgba(74,222,128,0.42)}
+.step-title{
+  font-size:1.02rem;font-weight:600;margin-bottom:0.7rem;
+  letter-spacing:-0.01em;
+}
+.step-body{font-size:0.85rem;font-weight:300;color:var(--text-muted);line-height:1.65}
+
+/* ══ CARD SPOTLIGHT BASE ══ */
+.spot{position:relative;overflow:hidden}
+.spot::after{
+  content:'';position:absolute;width:340px;height:340px;
+  left:var(--mx,50%);top:var(--my,50%);
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,var(--green-glow),transparent 68%);
+  opacity:0;transition:opacity 0.45s;pointer-events:none;z-index:0;
+}
+.spot:hover::after{opacity:1}
+.spot>*{position:relative;z-index:1}
+
+/* ══ MUSHROOMS ══ */
+.mushroom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.mushroom-card{
+  padding:2.2rem 1.7rem;
+  background:var(--bg-card);
+  border:1px solid var(--border);border-radius:4px;
+  transition:transform 0.55s var(--ease),border-color 0.45s,box-shadow 0.55s;
+  backdrop-filter:blur(6px);
+}
+.mushroom-card:hover{
+  transform:translateY(-8px);
+  border-color:var(--border-bright);
+  box-shadow:0 22px 50px rgba(0,0,0,0.42);
+}
 .mushroom-icon{
-  font-size:2.5rem;margin-bottom:1.25rem;
-  filter:grayscale(0.3);
+  font-size:2.1rem;margin-bottom:1.2rem;display:block;
+  transition:transform 0.55s var(--ease);
+  transform-origin:bottom left;
 }
+.mushroom-card:hover .mushroom-icon{transform:scale(1.18) rotate(-7deg)}
 .mushroom-latin{
-  font-size:0.68rem;letter-spacing:0.1em;font-style:italic;
-  color:var(--green);margin-bottom:0.5rem;
+  font-size:0.64rem;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--green-dim);font-style:italic;margin-bottom:0.45rem;
 }
-.mushroom-name{font-size:1.25rem;font-weight:700;margin-bottom:0.75rem}
-.mushroom-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.65}
+.mushroom-name{
+  font-size:1.2rem;font-weight:600;margin-bottom:0.85rem;
+  letter-spacing:-0.015em;
+}
+.mushroom-desc{
+  font-size:0.85rem;font-weight:300;color:var(--text-muted);
+  line-height:1.68;margin-bottom:1.3rem;
+}
 .mushroom-badge{
-  display:inline-block;margin-top:1rem;
-  font-size:0.62rem;font-weight:600;letter-spacing:0.14em;
-  text-transform:uppercase;color:var(--green);
-  border:1px solid var(--border-bright);padding:0.3rem 0.7rem;
+  display:inline-block;font-size:0.58rem;font-weight:600;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--green);border:1px solid var(--border-bright);
+  padding:0.35rem 0.8rem;border-radius:100px;
+  background:rgba(74,222,128,0.05);
 }
 
-/* ─── FARMERS ─── */
-#farmers{background:var(--bg)}
-.benefits-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
-  background:var(--border);border:1px solid var(--border);
-  margin-top:3.5rem;
-}
+/* ══ BENEFITS ══ */
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
 .benefit{
-  background:var(--bg);padding:2rem;
-  transition:background 0.3s;
+  padding:1.9rem 1.6rem;border:1px solid var(--border);border-radius:4px;
+  background:var(--bg-card);
+  transition:transform 0.5s var(--ease),border-color 0.45s,background 0.45s;
 }
-.benefit:hover{background:var(--bg3)}
+.benefit:hover{
+  transform:translateY(-6px);border-color:var(--border-bright);
+  background:rgba(13,31,18,0.8);
+}
 .benefit-icon{
-  font-size:1.4rem;margin-bottom:1rem;
+  font-size:1.5rem;margin-bottom:1rem;display:block;
+  transition:transform 0.5s var(--ease);
 }
-.benefit-title{font-size:0.95rem;font-weight:600;margin-bottom:0.4rem}
-.benefit-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.6}
+.benefit:hover .benefit-icon{transform:scale(1.15) translateY(-3px)}
+.benefit-title{font-size:0.97rem;font-weight:600;margin-bottom:0.55rem}
+.benefit-desc{font-size:0.83rem;font-weight:300;color:var(--text-muted);line-height:1.65}
 
-/* ─── QUOTE ─── */
-#quote{background:var(--bg2)}
-.quote-inner{
-  max-width:760px;margin:0 auto;text-align:center;
-  padding:4rem 2rem;
+/* ══ QUOTE ══ */
+#quote{
+  background:linear-gradient(180deg,transparent,rgba(13,31,18,0.5),transparent);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
 }
+.quote-inner{max-width:780px;margin:0 auto;text-align:center}
 .quote-mark{
-  font-size:4rem;color:var(--green);line-height:0.5;
-  margin-bottom:1.5rem;font-family:Georgia,serif;
+  font-size:4.5rem;line-height:0.6;color:var(--green);
+  opacity:0.28;margin-bottom:1.2rem;font-weight:700;
 }
 .quote-text{
-  font-size:clamp(1.1rem,2.5vw,1.55rem);font-weight:300;
-  line-height:1.55;color:var(--text);
-  margin-bottom:2rem;
+  font-size:clamp(1.05rem,3vw,1.5rem);font-weight:300;
+  line-height:1.6;letter-spacing:-0.015em;margin-bottom:2rem;
+  text-wrap:balance;
 }
 .quote-author{
-  font-size:0.72rem;font-weight:600;letter-spacing:0.16em;
-  text-transform:uppercase;color:var(--green);
-  margin-bottom:0.25rem;
+  font-size:0.88rem;font-weight:600;color:var(--green);
+  letter-spacing:0.03em;margin-bottom:0.25rem;
 }
-.quote-role{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em}
+.quote-role{
+  font-size:0.7rem;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--text-dim);
+}
 
-/* ─── CONTACT ─── */
-#contact{background:var(--bg)}
-.contact-inner{
-  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;
+/* ══ TEAM (vertical stack) ══ */
+#team{background:linear-gradient(180deg,transparent,rgba(9,20,16,0.4))}
+.team-stack{display:flex;flex-direction:column;gap:1.2rem;max-width:920px}
+.member{
+  position:relative;display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;gap:clamp(1.2rem,3vw,2.2rem);
+  padding:clamp(1.5rem,3.5vw,2.2rem);
+  border:1px solid var(--border);border-radius:4px;
+  background:var(--bg-card);
+  transition:transform 0.55s var(--ease),border-color 0.45s,background 0.45s,box-shadow 0.55s;
+  backdrop-filter:blur(6px);
 }
-.contact-info{margin-top:2rem}
-.contact-detail{
-  display:flex;flex-direction:column;gap:0.25rem;
-  margin-bottom:1.5rem;
+.member:hover{
+  transform:translateY(-5px);
+  border-color:var(--border-bright);
+  background:rgba(13,31,18,0.78);
+  box-shadow:0 20px 48px rgba(0,0,0,0.4);
 }
-.contact-label{
-  font-size:0.62rem;font-weight:500;letter-spacing:0.18em;
+.member::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--green),var(--green-deep));
+  transform:scaleY(0);transform-origin:top;
+  transition:transform 0.6s var(--ease);
+}
+.member:hover::before{transform:scaleY(1)}
+
+.m-avatar{
+  position:relative;flex-shrink:0;
+  width:clamp(62px,13vw,82px);aspect-ratio:1;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(140deg,rgba(74,222,128,0.2),rgba(22,163,74,0.07));
+  border:1px solid var(--border-bright);
+  font-size:clamp(1.15rem,3vw,1.5rem);font-weight:700;
+  color:var(--green);letter-spacing:0.04em;
+  transition:transform 0.55s var(--ease),box-shadow 0.5s;
+}
+.member:hover .m-avatar{
+  transform:scale(1.07);
+  box-shadow:0 0 0 5px rgba(74,222,128,0.07),0 0 26px rgba(74,222,128,0.18);
+}
+.m-avatar::after{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  border:1px dashed rgba(74,222,128,0.2);
+  animation:spinSlow 22s linear infinite;
+}
+
+.m-info{min-width:0}
+.m-role{
+  font-size:0.6rem;font-weight:600;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--green);margin-bottom:0.4rem;
+}
+.m-name{
+  font-size:clamp(1.15rem,3.2vw,1.55rem);font-weight:700;
+  letter-spacing:-0.022em;margin-bottom:0.5rem;line-height:1.15;
+}
+.m-bio{
+  font-size:clamp(0.82rem,2vw,0.89rem);font-weight:300;
+  color:var(--text-muted);line-height:1.65;max-width:52ch;
+}
+.m-tags{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.85rem}
+.m-tag{
+  font-size:0.57rem;font-weight:500;letter-spacing:0.13em;
   text-transform:uppercase;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:100px;
+  padding:0.3rem 0.7rem;transition:color 0.4s,border-color 0.4s;
+}
+.member:hover .m-tag{color:var(--green);border-color:var(--border-bright)}
+.m-num{
+  font-size:clamp(1.9rem,5vw,2.8rem);font-weight:700;line-height:1;
+  color:rgba(74,222,128,0.13);letter-spacing:-0.04em;
+  transition:color 0.55s var(--ease),transform 0.55s var(--ease);
+  font-variant-numeric:tabular-nums;align-self:flex-start;
+}
+.member:hover .m-num{color:rgba(74,222,128,0.35);transform:translateY(-3px)}
+
+/* ══ CONTACT ══ */
+#contact{background:linear-gradient(180deg,transparent,rgba(13,31,18,0.35))}
+.contact-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(2.5rem,6vw,4.5rem);align-items:start;
+}
+.contact-info{margin-top:2.3rem;display:flex;flex-direction:column;gap:1.3rem}
+.contact-detail{display:flex;flex-direction:column;gap:0.3rem}
+.contact-label{
+  font-size:0.6rem;letter-spacing:0.17em;text-transform:uppercase;
+  color:var(--text-dim);
 }
 .contact-val{
-  font-size:1rem;color:var(--text);text-decoration:none;
-  border-bottom:1px solid var(--border);padding-bottom:0.35rem;
-  transition:border-color 0.2s,color 0.2s;
+  font-size:0.97rem;color:var(--text);text-decoration:none;
+  transition:color 0.3s;width:fit-content;position:relative;
 }
-.contact-val:hover{color:var(--green);border-color:var(--green)}
-.contact-form{display:flex;flex-direction:column;gap:1rem;margin-top:2rem}
-.form-group{display:flex;flex-direction:column;gap:0.35rem}
+a.contact-val::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:100%;height:1px;
+  background:var(--green);transform:scaleX(0);transform-origin:right;
+  transition:transform 0.45s var(--ease);
+}
+a.contact-val:hover{color:var(--green)}
+a.contact-val:hover::after{transform:scaleX(1);transform-origin:left}
+
+.contact-form{display:flex;flex-direction:column;gap:1.15rem}
+.form-group{display:flex;flex-direction:column;gap:0.45rem}
 .form-label{
-  font-size:0.65rem;font-weight:500;letter-spacing:0.14em;
-  text-transform:uppercase;color:var(--text-dim);
+  font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--text-dim);transition:color 0.3s;
 }
+.form-group:focus-within .form-label{color:var(--green)}
 .form-input,.form-textarea{
-  background:var(--bg2);border:1px solid var(--border);
-  color:var(--text);font-family:'Space Grotesk',sans-serif;
-  font-size:0.9rem;padding:0.75rem 1rem;outline:none;
-  transition:border-color 0.2s;
-  -webkit-appearance:none;appearance:none;
+  background:rgba(5,13,7,0.6);
+  border:1px solid var(--border);border-radius:3px;
+  color:var(--text);padding:0.85rem 1rem;
+  font-size:0.93rem;font-family:inherit;
+  transition:border-color 0.35s,background 0.35s,box-shadow 0.35s;
+  width:100%;min-height:48px;
 }
-.form-input:focus,.form-textarea:focus{border-color:var(--green)}
-.form-textarea{resize:vertical;min-height:120px}
+.form-textarea{min-height:120px;resize:vertical;line-height:1.6}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-dim)}
+.form-input:focus,.form-textarea:focus{
+  outline:none;border-color:var(--green);
+  background:rgba(13,31,18,0.65);
+  box-shadow:0 0 0 3px rgba(74,222,128,0.09);
+}
 .form-submit{
-  align-self:flex-start;
-  font-size:0.72rem;font-weight:600;letter-spacing:0.14em;
-  text-transform:uppercase;cursor:pointer;
+  position:relative;overflow:hidden;
   background:var(--green);color:var(--bg);border:none;
-  padding:0.85rem 2rem;transition:opacity 0.2s;
-  font-family:'Space Grotesk',sans-serif;
+  padding:1rem 2rem;border-radius:2px;
+  font-size:0.76rem;font-weight:600;letter-spacing:0.14em;
+  text-transform:uppercase;cursor:pointer;
+  transition:transform 0.4s var(--ease),box-shadow 0.4s;
+  margin-top:0.4rem;min-height:50px;
 }
-.form-submit:hover{opacity:0.85}
+.form-submit::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,0.5) 50%,transparent 75%);
+  transform:translateX(-130%);transition:transform 0.8s var(--ease);
+}
+.form-submit:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(74,222,128,0.3)}
+.form-submit:hover::after{transform:translateX(130%)}
+.form-submit:disabled{opacity:0.65;cursor:default;transform:none}
 
-/* ─── FOOTER ─── */
+/* ══ FOOTER ══ */
 footer{
-  padding:2rem 2rem;
+  position:relative;z-index:2;
   border-top:1px solid var(--border);
+  padding:2.3rem var(--gut);
   display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:1rem;
+  gap:1.3rem;flex-wrap:wrap;
+  background:rgba(5,13,7,0.7);
 }
-.footer-logo{
-  font-size:0.85rem;font-weight:700;letter-spacing:0.1em;
-  text-transform:uppercase;color:var(--green);
+.footer-logo img{
+  height:30px;width:auto;
+  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
+  opacity:0.62;transition:opacity 0.4s;
 }
-.footer-text{
-  font-size:0.7rem;color:var(--text-dim);letter-spacing:0.06em;
-}
+.footer-logo:hover img{opacity:1}
+.footer-text{font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em}
 .footer-badge{
-  font-size:0.62rem;font-weight:500;letter-spacing:0.12em;
-  text-transform:uppercase;color:var(--text-dim);
-  border:1px solid var(--border);padding:0.3rem 0.7rem;
+  font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--green);border:1px solid var(--border);
+  padding:0.42rem 0.9rem;border-radius:100px;
+  background:rgba(74,222,128,0.04);
 }
 
-/* ─── DIVIDER LINE ─── */
-.section-divider{
-  width:40px;height:1px;background:var(--green);
-  margin-bottom:2rem;
+/* ══ BACK TO TOP ══ */
+#to-top{
+  position:fixed;right:clamp(1rem,3vw,2rem);bottom:clamp(1rem,3vw,2rem);
+  width:46px;height:46px;border-radius:50%;z-index:140;
+  border:1px solid var(--border-bright);
+  background:rgba(9,20,16,0.85);backdrop-filter:blur(12px);
+  color:var(--green);cursor:pointer;
+  display:grid;place-items:center;font-size:1rem;
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity 0.45s var(--ease),transform 0.45s var(--ease),
+             visibility 0.45s,background 0.35s,box-shadow 0.35s;
+}
+#to-top.show{opacity:1;visibility:visible;transform:none}
+#to-top:hover{background:var(--green);color:var(--bg);box-shadow:0 8px 26px rgba(74,222,128,0.32)}
+
+/* ══ FOCUS ══ */
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--green);outline-offset:3px;border-radius:2px;
 }
 
-/* ─── RESPONSIVE ─── */
-@media(max-width:900px){
-  .mission-grid,.contact-inner{grid-template-columns:1fr;gap:2.5rem}
+/* ══ RESPONSIVE ══ */
+@media(max-width:1000px){
   .steps{grid-template-columns:1fr 1fr}
-  .mushroom-grid{grid-template-columns:1fr 1fr}
-  .benefits-grid{grid-template-columns:1fr 1fr}
-  .mission-visual{display:none}
-  .globe-labels .label{display:none}
-  .stats-bar{grid-template-columns:1fr 1fr}
-  .stat:nth-child(2){border-right:none}
-  .stat:nth-child(3){border-top:1px solid var(--border)}
-  nav{padding:1rem 1.25rem}
-  .nav-links{display:none}
+  .mushroom-grid,.benefits-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:600px){
-  .steps,.mushroom-grid,.benefits-grid{grid-template-columns:1fr}
+@media(max-width:960px){
+  /* stack: the globe gets its own space above the copy instead of
+     sitting behind it, so the continents stay readable */
+  .hero-inner{
+    grid-template-columns:1fr;
+    gap:clamp(0.75rem,3vw,1.6rem);
+    justify-items:center;
+  }
+  .hero-globe{order:1;min-height:0}
+  .hero-content{
+    order:2;
+    text-align:center;align-items:center;
+    max-width:620px;margin:0 auto;
+  }
+  .hero-content::before{content:none}
+  .hero-h1,.hero-sub{text-shadow:none}
+  #hero{padding-top:calc(var(--nav-h) + 1rem);padding-bottom:3.5rem}
+}
+@media(max-width:860px){
+  .nav-links{display:none}
+  .nav-cta{display:none}
+  .burger{display:flex}
+  .mission-grid,.contact-inner{grid-template-columns:1fr;gap:2.8rem}
+  .mission-visual{order:-1}
+  .globe-labels{display:none}
   .stats-bar{grid-template-columns:1fr 1fr}
-  .hero-h1{font-size:2.2rem}
+  .stat:nth-child(2n){border-right:none}
+  .stat:nth-child(n+3){border-top:1px solid var(--border)}
+  .scroll-cue{display:none}
+}
+@media(max-width:640px){
+  .steps{grid-template-columns:1fr}
+  .mushroom-grid,.benefits-grid{grid-template-columns:1fr}
+  .member{
+    grid-template-columns:auto 1fr;
+    grid-template-areas:"avatar num" "info info";
+    gap:1rem 1.1rem;
+  }
+  .m-avatar{grid-area:avatar}
+  .m-num{grid-area:num;justify-self:end;align-self:center}
+  .m-info{grid-area:info}
+  footer{flex-direction:column;text-align:center;gap:1.1rem}
+  .hero-actions{width:100%;flex-direction:column}
+  .hero-actions .btn{width:100%;justify-content:center}
+  .quote-mark{font-size:3.2rem}
+  #mobile-menu a{font-size:1.38rem}
+}
+@media(max-width:400px){
+  .stats-bar{grid-template-columns:1fr}
+  .stat{border-right:none;border-top:1px solid var(--border)}
+  .stat:first-child{border-top:none}
+}
+
+/* ══ REDUCED MOTION ══ */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+  [data-reveal]{opacity:1 !important;transform:none !important}
+  .w>i{transform:none !important}
+  .label,.scroll-cue{opacity:1 !important}
+  .section-divider{transform:scaleX(1) !important}
+  #cursor-glow{display:none}
 }
 </style>
 </head>
 <body>
+<div class="ambient"></div>
+<div class="grid-tex"></div>
+<div id="progress"></div>
+<div id="cursor-glow"></div>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo"><img src="pilzboks-logo-transparent.png" alt="Pilzboks" style="height:44px;filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);"></a>
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo" aria-label="Pilzboks Startseite">
+    <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
+  </a>
   <ul class="nav-links">
     <li><a href="#how">Wie es funktioniert</a></li>
     <li><a href="#mushrooms">Pilze</a></li>
     <li><a href="#farmers">Für Landwirte</a></li>
-    <li><a href="#contact">Kontakt</a></li>
+    <li><a href="#team">Team</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">Jetzt starten</a>
+  <div class="nav-right">
+    <a href="#contact" class="nav-cta"><span>Jetzt starten</span></a>
+    <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
-<!-- HERO -->
-<section id="hero">
-  <canvas id="particles-canvas"></canvas>
-  <canvas id="globe-canvas"></canvas>
-
-  <!-- peripheral labels (desktop only) -->
-  <div class="globe-labels">
-    <div class="label l1">Klimaneutral</div>
-    <div class="label l2">100% Bio</div>
-    <div class="label l3">Kreislaufwirtschaft</div>
-    <div class="label l4 right">Vorarlberg</div>
-    <div class="label l5 right">DACH-Region</div>
-    <div class="label l6 right">Pilzanbau</div>
-  </div>
-
-  <div class="hero-content">
-    <p class="hero-eyebrow">Nachhaltige Landwirtschaft · Vorarlberg</p>
-    <h1 class="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
-    <p class="hero-sub">Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
-    <a href="#how" class="hero-btn">Mehr erfahren</a>
-  </div>
-</section>
-
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat">
-    <div class="stat-val">3</div>
-    <div class="stat-label">Pilzarten</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">100%</div>
-    <div class="stat-label">Bio-zertifiziert</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">22,5 m²</div>
-    <div class="stat-label">Container-Footprint</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">DACH</div>
-    <div class="stat-label">Vertriebsregion</div>
+<!-- ═══ MOBILE MENU ═══ -->
+<div id="mobile-menu">
+  <ul>
+    <li><a href="#how"><i>01</i>Wie es funktioniert</a></li>
+    <li><a href="#mushrooms"><i>02</i>Pilze</a></li>
+    <li><a href="#farmers"><i>03</i>Für Landwirte</a></li>
+    <li><a href="#team"><i>04</i>Team</a></li>
+    <li><a href="#contact"><i>05</i>Kontakt</a></li>
+  </ul>
+  <div class="mm-foot">
+    <span>Kontakt</span>
+    <a href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a>
+    <a href="#contact">Vorarlberg, Österreich</a>
   </div>
 </div>
 
-<!-- MISSION -->
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <canvas id="particles-canvas"></canvas>
+
+  <div class="hero-inner">
+  <div class="hero-content">
+    <p class="hero-eyebrow"><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
+    <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
+    <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
+    <div class="hero-actions" data-hero-fade>
+      <a href="#how" class="btn btn-primary"><span>Mehr erfahren</span><span class="btn-arrow">→</span></a>
+      <a href="#contact" class="btn btn-ghost"><span>Gespräch vereinbaren</span></a>
+    </div>
+  </div>
+
+  <div class="hero-globe">
+    <canvas id="globe-canvas"></canvas>
+    <div class="globe-labels">
+      <div class="label float l1">Klimaneutral</div>
+      <div class="label float l2">100% Bio</div>
+      <div class="label float l3">Kreislauf</div>
+      <div class="label float right l4">Vorarlberg</div>
+      <div class="label float right l5">DACH-Region</div>
+      <div class="label float right l6">Pilzanbau</div>
+    </div>
+  </div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══ TICKER ═══ -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-val" data-count="3">0</div><div class="stat-label">Pilzarten</div></div>
+  <div class="stat"><div class="stat-val" data-count="100" data-suffix="%">0</div><div class="stat-label">Bio-zertifiziert</div></div>
+  <div class="stat"><div class="stat-val" data-count="22.5" data-suffix=" m²" data-dec="1">0</div><div class="stat-label">Container-Footprint</div></div>
+  <div class="stat"><div class="stat-val">DACH</div><div class="stat-label">Vertriebsregion</div></div>
+</div>
+
+<!-- ═══ MISSION ═══ -->
 <section id="mission">
   <div class="container">
     <div class="mission-grid">
-      <div>
+      <div data-reveal="left">
         <p class="section-eyebrow">Unsere Mission</p>
         <div class="section-divider"></div>
         <h2 class="section-title">Pilze als Teil des<br>Ökosystems</h2>
-        <p class="section-body" style="margin-bottom:1.5rem">
+        <p class="section-body" style="margin-bottom:1.4rem">
           Pilzboks bringt biologischen Pilzanbau direkt auf den Hof — ressourcenschonend, klimaneutral und in den natürlichen Kreislauf eingebettet.
         </p>
         <p class="section-body">
           Mit kompakten Container-Einheiten ermöglichen wir Biobetrieben eine zusätzliche Einkommensquelle, die kaum Fläche benötigt und vollständig in bestehende Strukturen integriert werden kann.
         </p>
       </div>
-      <div class="mission-visual">
+      <div class="mission-visual" data-reveal="scale">
         <div class="mission-ring">
+          <div class="orbit"></div>
           <div class="mission-ring-inner">
             <strong>Myzel</strong>
             verbindet<br>Boden · Pflanze<br>Mensch · Zukunft
@@ -472,33 +1047,32 @@ footer{
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
+<!-- ═══ HOW ═══ -->
 <section id="how">
   <div class="container">
-    <p class="section-eyebrow">Wie es funktioniert</p>
-    <div class="section-divider"></div>
-    <h2 class="section-title">Vier Schritte zum<br>Anbau</h2>
+    <div class="section-head" data-reveal>
+      <p class="section-eyebrow">Wie es funktioniert</p>
+      <div class="section-divider"></div>
+      <h2 class="section-title">Vier Schritte zum<br>Anbau</h2>
+    </div>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">01 — Setup</div>
+      <div class="step" data-reveal data-stagger="0">
+        <div class="step-num"><b>01</b>Setup</div>
         <div class="step-title">Container auf dem Hof</div>
         <div class="step-body">Wir liefern und installieren den schlüsselfertigen Pilz-Container direkt auf Ihrem Betrieb. Minimaler Platzbedarf, maximale Integration.</div>
-        <div class="step-line"></div>
       </div>
-      <div class="step">
-        <div class="step-num">02 — Abnahme</div>
+      <div class="step" data-reveal data-stagger="1">
+        <div class="step-num"><b>02</b>Abnahme</div>
         <div class="step-title">Garantierte Abnahme</div>
         <div class="step-body">Pilzboks garantiert die Abnahme aller Erträge zu fairen, vertraglich gesicherten Preisen — unabhängig von Marktschwankungen.</div>
-        <div class="step-line"></div>
       </div>
-      <div class="step">
-        <div class="step-num">03 — Produktion</div>
-        <div class="step-title">Verarbeitung & Branding</div>
+      <div class="step" data-reveal data-stagger="2">
+        <div class="step-num"><b>03</b>Produktion</div>
+        <div class="step-title">Verarbeitung &amp; Branding</div>
         <div class="step-body">Wir übernehmen Verarbeitung, Verpackung und den Aufbau einer eigenen Markenidentität für Ihre Hofprodukte.</div>
-        <div class="step-line"></div>
       </div>
-      <div class="step">
-        <div class="step-num">04 — Kreislauf</div>
+      <div class="step" data-reveal data-stagger="3">
+        <div class="step-num"><b>04</b>Kreislauf</div>
         <div class="step-title">Regionale Kreislaufwirtschaft</div>
         <div class="step-body">Substrate werden regional beschafft, Restmaterialien als Kompost zurückgeführt — ein vollständiger biologischer Kreislauf.</div>
       </div>
@@ -506,29 +1080,31 @@ footer{
   </div>
 </section>
 
-<!-- MUSHROOMS -->
+<!-- ═══ MUSHROOMS ═══ -->
 <section id="mushrooms">
   <div class="container">
-    <p class="section-eyebrow">Unsere Pilze</p>
-    <div class="section-divider"></div>
-    <h2 class="section-title">Drei Arten,<br>ein Ökosystem</h2>
+    <div class="section-head" data-reveal>
+      <p class="section-eyebrow">Unsere Pilze</p>
+      <div class="section-divider"></div>
+      <h2 class="section-title">Drei Arten,<br>ein Ökosystem</h2>
+    </div>
     <div class="mushroom-grid">
-      <div class="mushroom-card">
-        <div class="mushroom-icon">🦔</div>
+      <div class="mushroom-card spot" data-reveal data-stagger="0">
+        <span class="mushroom-icon">🦔</span>
         <div class="mushroom-latin">Hericium erinaceus</div>
         <div class="mushroom-name">Igelstachelbart</div>
         <div class="mushroom-desc">Der außergewöhnlichste unserer Pilze — bekannt für seinen intensiv-meeresfrüchtigen Geschmack und herausragende Nährstoffe. Beliebt in der gehobenen Küche.</div>
         <span class="mushroom-badge">Premium</span>
       </div>
-      <div class="mushroom-card">
-        <div class="mushroom-icon">🍄</div>
+      <div class="mushroom-card spot" data-reveal data-stagger="1">
+        <span class="mushroom-icon">🍄</span>
         <div class="mushroom-latin">Lentinula edodes</div>
         <div class="mushroom-name">Shiitake</div>
         <div class="mushroom-desc">Asiatischer Klassiker mit tiefem Umami-Aroma. Shiitake ist vielseitig einsetzbar und weltweit einer der beliebtesten Kulturpilze.</div>
         <span class="mushroom-badge">Klassiker</span>
       </div>
-      <div class="mushroom-card">
-        <div class="mushroom-icon">🌿</div>
+      <div class="mushroom-card spot" data-reveal data-stagger="2">
+        <span class="mushroom-icon">🌿</span>
         <div class="mushroom-latin">Pleurotus ostreatus</div>
         <div class="mushroom-name">Austernpilz</div>
         <div class="mushroom-desc">Zart, mild und unglaublich vielseitig. Der Austernpilz gedeiht auch auf landwirtschaftlichen Reststoffen und ist das Herzstück unserer Kreislaufwirtschaft.</div>
@@ -538,40 +1114,42 @@ footer{
   </div>
 </section>
 
-<!-- FARMERS -->
+<!-- ═══ FARMERS ═══ -->
 <section id="farmers">
   <div class="container">
-    <p class="section-eyebrow">Für Landwirte</p>
-    <div class="section-divider"></div>
-    <h2 class="section-title">Was Pilzboks<br>bietet</h2>
+    <div class="section-head" data-reveal>
+      <p class="section-eyebrow">Für Landwirte</p>
+      <div class="section-divider"></div>
+      <h2 class="section-title">Was Pilzboks<br>bietet</h2>
+    </div>
     <div class="benefits-grid">
-      <div class="benefit">
-        <div class="benefit-icon">📐</div>
+      <div class="benefit" data-reveal data-stagger="0">
+        <span class="benefit-icon">📐</span>
         <div class="benefit-title">Kleiner Footprint</div>
         <div class="benefit-desc">22,5 m² Stellfläche genügen — nutzbar auf versiegelten oder benachteiligten Flächen.</div>
       </div>
-      <div class="benefit">
-        <div class="benefit-icon">📋</div>
+      <div class="benefit" data-reveal data-stagger="1">
+        <span class="benefit-icon">📋</span>
         <div class="benefit-title">Planungssicherheit</div>
         <div class="benefit-desc">Feste Abnahmeverträge sorgen für kalkulierbares Zusatzeinkommen über die gesamte Laufzeit.</div>
       </div>
-      <div class="benefit">
-        <div class="benefit-icon">💶</div>
+      <div class="benefit" data-reveal data-stagger="2">
+        <span class="benefit-icon">💶</span>
         <div class="benefit-title">Förderung möglich</div>
         <div class="benefit-desc">Das System ist förderfähig über AMA, Ländliche Entwicklung und andere Agrarprogramme.</div>
       </div>
-      <div class="benefit">
-        <div class="benefit-icon">♻️</div>
+      <div class="benefit" data-reveal data-stagger="3">
+        <span class="benefit-icon">♻️</span>
         <div class="benefit-title">Kreislaufwirtschaft</div>
         <div class="benefit-desc">Substrate aus regionaler Landwirtschaft, Rückführung als Bodenverbesserer — geschlossener Kreislauf.</div>
       </div>
-      <div class="benefit">
-        <div class="benefit-icon">🔧</div>
+      <div class="benefit" data-reveal data-stagger="4">
+        <span class="benefit-icon">🔧</span>
         <div class="benefit-title">Technischer Support</div>
         <div class="benefit-desc">Wir begleiten Einrichtung, Schulung und laufenden Betrieb — Sie müssen kein Experte sein.</div>
       </div>
-      <div class="benefit">
-        <div class="benefit-icon">🌱</div>
+      <div class="benefit" data-reveal data-stagger="5">
+        <span class="benefit-icon">🌱</span>
         <div class="benefit-title">Bio-Integration</div>
         <div class="benefit-desc">Vollständig konform mit EU-Bio-Richtlinien — ideal für bestehende Biobetriebe ohne Zusatzaufwand.</div>
       </div>
@@ -579,10 +1157,10 @@ footer{
   </div>
 </section>
 
-<!-- QUOTE -->
+<!-- ═══ QUOTE ═══ -->
 <section id="quote">
   <div class="container">
-    <div class="quote-inner">
+    <div class="quote-inner" data-reveal>
       <div class="quote-mark">"</div>
       <p class="quote-text">Als Biohof wollte ich meine Fläche effizienter nutzen, ohne dabei meinen Werten zu widersprechen. Mit Pilzboks habe ich eine Lösung gefunden, die perfekt in unseren Kreislauf passt und nebenbei ein verlässliches Zusatzeinkommen schafft.</p>
       <div class="quote-author">Jürgen Feurle</div>
@@ -591,11 +1169,55 @@ footer{
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- ═══ TEAM ═══ -->
+<section id="team">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="section-eyebrow">Das Team</p>
+      <div class="section-divider"></div>
+      <h2 class="section-title">Die Menschen<br>hinter Pilzboks</h2>
+      <p class="section-body">Zwei Ingenieure aus Vorarlberg, die Landwirtschaft und Technik zusammenbringen.</p>
+    </div>
+
+    <div class="team-stack">
+      <article class="member spot" data-reveal data-stagger="0">
+        <div class="m-avatar">TW</div>
+        <div class="m-info">
+          <div class="m-role">Gründer &amp; Geschäftsführung</div>
+          <h3 class="m-name">Tobias Willi</h3>
+          <p class="m-bio">Elektro- und Elektronikingenieur. Treibt Produktentwicklung, Partnerschaften mit Biobetrieben und die strategische Ausrichtung von Pilzboks voran.</p>
+          <div class="m-tags">
+            <span class="m-tag">Strategie</span>
+            <span class="m-tag">Produkt</span>
+            <span class="m-tag">Partnerbetriebe</span>
+          </div>
+        </div>
+        <div class="m-num">01</div>
+      </article>
+
+      <article class="member spot" data-reveal data-stagger="1">
+        <div class="m-avatar">JA</div>
+        <div class="m-info">
+          <div class="m-role">Mitgründer</div>
+          <h3 class="m-name">Jakob</h3>
+          <p class="m-bio">Ingenieur mit Fokus auf Anlagentechnik. Verantwortet Aufbau, Klimasteuerung und den zuverlässigen Betrieb der Container-Systeme.</p>
+          <div class="m-tags">
+            <span class="m-tag">Technik</span>
+            <span class="m-tag">Anlagenbau</span>
+            <span class="m-tag">Betrieb</span>
+          </div>
+        </div>
+        <div class="m-num">02</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
 <section id="contact">
   <div class="container">
     <div class="contact-inner">
-      <div>
+      <div data-reveal="left">
         <p class="section-eyebrow">Kontakt</p>
         <div class="section-divider"></div>
         <h2 class="section-title">Jetzt ins<br>Gespräch kommen</h2>
@@ -611,215 +1233,683 @@ footer{
           </div>
           <div class="contact-detail">
             <span class="contact-label">Region</span>
-            <span class="contact-val">Vorarlberg & DACH-Region</span>
+            <span class="contact-val">Vorarlberg &amp; DACH-Region</span>
           </div>
         </div>
       </div>
-      <div>
-        <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div data-reveal="right">
+        <form class="contact-form" id="contact-form" novalidate>
           <div class="form-group">
             <label class="form-label" for="name">Name</label>
-            <input class="form-input" type="text" id="name" placeholder="Ihr Name" required>
+            <input class="form-input" type="text" id="name" name="name" placeholder="Ihr Name" autocomplete="name" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="email">E-Mail</label>
-            <input class="form-input" type="email" id="email" placeholder="ihre@email.com" required>
+            <input class="form-input" type="email" id="email" name="email" placeholder="ihre@email.com" autocomplete="email" inputmode="email" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="hof">Betrieb (optional)</label>
-            <input class="form-input" type="text" id="hof" placeholder="Biohof ...">
+            <input class="form-input" type="text" id="hof" name="hof" placeholder="Biohof ..." autocomplete="organization">
           </div>
           <div class="form-group">
             <label class="form-label" for="message">Nachricht</label>
-            <textarea class="form-textarea" id="message" placeholder="Erzählen Sie uns von Ihrem Hof..." required></textarea>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Erzählen Sie uns von Ihrem Hof..." required></textarea>
           </div>
-          <button type="submit" class="form-submit">Nachricht senden</button>
+          <button type="submit" class="form-submit" id="submit-btn">Nachricht senden</button>
         </form>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
-  <span class="footer-logo"><img src="pilzboks-logo-transparent.png" alt="Pilzboks" style="height:30px;filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);opacity:0.7;"></span>
-  <span class="footer-text">© 2025 Pilzboks. Bio-Pilze direkt vom Hof.</span>
+  <a href="#hero" class="footer-logo" aria-label="Nach oben">
+    <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
+  </a>
+  <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
   <span class="footer-badge">🌿 100% Bio</span>
 </footer>
 
+<button id="to-top" aria-label="Nach oben scrollen">↑</button>
+
 <script>
-// ─── GLOBE CANVAS ───────────────────────────────────────
 (function(){
-  const canvas = document.getElementById('globe-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = () => Math.min(window.innerWidth * 0.72, 700);
-  const H = () => W();
-  let w, h, R, dots = [], rotation = 0;
-  const N = 1800;
-  const golden = (1 + Math.sqrt(5)) / 2;
+'use strict';
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var isTouch = window.matchMedia('(hover: none)').matches;
+var mobile = window.innerWidth < 860;
 
-  function buildDots(){
-    dots = [];
-    for(let i = 0; i < N; i++){
-      const theta = 2 * Math.PI * i / golden;
-      const phi = Math.acos(1 - 2 * (i + 0.5) / N);
-      dots.push({ theta, phi });
-    }
-  }
-
-  function resize(){
-    w = W(); h = H(); R = w * 0.44;
-    canvas.width = w * devicePixelRatio;
-    canvas.height = h * devicePixelRatio;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-
-  function projectDot(theta, phi, rot){
-    // rotate around Y axis
-    const x0 = Math.sin(phi) * Math.cos(theta + rot);
-    const y0 = -Math.cos(phi);
-    const z0 = Math.sin(phi) * Math.sin(theta + rot);
-    return { x: x0, y: y0, z: z0 };
-  }
-
-  function render(){
-    ctx.clearRect(0, 0, w, h);
-    const cx = w / 2, cy = h / 2;
-
-    // atmosphere glow
-    const grd = ctx.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 1.15);
-    grd.addColorStop(0, 'rgba(74,222,128,0.0)');
-    grd.addColorStop(0.7, 'rgba(74,222,128,0.025)');
-    grd.addColorStop(1, 'rgba(74,222,128,0.0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, w, h);
-
-    // project and sort by z
-    const projected = dots.map(d => {
-      const p = projectDot(d.theta, d.phi, rotation);
-      return { ...p, px: cx + p.x * R, py: cy + p.y * R };
-    }).sort((a, b) => a.z - b.z);
-
-    for(const d of projected){
-      const front = d.z >= 0;
-      let alpha, size;
-      if(front){
-        // map z 0→1 to alpha 0.12→0.77
-        alpha = 0.12 + d.z * 0.65;
-        size = 0.8 + d.z * 1.8;
+/* ─── HERO WORD REVEAL ─────────────────────────── */
+(function(){
+  var h1 = document.getElementById('hero-h1');
+  if(!h1 || reduce) { if(h1) h1.style.opacity=1; return; }
+  var html = h1.innerHTML;
+  // split on spaces but keep <br> and <em> wrappers intact
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var out = '', i = 0;
+  function walk(nodes){
+    var s = '';
+    for(var n=0;n<nodes.length;n++){
+      var node = nodes[n];
+      if(node.nodeType === 3){
+        var parts = node.textContent.split(/(\s+)/);
+        for(var p=0;p<parts.length;p++){
+          if(!parts[p]) continue;
+          if(/^\s+$/.test(parts[p])){ s += ' '; continue; }
+          s += '<span class="w"><i style="animation-delay:'+(0.28 + i*0.075).toFixed(3)+'s">'+parts[p]+'</i></span>';
+          i++;
+        }
+      } else if(node.nodeName === 'BR'){
+        s += '<br>';
       } else {
-        alpha = 0.06 + (d.z + 1) * 0.06;
-        size = 0.5;
+        s += '<'+node.nodeName.toLowerCase()+'>'+walk(node.childNodes)+'</'+node.nodeName.toLowerCase()+'>';
       }
-      ctx.beginPath();
-      ctx.arc(d.px, d.py, size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(74,222,128,${alpha.toFixed(3)})`;
-      ctx.fill();
     }
-
-    // subtle equator ring
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, R, R * 0.08, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(74,222,128,0.06)';
-    ctx.lineWidth = 0.5;
-    ctx.stroke();
-
-    rotation += 0.0012;
-    requestAnimationFrame(render);
+    return s;
   }
+  out = walk(tmp.childNodes);
+  h1.innerHTML = out;
 
-  resize();
-  buildDots();
-  render();
-  window.addEventListener('resize', () => { resize(); });
+  // fade in the rest after words
+  var fades = document.querySelectorAll('[data-hero-fade]');
+  for(var f=0;f<fades.length;f++){
+    (function(el,idx){
+      el.style.opacity = 0;
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)';
+      setTimeout(function(){ el.style.opacity=1; el.style.transform='none'; }, 700 + idx*130);
+    })(fades[f], f);
+  }
 })();
 
-// ─── PARTICLE CANVAS ────────────────────────────────────
+/* ─── TICKER ───────────────────────────────────── */
 (function(){
-  const canvas = document.getElementById('particles-canvas');
-  const ctx = canvas.getContext('2d');
-  let w, h, particles = [];
-
-  function resize(){
-    w = window.innerWidth; h = window.innerHeight;
-    canvas.width = w * devicePixelRatio;
-    canvas.height = h * devicePixelRatio;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.scale(devicePixelRatio, devicePixelRatio);
+  var track = document.getElementById('ticker-track');
+  if(!track) return;
+  var items = ['Bio-zertifiziert','Klimaneutral','Regionale Substrate','Garantierte Abnahme',
+               'Kreislaufwirtschaft','22,5 m² Footprint','Shiitake','Austernpilz','Igelstachelbart',
+               'Vorarlberg','Förderfähig','Schlüsselfertig'];
+  var html = '';
+  for(var k=0;k<items.length;k++){
+    html += '<div class="ticker-item"><b>◆</b>'+items[k]+'</div>';
   }
-
-  function spawn(){
-    return {
-      x: Math.random() * w,
-      y: h + Math.random() * 20,
-      r: Math.random() * 1.2 + 0.3,
-      speed: Math.random() * 0.4 + 0.15,
-      drift: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.35 + 0.05,
-      life: 0,
-      maxLife: Math.random() * 300 + 200
-    };
-  }
-
-  for(let i = 0; i < 55; i++){
-    const p = spawn();
-    p.y = Math.random() * h;
-    p.life = Math.random() * p.maxLife;
-    particles.push(p);
-  }
-
-  function render(){
-    ctx.clearRect(0, 0, w, h);
-    particles.forEach((p, i) => {
-      p.y -= p.speed;
-      p.x += p.drift;
-      p.life++;
-      const fade = p.life < 40 ? p.life / 40 : p.life > p.maxLife - 40 ? (p.maxLife - p.life) / 40 : 1;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(74,222,128,${(p.alpha * fade).toFixed(3)})`;
-      ctx.fill();
-      if(p.y < -10 || p.life > p.maxLife) particles[i] = spawn();
-    });
-    requestAnimationFrame(render);
-  }
-
-  resize();
-  render();
-  window.addEventListener('resize', resize);
+  track.innerHTML = html + html; // duplicate for seamless loop
 })();
 
-// ─── FORM HANDLER ────────────────────────────────────────
-function handleSubmit(e){
-  e.preventDefault();
-  const btn = e.target.querySelector('.form-submit');
-  btn.textContent = 'Gesendet ✓';
-  btn.style.background = 'var(--green-dim)';
-  btn.style.color = 'var(--text)';
-  e.target.reset();
-  setTimeout(() => {
-    btn.textContent = 'Nachricht senden';
-    btn.style.background = '';
-    btn.style.color = '';
-  }, 4000);
+/* ─── SCROLL PROGRESS + NAV + TO-TOP ───────────── */
+(function(){
+  var nav = document.getElementById('nav');
+  var bar = document.getElementById('progress');
+  var top = document.getElementById('to-top');
+  var ticking = false;
+  function onScroll(){
+    var y = window.scrollY || window.pageYOffset;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    if(bar) bar.style.width = (max > 0 ? (y/max*100) : 0) + '%';
+    if(nav) nav.classList.toggle('scrolled', y > 40);
+    if(top) top.classList.toggle('show', y > 600);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ window.requestAnimationFrame(onScroll); ticking = true; }
+  }, {passive:true});
+  onScroll();
+  if(top) top.addEventListener('click', function(){
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+  });
+})();
+
+/* ─── MOBILE MENU ──────────────────────────────── */
+(function(){
+  var burger = document.getElementById('burger');
+  var menu = document.getElementById('mobile-menu');
+  if(!burger || !menu) return;
+  function close(){
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
+    burger.setAttribute('aria-expanded','false');
+    burger.setAttribute('aria-label','Menü öffnen');
+  }
+  burger.addEventListener('click', function(){
+    var open = document.body.classList.toggle('menu-open');
+    document.body.style.overflow = open ? 'hidden' : '';
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+  });
+  var links = menu.querySelectorAll('a');
+  for(var i=0;i<links.length;i++) links[i].addEventListener('click', close);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && document.body.classList.contains('menu-open')) close();
+  });
+  window.addEventListener('resize', function(){
+    if(window.innerWidth > 860 && document.body.classList.contains('menu-open')) close();
+  });
+})();
+
+/* ─── REVEAL ON SCROLL ─────────────────────────── */
+(function(){
+  var els = document.querySelectorAll('[data-reveal]');
+  if(reduce || !('IntersectionObserver' in window)){
+    for(var r=0;r<els.length;r++) els[r].classList.add('in');
+    var dv = document.querySelectorAll('.section-divider');
+    for(var d=0;d<dv.length;d++) dv[d].classList.add('in');
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var s = parseInt(en.target.getAttribute('data-stagger') || '0', 10);
+        en.target.style.transitionDelay = (s * 0.09) + 's';
+        en.target.classList.add('in');
+        var div = en.target.querySelector('.section-divider');
+        if(div) div.classList.add('in');
+        io.unobserve(en.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -8% 0px'});
+  for(var i=0;i<els.length;i++) io.observe(els[i]);
+})();
+
+/* ─── COUNT-UP STATS ───────────────────────────── */
+(function(){
+  var nums = document.querySelectorAll('[data-count]');
+  if(!nums.length) return;
+  if(reduce || !('IntersectionObserver' in window)){
+    for(var n=0;n<nums.length;n++){
+      var el = nums[n];
+      var dec = parseInt(el.getAttribute('data-dec')||'0',10);
+      el.textContent = parseFloat(el.getAttribute('data-count')).toFixed(dec).replace('.',',') + (el.getAttribute('data-suffix')||'');
+    }
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target;
+      io.unobserve(el);
+      var target = parseFloat(el.getAttribute('data-count'));
+      var dec = parseInt(el.getAttribute('data-dec')||'0',10);
+      var suf = el.getAttribute('data-suffix')||'';
+      var dur = 1500, start = null;
+      function step(ts){
+        if(!start) start = ts;
+        var p = Math.min((ts - start)/dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target*eased).toFixed(dec).replace('.',',') + suf;
+        if(p < 1) requestAnimationFrame(step);
+        else el.textContent = target.toFixed(dec).replace('.',',') + suf;
+      }
+      requestAnimationFrame(step);
+    });
+  }, {threshold: 0.5});
+  for(var i=0;i<nums.length;i++) io.observe(nums[i]);
+})();
+
+/* ─── CARD SPOTLIGHT ───────────────────────────── */
+if(!isTouch && !reduce){
+  var spots = document.querySelectorAll('.spot');
+  for(var s=0;s<spots.length;s++){
+    (function(card){
+      card.addEventListener('mousemove', function(e){
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    })(spots[s]);
+  }
 }
 
-// ─── SCROLL FADE IN ──────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if(e.isIntersecting){ e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+/* ─── CURSOR GLOW ──────────────────────────────── */
+if(!isTouch && !reduce){
+  var glow = document.getElementById('cursor-glow');
+  var gx = 0, gy = 0, cx = 0, cy = 0, gactive = false;
+  document.addEventListener('mousemove', function(e){
+    gx = e.clientX; gy = e.clientY;
+    if(!gactive){ gactive = true; glow.style.opacity = 1; }
   });
-}, { threshold: 0.1 });
+  (function loop(){
+    cx += (gx - cx) * 0.09;
+    cy += (gy - cy) * 0.09;
+    glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+    requestAnimationFrame(loop);
+  })();
+}
 
-document.querySelectorAll('.step,.mushroom-card,.benefit,.contact-detail').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(16px)';
-  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-  observer.observe(el);
-});
+/* ─── GLOBE ─────────────────────────────────────────
+   Dotted earth: real continents from a run-length
+   encoded land mask, perspective projection, rim
+   atmosphere, location markers and great-circle arcs.
+   Drag to spin (mouse + touch) with inertia.
+─────────────────────────────────────────────────── */
+(function(){
+  var canvas = document.getElementById('globe-canvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d', {alpha:true});
+
+var LAND_RLE=
+'166,F,G,G,6I,1Q,66,L,2,15,T,5,G,3,Y,5,3H,1,8,F,6,13,N,C,1J,5,1,2,36,3,7,1,1,3,6,9,3,17,P,5,2,2,1P,2,30,5,5,1,7'+
+',1,2,4,2,7,7,15,1W,3,Q,4,2,2,2X,9,3,4,4,4,1,5,H,V,1P,7,K,J,J,6,21,5,H,3,3,7,I,U,1O,3,M,K,2R,9,5,2,2,4,1,3,2,A,'+
+'H,R,1O,3,A,2,7,W,2,5,9,3,T,1,17,4,1,B,3,6,3,D,F,Q,1N,4,9,4,1,18,8,9,14,6,1,2,P,D,4,3,3,G,B,Q,10,6,T,5,1,1X,T,K'+
+',2,S,2,2,1,3,4,4,4,7,D,L,Y,F,J,4,2,4,1,24,1,7,1,2,A,17,2,5,3,9,1,4,3,2,1,6,A,J,10,K,3,2,3,J,1,2J,5,1U,7,9,7,G,'+
+'11,N,2,38,3,1U,8,6,2,2,8,B,C,8,K,9,2,8,4,34,F,1N,1,4,2,3,1,7,A,A,E,6,K,9,1,3H,D,1N,6,1,9,5,B,8,13,9,2,3I,C,1M,'+
+'C,6,H,6,12,A,3,35,1,8,H,E,1,16,D,6,J,3,12,B,2,2Z,5,8,L,7,2,1,8,11,C,8,2,2,1J,B,4,2N,6,4,4,3,U,5,C,10,C,C,19,3,'+
+'B,4,6,2L,E,4,U,2,2,1,G,10,9,D,18,3,9,1,2,3,4,2M,E,6,Q,3,M,12,6,E,17,4,7,2,1,2,6,2K,F,6,1F,1,1,13,2,I,13,2,2,3,'+
+'7,4,1,2Q,1,1,C,5,1G,2,2,12,2,I,11,3,1,5,2,34,9,4,1M,11,1,K,10,2,2,5,2,34,A,1,1N,1J,2,1,15,2,3,33,2,1,20,1D,5,4'+
+',15,36,1,2,21,1C,4,6,12,38,1,1,22,1D,2,1,5,1,14,17,1,1X,2,2,22,1F,1B,P,2,2,2,8,4,1W,3,1,22,1A,1,2,1E,B,2,B,7,8'+
+',3,1W,4,2,21,18,1D,A,5,3,2,9,A,6,3,1U,5,4,20,18,1D,9,5,1,1,4,2,7,4,3,4,6,4,1P,8,1,23,15,1G,7,6,2,3,3,1,4,2,J,2'+
+',1P,9,1,24,14,1F,8,6,2,4,1,3,3,2,I,4,1G,2,1,2,2,A,2,23,13,1H,7,A,3,4,2,2,I,4,1G,5,3,8,2,25,11,1J,4,3,7,3,1,5,1'+
+',4,23,4,3,5,4,26,10,1K,1,2,B,H,1,2,1V,5,3,3,5,28,Y,1K,E,K,1W,9,5,2C,V,1K,H,I,1X,7,3,2F,T,1L,K,4,5,6,1Z,6,1,2I,'+
+'1,1,Q,1L,2X,2R,1,1,E,3,1,5,2,1L,1B,1,1M,2Q,2,1,B,C,2,1H,1E,2,1K,2S,2,1,A,C,2,1H,12,2,B,3,1,1,1F,2U,1,2,9,D,1,1'+
+'G,14,1,C,3,1,1,1E,2V,1,2,8,F,1,1D,15,2,G,8,15,1,1,2Y,7,B,3,1F,16,2,H,7,12,3,1,2Y,7,D,3,1C,18,1,H,8,G,1,H,36,6,'+
+'5,3,7,3,1A,18,2,F,B,B,5,B,3,1,22,1,14,7,4,3,B,3,17,17,2,E,C,A,7,A,2,2,39,C,8,1,2,3,2,1,14,18,2,C,D,9,8,A,B,2,3'+
+'2,9,1M,18,3,9,F,8,9,B,A,2,37,8,1H,1A,2,7,I,5,E,9,9,1,39,7,1H,1B,1,5,K,5,E,9,9,2,3B,4,1H,1E,O,4,F,9,8,1,1,1,3C,'+
+'2,9,1,18,1C,5,1,J,4,F,1,2,5,C,2,3A,2,6,C,11,1H,K,3,J,3,C,1,3D,5,2,C,12,1F,L,2,1,1,D,2,4,1,D,1,1,1,3D,2,1,G,10,'+
+'1F,O,1,E,1,I,3,3H,G,11,1C,P,1,F,1,C,1,5,2,3H,K,Y,8,4,Z,15,2,A,3,3N,L,1C,V,13,2,1,3,8,4,3M,M,1C,U,15,2,1,2,7,4,'+
+'3N,N,1B,T,17,4,4,8,7,1,3D,O,1B,S,18,4,4,7,2,1,5,1,3C,S,18,R,1A,3,4,7,1,3,7,2,38,T,17,Q,1B,4,4,5,2,3,7,2,2,2,34'+
+',Y,13,O,1D,4,5,3,2,3,4,2,2,8,7,1,2T,Z,13,N,1E,3,A,4,9,9,4,2,2S,11,11,M,1G,3,O,7,2,2,3,1,2R,10,12,L,1H,6,L,7,6,'+
+'1,2R,10,12,L,1M,3,2,1,1,1,3,2,8,5,2,2,2Y,Z,12,M,1R,2,2,1,I,2,8,1,2O,Y,14,L,2P,1,2O,W,15,L,21,2,1,1,4,2,34,U,15'+
+',M,7,1,1S,5,4,2,34,U,15,M,6,2,1O,9,4,3,34,T,14,N,4,4,1N,B,3,3,36,R,14,M,4,5,1M,D,2,4,Q,1,2F,P,15,K,6,5,1L,K,P,'+
+'1,2H,O,16,I,7,4,1L,M,36,N,17,I,7,4,1I,Q,C,1,2S,N,18,H,6,4,1H,T,C,1,2R,L,1A,H,7,3,1H,U,32,J,1D,H,7,3,1H,V,31,I,'+
+'1F,E,1T,V,31,I,1F,E,1T,V,31,I,1G,D,1T,W,30,H,1H,C,1V,V,2Z,I,1I,A,1W,U,31,G,1J,9,1X,A,4,G,30,G,1K,8,1Y,7,8,E,31'+
+',F,1M,2,23,4,C,1,1,B,31,C,4D,9,I,2,2H,E,4D,8,J,2,2G,D,4F,5,M,3,2E,9,59,3,2F,9,4O,1,J,1,1,1,2F,8,4O,3,I,2,2I,7,'+
+'4O,2,I,2,2I,8,56,3,2J,6,57,4,2J,7,7S,8,7S,7,31,1,4S,5,7V,5,6,2,7O,5,7W,5,1K6,1,FU,2,2L,2,11,1,47,2,2K,6,N,3,8,'+
+'E,3,K,39,2,2E,L,8,1K,34,1,1,5,24,4,1,O,7,1T,2V,8,1G,1H,3,25,1Z,3,J,5,1,5,13,1T,1,29,1W,5,2,8,3,1,6,9,10,45,17,'+
+'J,9,V,11,42,12,1S,10,44,U,2,5,1O,10,4B,Q,2,3,1S,N,4,6,4I,P,2,7,1N,D,1,7,6,6,4E,15,1P,4,5,6,3,C,4B,10,22,9,5,2,'+
+'4K,Z,76,9,A,E,7B,1,W0';
+
+  var MW = 288, MH = 144;
+
+  /* decode RLE -> Uint8Array bitmask */
+  var LAND = (function(){
+    var a = new Uint8Array(MW*MH), t = LAND_RLE.split(','), i = 0, v = 0, k, n, j;
+    for(k=0;k<t.length;k++){
+      n = parseInt(t[k],36);
+      if(v) for(j=0;j<n;j++) a[i+j] = 1;
+      i += n; v ^= 1;
+    }
+    return a;
+  })();
+  function isLand(lat, lon){
+    var y = (90 - lat) / 180 * MH | 0;
+    var x = ((lon + 180) / 360 * MW | 0) % MW;
+    if(y < 0) y = 0; if(y >= MH) y = MH - 1;
+    if(x < 0) x += MW;
+    return LAND[y*MW + x] === 1;
+  }
+
+  /* ── build dots on land ── */
+  var dots = [];
+  function buildDots(target){
+    dots = [];
+    var G = (1 + Math.sqrt(5)) / 2;
+    var N = Math.round(target / 0.34);      // land is ~34% of the sphere
+    for(var i=0;i<N;i++){
+      var theta = 2 * Math.PI * i / G;
+      var phi   = Math.acos(1 - 2*(i + 0.5)/N);
+      var lat   = 90 - phi * 180 / Math.PI;
+      var lon   = ((theta * 180 / Math.PI) % 360) - 180;
+      if(!isLand(lat, lon)) continue;
+      var la = lat * Math.PI/180, lo = lon * Math.PI/180;
+      var cl = Math.cos(la);
+      dots.push({
+        /* +x = east, +y = north, +z = toward the camera */
+        x: cl * Math.sin(lo),
+        y: Math.sin(la),
+        z: cl * Math.cos(lo),
+        /* a little size variation keeps it from looking machine-made */
+        s: 0.78 + (i % 7) * 0.052
+      });
+    }
+  }
+
+  /* ── places (DACH focus, Vorarlberg is home) ── */
+  function v3(lat, lon){
+    var la = lat*Math.PI/180, lo = lon*Math.PI/180, cl = Math.cos(la);
+    return {x: cl*Math.sin(lo), y: Math.sin(la), z: cl*Math.cos(lo)};
+  }
+  var HOME = v3(47.25, 9.90);                 // Vorarlberg
+  var PLACES = [
+    {p: HOME,               home:true },
+    {p: v3(48.14, 11.58)},                    // München
+    {p: v3(47.37,  8.54)},                    // Zürich
+    {p: v3(48.21, 16.37)},                    // Wien
+    {p: v3(52.52, 13.40)},                    // Berlin
+    {p: v3(53.55,  9.99)}                     // Hamburg
+  ];
+  /* ── state ── */
+  var w, h, R, RL, dpr, cx, cy;   // RL = projected silhouette radius
+  var spin = 0;                    // auto + drag yaw
+  var yaw = -0.17, pitch = 0.30;   // Vorarlberg centred, modest tilt  // start with Europe/Africa facing us
+  var velY = 0, velP = 0;
+  var dragging = false, lastX = 0, lastY = 0, lastT = 0, moved = 0;
+  var visible = true, t0 = performance.now();
+  var AUTO = 0.00085;
+  var PERSP = 2.6;                 // camera distance in radii
+
+  function sizeIt(){
+    mobile = window.innerWidth < 960;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var box;
+    if(mobile){
+      /* stacked above the copy: leave room for headline, sub and buttons */
+      box = Math.min(window.innerWidth * 0.86, Math.max(210, window.innerHeight * 0.34), 340);
+    } else {
+      /* fill the globe column without inflating it */
+      var host = canvas.parentElement;
+      box = Math.max(340, Math.min(host.clientWidth || 520, host.clientHeight || 520, 560));
+    }
+    w = h = box;
+    R  = box * (mobile ? 0.345 : 0.345);
+    RL = R * PERSP / Math.sqrt(PERSP*PERSP - 1);
+    cx = w/2; cy = h/2;
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    buildDots(mobile ? 2100 : 4300);
+  }
+
+  /* rotate a unit vector by yaw (Y axis) then pitch (X axis) */
+  function rot(p, sy, cyw, sp, cp){
+    var x =  p.x*cyw + p.z*sy;
+    var z = -p.x*sy  + p.z*cyw;
+    var y =  p.y*cp  - z*sp;
+    var z2=  p.y*sp  + z*cp;
+    return {x:x, y:y, z:z2};
+  }
+  /* perspective project: returns null when behind the horizon */
+  function proj(v){
+    var d = PERSP - v.z;
+    if(d <= 0.15) return null;
+    var k = PERSP / d;
+    return {x: cx + v.x*R*k, y: cy - v.y*R*k, z: v.z, k: k};
+  }
+
+  function draw(now){
+    var time = (now - t0) / 1000;
+    ctx.clearRect(0,0,w,h);
+
+    if(!dragging){
+      yaw   += AUTO + velY;
+      pitch += velP;
+      velY  *= 0.94;
+      velP  *= 0.94;
+      if(Math.abs(velY) < 1e-5) velY = 0;
+      if(Math.abs(velP) < 1e-5) velP = 0;
+    }
+    if(pitch >  0.85) pitch =  0.85;
+    if(pitch < -0.85) pitch = -0.85;
+
+    var sy = Math.sin(yaw),  cyw = Math.cos(yaw);
+    var sp = Math.sin(pitch), cp = Math.cos(pitch);
+
+    /* 1. atmosphere halo behind the globe */
+    var halo = ctx.createRadialGradient(cx, cy, RL*0.84, cx, cy, RL*1.4);
+    halo.addColorStop(0,   'rgba(74,222,128,0.22)');
+    halo.addColorStop(0.45,'rgba(74,222,128,0.075)');
+    halo.addColorStop(1,   'rgba(74,222,128,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(cx, cy, RL*1.4, 0, 6.2832); ctx.fill();
+
+    /* 2. ocean body — slightly lifted from the page so land reads on top */
+    var body = ctx.createRadialGradient(cx - RL*0.34, cy - RL*0.4, RL*0.06, cx, cy, RL);
+    body.addColorStop(0,   'rgba(24,62,39,0.62)');
+    body.addColorStop(0.55,'rgba(13,36,22,0.55)');
+    body.addColorStop(1,   'rgba(5,15,9,0.66)');
+    ctx.fillStyle = body;
+    ctx.beginPath(); ctx.arc(cx, cy, RL, 0, 6.2832); ctx.fill();
+
+    /* 3. land dots, painted back to front */
+    var i, p, v, a, sz, front = [], back = [];
+    for(i=0;i<dots.length;i++){
+      v = rot(dots[i], sy, cyw, sp, cp);
+      p = proj(v);
+      if(!p) continue;
+      p.s = dots[i].s;
+      (v.z >= 0 ? front : back).push(p);
+    }
+    /* far side: dim, so the sphere feels transparent but never noisy */
+    for(i=0;i<back.length;i++){
+      p = back[i];
+      a = 0.055 + (p.z + 1) * 0.075;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 0.62 * p.s, 0, 6.2832);
+      ctx.fillStyle = 'rgba(45,122,74,' + a.toFixed(3) + ')';
+      ctx.fill();
+    }
+    /* near side: bright, sized by depth */
+    front.sort(function(m,n){ return m.z - n.z; });
+    for(i=0;i<front.length;i++){
+      p  = front[i];
+      a  = 0.26 + p.z * 0.66;
+      sz = (0.95 + p.z * 1.35) * p.s;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, sz, 0, 6.2832);
+      ctx.fillStyle = 'rgba(' + (74 + p.z*60|0) + ',' + (222 + p.z*17|0) + ',' + (128 + p.z*44|0) + ',' + a.toFixed(3) + ')';
+      ctx.fill();
+    }
+
+    /* 4. terminator — a soft shadow on the lower-right limb for volume */
+    var term = ctx.createRadialGradient(cx - RL*0.45, cy - RL*0.5, RL*0.1, cx, cy, RL*1.02);
+    term.addColorStop(0,   'rgba(0,0,0,0)');
+    term.addColorStop(0.62,'rgba(0,0,0,0)');
+    term.addColorStop(1,   'rgba(3,9,5,0.5)');
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, RL, 0, 6.2832); ctx.clip();
+    ctx.fillStyle = term;
+    ctx.fillRect(cx-RL, cy-RL, RL*2, RL*2);
+    ctx.restore();
+
+    /* 5. rim light */
+    ctx.beginPath();
+    ctx.arc(cx, cy, RL, 0, 6.2832);
+    ctx.strokeStyle = 'rgba(134,239,172,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    /* 6. place markers */
+    for(var m=0;m<PLACES.length;m++){
+      var pl = PLACES[m];
+      v = rot(pl.p, sy, cyw, sp, cp);
+      if(v.z < 0.02) continue;                 // hide round the back
+      p = proj(v); if(!p) continue;
+      var fade = Math.min(1, v.z * 3.2);
+      var rad  = pl.home ? 3.0 : 1.8;
+
+      if(pl.home){
+        /* expanding ring, once every 2.6s */
+        var ph = (time / 2.6) % 1;
+        var rr = rad + ph * 17;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rr, 0, 6.2832);
+        ctx.strokeStyle = 'rgba(134,239,172,' + ((1-ph)*0.5*fade).toFixed(3) + ')';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+      /* glow + core */
+      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad*2.6);
+      g.addColorStop(0, 'rgba(167,243,208,' + (0.42*fade).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(167,243,208,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x, p.y, rad*2.6, 0, 6.2832); ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rad, 0, 6.2832);
+      ctx.fillStyle = pl.home
+        ? 'rgba(220,255,235,' + fade.toFixed(3) + ')'
+        : 'rgba(134,239,172,' + (0.9*fade).toFixed(3) + ')';
+      ctx.fill();
+    }
+  }
+
+  function loop(now){
+    if(visible) draw(now || performance.now());
+    requestAnimationFrame(loop);
+  }
+
+  /* ── drag to spin (pointer covers mouse + touch) ── */
+  function down(e){
+    dragging = true; moved = 0;
+    lastX = e.clientX; lastY = e.clientY; lastT = performance.now();
+    canvas.style.cursor = 'grabbing';
+  }
+  function move(e){
+    if(!dragging) return;
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    var nowT = performance.now(), dt = Math.max(16, nowT - lastT);
+    yaw   += dx * 0.0062;
+    pitch += dy * 0.0045;
+    velY = dx * 0.0062 * (16/dt) * 0.55;
+    velP = dy * 0.0045 * (16/dt) * 0.55;
+    lastX = e.clientX; lastY = e.clientY; lastT = nowT;
+    /* only claim the gesture once it is clearly a horizontal spin,
+       so vertical swipes still scroll the page */
+    if(e.cancelable && Math.abs(dx) > Math.abs(dy)) e.preventDefault();
+  }
+  function up(){
+    if(!dragging) return;
+    dragging = false;
+    canvas.style.cursor = 'grab';
+  }
+  if(window.PointerEvent){
+    canvas.style.cursor = 'grab';
+    canvas.style.touchAction = 'pan-y';
+    canvas.style.pointerEvents = 'auto';
+    canvas.addEventListener('pointerdown', function(e){ down(e); canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener('pointermove', move, {passive:false});
+    canvas.addEventListener('pointerup', up);
+    canvas.addEventListener('pointercancel', up);
+    canvas.addEventListener('pointerleave', up);
+  }
+  /* gentle parallax from the mouse when not dragging (desktop) */
+  if(!isTouch && !reduce){
+    window.addEventListener('mousemove', function(e){
+      if(dragging) return;
+      var nx = (e.clientX / window.innerWidth) - 0.5;
+      var ny = (e.clientY / window.innerHeight) - 0.5;
+      pitch += ((0.30 + ny * 0.24) - pitch) * 0.015;
+      velY  += (nx * 0.00035 - velY) * 0.03;
+    }, {passive:true});
+  }
+
+  /* pause when the hero is offscreen */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },
+      {threshold:0}).observe(document.getElementById('hero'));
+  }
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt); rt = setTimeout(sizeIt, 180);
+  });
+
+  sizeIt();
+  if(reduce){ draw(performance.now()); } else { loop(); }
+})();
+
+  /* ─── PARTICLES ────────────────────────────────── */
+(function(){
+  var canvas = document.getElementById('particles-canvas');
+  if(!canvas || reduce) return;
+  var ctx = canvas.getContext('2d');
+  var parts = [], w, h, dpr;
+  var COUNT = mobile ? 26 : 55;
+  var visible = true;
+
+  function size(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var rect = canvas.getBoundingClientRect();
+    w = rect.width; h = rect.height;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function spawn(y){
+    return {
+      x: Math.random() * w,
+      y: y !== undefined ? y : h + Math.random() * 60,
+      r: 0.5 + Math.random() * 1.6,
+      vy: 0.14 + Math.random() * 0.45,
+      vx: (Math.random() - 0.5) * 0.24,
+      life: 0,
+      max: 420 + Math.random() * 520,
+      drift: Math.random() * Math.PI * 2
+    };
+  }
+  function init(){
+    parts = [];
+    for(var i=0;i<COUNT;i++) parts.push(spawn(Math.random()*h));
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<parts.length;i++){
+      var p = parts[i];
+      p.life++;
+      p.drift += 0.011;
+      p.y -= p.vy;
+      p.x += p.vx + Math.sin(p.drift) * 0.28;
+      if(p.life > p.max || p.y < -20){ parts[i] = spawn(); continue; }
+      var t = p.life / p.max;
+      var a = t < 0.18 ? (t/0.18) : (t > 0.72 ? (1-t)/0.28 : 1);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(134,239,172,' + (a * 0.42).toFixed(3) + ')';
+      ctx.fill();
+    }
+  }
+  function loop(){
+    if(visible) draw();
+    requestAnimationFrame(loop);
+  }
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },
+      {threshold:0}).observe(canvas);
+  }
+  var rt2;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt2);
+    rt2 = setTimeout(function(){ size(); init(); }, 180);
+  });
+  size(); init(); loop();
+})();
+
+/* ─── FORM ─────────────────────────────────────── */
+(function(){
+  var form = document.getElementById('contact-form');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = document.getElementById('submit-btn');
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var hof = document.getElementById('hof').value.trim();
+    var msg = document.getElementById('message').value.trim();
+
+    if(!name || !email || !msg){
+      btn.textContent = 'Bitte alle Pflichtfelder ausfüllen';
+      setTimeout(function(){ btn.textContent = 'Nachricht senden'; }, 2600);
+      return;
+    }
+    var subject = encodeURIComponent('Anfrage von ' + name + (hof ? ' — ' + hof : ''));
+    var body = encodeURIComponent(
+      'Name: ' + name + '\n' +
+      'E-Mail: ' + email + '\n' +
+      (hof ? 'Betrieb: ' + hof + '\n' : '') +
+      '\n' + msg
+    );
+    btn.textContent = 'E-Mail wird geöffnet …';
+    btn.disabled = true;
+    window.location.href = 'mailto:hallo@pilzboks.com?subject=' + subject + '&body=' + body;
+    setTimeout(function(){
+      btn.textContent = 'Nachricht senden';
+      btn.disabled = false;
+    }, 3200);
+  });
+})();
+
+})();
 </script>
 </body>
 </html>
