@@ -9,99 +9,390 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#050d07;--bg2:#091410;--bg3:#0d1f12;--green:#4ade80;--green-dim:#2d7a4a;--text:#e8f5ec;--text-muted:rgba(232,245,236,0.45);--text-dim:rgba(232,245,236,0.25);--border:rgba(74,222,128,0.12);--border-bright:rgba(74,222,128,0.3)}
+:root{
+  --bg:#050d07;
+  --bg2:#091410;
+  --bg3:#0d1f12;
+  --green:#4ade80;
+  --green-dim:#2d7a4a;
+  --green-glow:rgba(74,222,128,0.15);
+  --green-glow2:rgba(74,222,128,0.06);
+  --text:#e8f5ec;
+  --text-muted:rgba(232,245,236,0.45);
+  --text-dim:rgba(232,245,236,0.25);
+  --border:rgba(74,222,128,0.12);
+  --border-bright:rgba(74,222,128,0.3);
+}
 html{scroll-behavior:smooth;height:100%}
-body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;line-height:1.6;overflow-x:hidden;min-height:100%}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2.5rem;background:linear-gradient(to bottom,rgba(5,13,7,0.95),rgba(5,13,7,0))}
-.nav-logo{font-size:1.05rem;font-weight:700;letter-spacing:0.08em;color:var(--green);text-transform:uppercase;text-decoration:none}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100%;
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 2.5rem;
+  background:linear-gradient(to bottom,rgba(5,13,7,0.95) 0%,rgba(5,13,7,0) 100%);
+}
+.nav-logo{
+  font-size:1.05rem;font-weight:700;letter-spacing:0.08em;
+  color:var(--green);text-transform:uppercase;text-decoration:none;
+}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:0.72rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.nav-links a{
+  font-size:0.72rem;font-weight:500;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text-muted);text-decoration:none;
+  transition:color 0.2s;
+}
 .nav-links a:hover{color:var(--green)}
-.nav-cta{font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--bg);background:var(--green);border:none;padding:0.55rem 1.25rem;cursor:pointer;text-decoration:none}
-#hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#globe-canvas{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:1}
-#particles-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
-.hero-content{position:relative;z-index:2;text-align:center;padding:0 1rem;display:flex;flex-direction:column;align-items:center}
-.hero-eyebrow{font-size:0.68rem;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--green);margin-bottom:1.5rem}
-.hero-h1{font-size:clamp(2.4rem,6vw,5rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin-bottom:1.25rem;max-width:700px}
+.nav-cta{
+  font-size:0.72rem;font-weight:600;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--bg);background:var(--green);
+  border:none;padding:0.55rem 1.25rem;cursor:pointer;
+  text-decoration:none;transition:opacity 0.2s;
+}
+.nav-cta:hover{opacity:0.85}
+
+/* ─── HERO ─── */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+#globe-canvas{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;z-index:1;
+}
+#particles-canvas{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+}
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;padding:0 1rem;
+  display:flex;flex-direction:column;align-items:center;
+}
+.hero-eyebrow{
+  font-size:0.68rem;font-weight:500;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--green);
+  margin-bottom:1.5rem;
+}
+.hero-h1{
+  font-size:clamp(2.4rem,6vw,5rem);
+  font-weight:700;line-height:1.05;
+  letter-spacing:-0.02em;
+  margin-bottom:1.25rem;
+  max-width:700px;
+}
 .hero-h1 em{color:var(--green);font-style:normal}
-.hero-sub{font-size:1rem;font-weight:300;color:var(--text-muted);max-width:480px;margin-bottom:2.5rem}
-.hero-btn{display:inline-block;font-size:0.78rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;color:var(--bg);background:var(--green);padding:0.85rem 2.2rem}
-.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3}
-.label{position:absolute;font-size:0.62rem;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:0.5rem}
-.label::before{content:'';width:24px;height:1px;background:var(--border-bright);flex-shrink:0}
-.label.right::before{display:none}.label.right::after{content:'';width:24px;height:1px;background:var(--border-bright)}
-.l1{top:28%;left:4%}.l2{top:40%;left:4%}.l3{top:52%;left:4%}
-.l4{top:28%;right:4%;justify-content:flex-end}.l5{top:40%;right:4%;justify-content:flex-end}.l6{top:52%;right:4%;justify-content:flex-end}
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.stat{padding:2rem 1.5rem;border-right:1px solid var(--border);text-align:center}.stat:last-child{border-right:none}
-.stat-val{font-size:2rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:0.35rem}
-.stat-label{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.hero-sub{
+  font-size:1rem;font-weight:300;
+  color:var(--text-muted);max-width:480px;
+  margin-bottom:2.5rem;
+}
+.hero-btn{
+  display:inline-block;
+  font-size:0.78rem;font-weight:600;letter-spacing:0.14em;
+  text-transform:uppercase;text-decoration:none;
+  color:var(--bg);background:var(--green);
+  padding:0.85rem 2.2rem;
+  transition:opacity 0.2s,transform 0.2s;
+}
+.hero-btn:hover{opacity:0.88;transform:translateY(-1px)}
+
+/* peripheral labels around globe */
+.globe-labels{
+  position:absolute;inset:0;pointer-events:none;z-index:3;
+}
+.label{
+  position:absolute;
+  font-size:0.62rem;font-weight:500;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--text-dim);
+  display:flex;align-items:center;gap:0.5rem;
+}
+.label::before{
+  content:'';width:24px;height:1px;
+  background:var(--border-bright);flex-shrink:0;
+}
+.label.right::before{display:none}
+.label.right::after{
+  content:'';width:24px;height:1px;
+  background:var(--border-bright);flex-shrink:0;
+}
+.l1{top:28%;left:4%}
+.l2{top:40%;left:4%}
+.l3{top:52%;left:4%}
+.l4{top:28%;right:4%;justify-content:flex-end}
+.l5{top:40%;right:4%;justify-content:flex-end}
+.l6{top:52%;right:4%;justify-content:flex-end}
+
+/* ─── STATS BAR ─── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.stat{
+  padding:2rem 1.5rem;
+  border-right:1px solid var(--border);
+  text-align:center;
+}
+.stat:last-child{border-right:none}
+.stat-val{
+  font-size:2rem;font-weight:700;
+  color:var(--green);letter-spacing:-0.03em;line-height:1;
+  margin-bottom:0.35rem;
+}
+.stat-label{
+  font-size:0.68rem;font-weight:400;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-muted);
+}
+
+/* ─── SECTIONS ─── */
 section{padding:5rem 0}
 .container{max-width:1100px;margin:0 auto;padding:0 2rem}
-.section-eyebrow{font-size:0.65rem;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--green);margin-bottom:1rem}
-.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1rem}
-.section-body{font-size:1rem;font-weight:300;color:var(--text-muted);max-width:520px;line-height:1.7}
-.section-divider{width:40px;height:1px;background:var(--green);margin-bottom:2rem}
+.section-eyebrow{
+  font-size:0.65rem;font-weight:500;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--green);
+  margin-bottom:1rem;
+}
+.section-title{
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:700;line-height:1.1;letter-spacing:-0.02em;
+  margin-bottom:1rem;
+}
+.section-body{
+  font-size:1rem;font-weight:300;color:var(--text-muted);
+  max-width:520px;line-height:1.7;
+}
+
+/* ─── MISSION ─── */
 #mission{background:var(--bg2)}
-.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.mission-visual{display:flex;align-items:center;justify-content:center}
-.mission-ring{width:300px;height:300px;border-radius:50%;border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;position:relative}
-.mission-ring::before{content:'';position:absolute;inset:20px;border-radius:50%;border:1px solid var(--border)}
-.mission-ring-inner{font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);text-align:center;line-height:2}
-.mission-ring-inner strong{display:block;font-size:1.6rem;font-weight:700;color:var(--green);margin-bottom:0.25rem}
+.mission-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;
+  align-items:center;
+}
+.mission-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.mission-ring{
+  width:320px;height:320px;border-radius:50%;
+  border:1px solid var(--border-bright);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.mission-ring::before{
+  content:'';position:absolute;inset:20px;border-radius:50%;
+  border:1px solid var(--border);
+}
+.mission-ring-inner{
+  font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--text-dim);text-align:center;line-height:2;
+}
+.mission-ring-inner strong{display:block;font-size:1.6rem;font-weight:700;color:var(--green);letter-spacing:-0.02em;margin-bottom:0.25rem}
+
+/* ─── HOW IT WORKS ─── */
 #how{background:var(--bg)}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3.5rem}
-.step{padding:1.75rem;border:1px solid var(--border);position:relative}
-.step-num{font-size:0.62rem;font-weight:600;letter-spacing:0.18em;color:var(--green);text-transform:uppercase;margin-bottom:1rem}
-.step-title{font-size:1rem;font-weight:600;margin-bottom:0.5rem}
+.steps{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+  margin-top:3.5rem;
+}
+.step{
+  padding:1.75rem;
+  border:1px solid var(--border);
+  position:relative;
+  transition:border-color 0.3s;
+}
+.step:hover{border-color:var(--border-bright)}
+.step-num{
+  font-size:0.62rem;font-weight:600;letter-spacing:0.18em;
+  color:var(--green);text-transform:uppercase;margin-bottom:1rem;
+}
+.step-title{
+  font-size:1rem;font-weight:600;line-height:1.3;
+  margin-bottom:0.5rem;
+}
 .step-body{font-size:0.85rem;color:var(--text-muted);line-height:1.65}
-.step-line{position:absolute;top:50%;right:-1px;width:1px;height:40%;background:var(--green-dim);transform:translateY(-50%)}
+.step-line{
+  position:absolute;top:50%;right:-1px;
+  width:1px;height:40%;background:var(--green-dim);
+  transform:translateY(-50%);
+}
 .step:last-child .step-line{display:none}
+
+/* ─── MUSHROOMS ─── */
 #mushrooms{background:var(--bg2)}
-.mushroom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
-.mushroom-card{border:1px solid var(--border);padding:2rem}
-.mushroom-icon{font-size:2.5rem;margin-bottom:1.25rem}
-.mushroom-latin{font-size:0.68rem;letter-spacing:0.1em;font-style:italic;color:var(--green);margin-bottom:0.5rem}
+.mushroom-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+  margin-top:3.5rem;
+}
+.mushroom-card{
+  border:1px solid var(--border);
+  padding:2rem;
+  transition:border-color 0.3s,background 0.3s;
+  position:relative;overflow:hidden;
+}
+.mushroom-card:hover{border-color:var(--border-bright);background:var(--bg3)}
+.mushroom-icon{
+  font-size:2.5rem;margin-bottom:1.25rem;
+  filter:grayscale(0.3);
+}
+.mushroom-latin{
+  font-size:0.68rem;letter-spacing:0.1em;font-style:italic;
+  color:var(--green);margin-bottom:0.5rem;
+}
 .mushroom-name{font-size:1.25rem;font-weight:700;margin-bottom:0.75rem}
 .mushroom-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.65}
-.mushroom-badge{display:inline-block;margin-top:1rem;font-size:0.62rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);border:1px solid var(--border-bright);padding:0.3rem 0.7rem}
+.mushroom-badge{
+  display:inline-block;margin-top:1rem;
+  font-size:0.62rem;font-weight:600;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--green);
+  border:1px solid var(--border-bright);padding:0.3rem 0.7rem;
+}
+
+/* ─── FARMERS ─── */
 #farmers{background:var(--bg)}
-.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:3.5rem}
-.benefit{background:var(--bg);padding:2rem}
-.benefit-icon{font-size:1.4rem;margin-bottom:1rem}
+.benefits-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);
+  margin-top:3.5rem;
+}
+.benefit{
+  background:var(--bg);padding:2rem;
+  transition:background 0.3s;
+}
+.benefit:hover{background:var(--bg3)}
+.benefit-icon{
+  font-size:1.4rem;margin-bottom:1rem;
+}
 .benefit-title{font-size:0.95rem;font-weight:600;margin-bottom:0.4rem}
 .benefit-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.6}
+
+/* ─── QUOTE ─── */
 #quote{background:var(--bg2)}
-.quote-inner{max-width:760px;margin:0 auto;text-align:center;padding:4rem 2rem}
-.quote-mark{font-size:4rem;color:var(--green);line-height:0.5;margin-bottom:1.5rem;font-family:Georgia,serif}
-.quote-text{font-size:clamp(1.1rem,2.5vw,1.55rem);font-weight:300;line-height:1.55;margin-bottom:2rem}
-.quote-author{font-size:0.72rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--green);margin-bottom:0.25rem}
-.quote-role{font-size:0.72rem;color:var(--text-muted)}
+.quote-inner{
+  max-width:760px;margin:0 auto;text-align:center;
+  padding:4rem 2rem;
+}
+.quote-mark{
+  font-size:4rem;color:var(--green);line-height:0.5;
+  margin-bottom:1.5rem;font-family:Georgia,serif;
+}
+.quote-text{
+  font-size:clamp(1.1rem,2.5vw,1.55rem);font-weight:300;
+  line-height:1.55;color:var(--text);
+  margin-bottom:2rem;
+}
+.quote-author{
+  font-size:0.72rem;font-weight:600;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--green);
+  margin-bottom:0.25rem;
+}
+.quote-role{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em}
+
+/* ─── CONTACT ─── */
 #contact{background:var(--bg)}
-.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.contact-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;
+}
 .contact-info{margin-top:2rem}
-.contact-detail{display:flex;flex-direction:column;gap:0.25rem;margin-bottom:1.5rem}
-.contact-label{font-size:0.62rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-dim)}
-.contact-val{font-size:1rem;color:var(--text);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:0.35rem}
+.contact-detail{
+  display:flex;flex-direction:column;gap:0.25rem;
+  margin-bottom:1.5rem;
+}
+.contact-label{
+  font-size:0.62rem;font-weight:500;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.contact-val{
+  font-size:1rem;color:var(--text);text-decoration:none;
+  border-bottom:1px solid var(--border);padding-bottom:0.35rem;
+  transition:border-color 0.2s,color 0.2s;
+}
+.contact-val:hover{color:var(--green);border-color:var(--green)}
 .contact-form{display:flex;flex-direction:column;gap:1rem;margin-top:2rem}
 .form-group{display:flex;flex-direction:column;gap:0.35rem}
-.form-label{font-size:0.65rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim)}
-.form-input,.form-textarea{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.9rem;padding:0.75rem 1rem;outline:none}
+.form-label{
+  font-size:0.65rem;font-weight:500;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.form-input,.form-textarea{
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--text);font-family:'Space Grotesk',sans-serif;
+  font-size:0.9rem;padding:0.75rem 1rem;outline:none;
+  transition:border-color 0.2s;
+  -webkit-appearance:none;appearance:none;
+}
 .form-input:focus,.form-textarea:focus{border-color:var(--green)}
 .form-textarea{resize:vertical;min-height:120px}
-.form-submit{align-self:flex-start;font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;background:var(--green);color:var(--bg);border:none;padding:0.85rem 2rem;font-family:'Space Grotesk',sans-serif}
-footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.footer-logo{font-size:0.85rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green)}
-.footer-text{font-size:0.7rem;color:var(--text-dim)}
-.footer-badge{font-size:0.62rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);padding:0.3rem 0.7rem}
-@media(max-width:900px){.mission-grid,.contact-inner{grid-template-columns:1fr;gap:2.5rem}.steps{grid-template-columns:1fr 1fr}.mushroom-grid{grid-template-columns:1fr 1fr}.benefits-grid{grid-template-columns:1fr 1fr}.mission-visual{display:none}.globe-labels .label{display:none}.stats-bar{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(3){border-top:1px solid var(--border)}.nav-links{display:none}nav{padding:1rem 1.25rem}}
-@media(max-width:600px){.steps,.mushroom-grid,.benefits-grid{grid-template-columns:1fr}.hero-h1{font-size:2.2rem}}
+.form-submit{
+  align-self:flex-start;
+  font-size:0.72rem;font-weight:600;letter-spacing:0.14em;
+  text-transform:uppercase;cursor:pointer;
+  background:var(--green);color:var(--bg);border:none;
+  padding:0.85rem 2rem;transition:opacity 0.2s;
+  font-family:'Space Grotesk',sans-serif;
+}
+.form-submit:hover{opacity:0.85}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:2rem 2rem;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.footer-logo{
+  font-size:0.85rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--green);
+}
+.footer-text{
+  font-size:0.7rem;color:var(--text-dim);letter-spacing:0.06em;
+}
+.footer-badge{
+  font-size:0.62rem;font-weight:500;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text-dim);
+  border:1px solid var(--border);padding:0.3rem 0.7rem;
+}
+
+/* ─── DIVIDER LINE ─── */
+.section-divider{
+  width:40px;height:1px;background:var(--green);
+  margin-bottom:2rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .mission-grid,.contact-inner{grid-template-columns:1fr;gap:2.5rem}
+  .steps{grid-template-columns:1fr 1fr}
+  .mushroom-grid{grid-template-columns:1fr 1fr}
+  .benefits-grid{grid-template-columns:1fr 1fr}
+  .mission-visual{display:none}
+  .globe-labels .label{display:none}
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border-right:none}
+  .stat:nth-child(3){border-top:1px solid var(--border)}
+  nav{padding:1rem 1.25rem}
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .steps,.mushroom-grid,.benefits-grid{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .hero-h1{font-size:2.2rem}
+}
 </style>
 </head>
 <body>
+
+<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">Pilzboks</a>
+  <a href="#" class="nav-logo"><img src="pilzboks-logo-transparent.png" alt="Pilzboks" style="height:44px;filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);"></a>
   <ul class="nav-links">
     <li><a href="#how">Wie es funktioniert</a></li>
     <li><a href="#mushrooms">Pilze</a></li>
@@ -110,9 +401,13 @@ footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:
   </ul>
   <a href="#contact" class="nav-cta">Jetzt starten</a>
 </nav>
+
+<!-- HERO -->
 <section id="hero">
   <canvas id="particles-canvas"></canvas>
   <canvas id="globe-canvas"></canvas>
+
+  <!-- peripheral labels (desktop only) -->
   <div class="globe-labels">
     <div class="label l1">Klimaneutral</div>
     <div class="label l2">100% Bio</div>
@@ -121,6 +416,7 @@ footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:
     <div class="label l5 right">DACH-Region</div>
     <div class="label l6 right">Pilzanbau</div>
   </div>
+
   <div class="hero-content">
     <p class="hero-eyebrow">Nachhaltige Landwirtschaft · Vorarlberg</p>
     <h1 class="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
@@ -128,12 +424,28 @@ footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:
     <a href="#how" class="hero-btn">Mehr erfahren</a>
   </div>
 </section>
+
+<!-- STATS BAR -->
 <div class="stats-bar">
-  <div class="stat"><div class="stat-val">3</div><div class="stat-label">Pilzarten</div></div>
-  <div class="stat"><div class="stat-val">100%</div><div class="stat-label">Bio-zertifiziert</div></div>
-  <div class="stat"><div class="stat-val">22,5 m²</div><div class="stat-label">Container-Footprint</div></div>
-  <div class="stat"><div class="stat-val">DACH</div><div class="stat-label">Vertriebsregion</div></div>
+  <div class="stat">
+    <div class="stat-val">3</div>
+    <div class="stat-label">Pilzarten</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">100%</div>
+    <div class="stat-label">Bio-zertifiziert</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">22,5 m²</div>
+    <div class="stat-label">Container-Footprint</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">DACH</div>
+    <div class="stat-label">Vertriebsregion</div>
+  </div>
 </div>
+
+<!-- MISSION -->
 <section id="mission">
   <div class="container">
     <div class="mission-grid">
@@ -141,8 +453,12 @@ footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:
         <p class="section-eyebrow">Unsere Mission</p>
         <div class="section-divider"></div>
         <h2 class="section-title">Pilze als Teil des<br>Ökosystems</h2>
-        <p class="section-body" style="margin-bottom:1.5rem">Pilzboks bringt biologischen Pilzanbau direkt auf den Hof — ressourcenschonend, klimaneutral und in den natürlichen Kreislauf eingebettet.</p>
-        <p class="section-body">Mit kompakten Container-Einheiten ermöglichen wir Biobetrieben eine zusätzliche Einkommensquelle, die kaum Fläche benötigt.</p>
+        <p class="section-body" style="margin-bottom:1.5rem">
+          Pilzboks bringt biologischen Pilzanbau direkt auf den Hof — ressourcenschonend, klimaneutral und in den natürlichen Kreislauf eingebettet.
+        </p>
+        <p class="section-body">
+          Mit kompakten Container-Einheiten ermöglichen wir Biobetrieben eine zusätzliche Einkommensquelle, die kaum Fläche benötigt und vollständig in bestehende Strukturen integriert werden kann.
+        </p>
       </div>
       <div class="mission-visual">
         <div class="mission-ring">
@@ -155,91 +471,355 @@ footer{padding:2rem;border-top:1px solid var(--border);display:flex;align-items:
     </div>
   </div>
 </section>
+
+<!-- HOW IT WORKS -->
 <section id="how">
   <div class="container">
     <p class="section-eyebrow">Wie es funktioniert</p>
     <div class="section-divider"></div>
-    <h2 class="section-title">Vier Schritte zum Anbau</h2>
+    <h2 class="section-title">Vier Schritte zum<br>Anbau</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">01 — Setup</div><div class="step-title">Container auf dem Hof</div><div class="step-body">Schlüsselfertiger Pilz-Container direkt auf Ihrem Betrieb. Minimaler Platzbedarf.</div><div class="step-line"></div></div>
-      <div class="step"><div class="step-num">02 — Abnahme</div><div class="step-title">Garantierte Abnahme</div><div class="step-body">Faire, vertraglich gesicherte Preise — unabhängig von Marktschwankungen.</div><div class="step-line"></div></div>
-      <div class="step"><div class="step-num">03 — Produktion</div><div class="step-title">Verarbeitung &amp; Branding</div><div class="step-body">Wir übernehmen Verarbeitung, Verpackung und Markenaufbau für Ihre Hofprodukte.</div><div class="step-line"></div></div>
-      <div class="step"><div class="step-num">04 — Kreislauf</div><div class="step-title">Regionale Kreislaufwirtschaft</div><div class="step-body">Substrate regional beschafft, Restmaterialien als Kompost zurückgeführt.</div></div>
+      <div class="step">
+        <div class="step-num">01 — Setup</div>
+        <div class="step-title">Container auf dem Hof</div>
+        <div class="step-body">Wir liefern und installieren den schlüsselfertigen Pilz-Container direkt auf Ihrem Betrieb. Minimaler Platzbedarf, maximale Integration.</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="step-num">02 — Abnahme</div>
+        <div class="step-title">Garantierte Abnahme</div>
+        <div class="step-body">Pilzboks garantiert die Abnahme aller Erträge zu fairen, vertraglich gesicherten Preisen — unabhängig von Marktschwankungen.</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="step-num">03 — Produktion</div>
+        <div class="step-title">Verarbeitung & Branding</div>
+        <div class="step-body">Wir übernehmen Verarbeitung, Verpackung und den Aufbau einer eigenen Markenidentität für Ihre Hofprodukte.</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step">
+        <div class="step-num">04 — Kreislauf</div>
+        <div class="step-title">Regionale Kreislaufwirtschaft</div>
+        <div class="step-body">Substrate werden regional beschafft, Restmaterialien als Kompost zurückgeführt — ein vollständiger biologischer Kreislauf.</div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- MUSHROOMS -->
 <section id="mushrooms">
   <div class="container">
     <p class="section-eyebrow">Unsere Pilze</p>
     <div class="section-divider"></div>
-    <h2 class="section-title">Drei Arten, ein Ökosystem</h2>
+    <h2 class="section-title">Drei Arten,<br>ein Ökosystem</h2>
     <div class="mushroom-grid">
-      <div class="mushroom-card"><div class="mushroom-icon">🦔</div><div class="mushroom-latin">Hericium erinaceus</div><div class="mushroom-name">Igelstachelbart</div><div class="mushroom-desc">Intensiv-meeresfrüchtiger Geschmack, herausragende Nährstoffe. Beliebt in der gehobenen Küche.</div><span class="mushroom-badge">Premium</span></div>
-      <div class="mushroom-card"><div class="mushroom-icon">🍄</div><div class="mushroom-latin">Lentinula edodes</div><div class="mushroom-name">Shiitake</div><div class="mushroom-desc">Asiatischer Klassiker mit tiefem Umami-Aroma. Weltweit einer der beliebtesten Kulturpilze.</div><span class="mushroom-badge">Klassiker</span></div>
-      <div class="mushroom-card"><div class="mushroom-icon">🌿</div><div class="mushroom-latin">Pleurotus ostreatus</div><div class="mushroom-name">Austernpilz</div><div class="mushroom-desc">Zart, mild, vielseitig. Das Herzstück unserer Kreislaufwirtschaft.</div><span class="mushroom-badge">Kernprodukt</span></div>
+      <div class="mushroom-card">
+        <div class="mushroom-icon">🦔</div>
+        <div class="mushroom-latin">Hericium erinaceus</div>
+        <div class="mushroom-name">Igelstachelbart</div>
+        <div class="mushroom-desc">Der außergewöhnlichste unserer Pilze — bekannt für seinen intensiv-meeresfrüchtigen Geschmack und herausragende Nährstoffe. Beliebt in der gehobenen Küche.</div>
+        <span class="mushroom-badge">Premium</span>
+      </div>
+      <div class="mushroom-card">
+        <div class="mushroom-icon">🍄</div>
+        <div class="mushroom-latin">Lentinula edodes</div>
+        <div class="mushroom-name">Shiitake</div>
+        <div class="mushroom-desc">Asiatischer Klassiker mit tiefem Umami-Aroma. Shiitake ist vielseitig einsetzbar und weltweit einer der beliebtesten Kulturpilze.</div>
+        <span class="mushroom-badge">Klassiker</span>
+      </div>
+      <div class="mushroom-card">
+        <div class="mushroom-icon">🌿</div>
+        <div class="mushroom-latin">Pleurotus ostreatus</div>
+        <div class="mushroom-name">Austernpilz</div>
+        <div class="mushroom-desc">Zart, mild und unglaublich vielseitig. Der Austernpilz gedeiht auch auf landwirtschaftlichen Reststoffen und ist das Herzstück unserer Kreislaufwirtschaft.</div>
+        <span class="mushroom-badge">Kernprodukt</span>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- FARMERS -->
 <section id="farmers">
   <div class="container">
     <p class="section-eyebrow">Für Landwirte</p>
     <div class="section-divider"></div>
-    <h2 class="section-title">Was Pilzboks bietet</h2>
+    <h2 class="section-title">Was Pilzboks<br>bietet</h2>
     <div class="benefits-grid">
-      <div class="benefit"><div class="benefit-icon">📐</div><div class="benefit-title">Kleiner Footprint</div><div class="benefit-desc">22,5 m² genügen — auch auf versiegelten Flächen nutzbar.</div></div>
-      <div class="benefit"><div class="benefit-icon">📋</div><div class="benefit-title">Planungssicherheit</div><div class="benefit-desc">Feste Abnahmeverträge für kalkulierbares Zusatzeinkommen.</div></div>
-      <div class="benefit"><div class="benefit-icon">💶</div><div class="benefit-title">Förderung möglich</div><div class="benefit-desc">Förderfähig über AMA und Ländliche Entwicklung.</div></div>
-      <div class="benefit"><div class="benefit-icon">♻️</div><div class="benefit-title">Kreislaufwirtschaft</div><div class="benefit-desc">Substrate aus regionaler Landwirtschaft, Rückführung als Bodenverbesserer.</div></div>
-      <div class="benefit"><div class="benefit-icon">🔧</div><div class="benefit-title">Technischer Support</div><div class="benefit-desc">Begleitung bei Einrichtung, Schulung und Betrieb.</div></div>
-      <div class="benefit"><div class="benefit-icon">🌱</div><div class="benefit-title">Bio-Integration</div><div class="benefit-desc">Vollständig konform mit EU-Bio-Richtlinien.</div></div>
+      <div class="benefit">
+        <div class="benefit-icon">📐</div>
+        <div class="benefit-title">Kleiner Footprint</div>
+        <div class="benefit-desc">22,5 m² Stellfläche genügen — nutzbar auf versiegelten oder benachteiligten Flächen.</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">📋</div>
+        <div class="benefit-title">Planungssicherheit</div>
+        <div class="benefit-desc">Feste Abnahmeverträge sorgen für kalkulierbares Zusatzeinkommen über die gesamte Laufzeit.</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">💶</div>
+        <div class="benefit-title">Förderung möglich</div>
+        <div class="benefit-desc">Das System ist förderfähig über AMA, Ländliche Entwicklung und andere Agrarprogramme.</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">♻️</div>
+        <div class="benefit-title">Kreislaufwirtschaft</div>
+        <div class="benefit-desc">Substrate aus regionaler Landwirtschaft, Rückführung als Bodenverbesserer — geschlossener Kreislauf.</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">🔧</div>
+        <div class="benefit-title">Technischer Support</div>
+        <div class="benefit-desc">Wir begleiten Einrichtung, Schulung und laufenden Betrieb — Sie müssen kein Experte sein.</div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon">🌱</div>
+        <div class="benefit-title">Bio-Integration</div>
+        <div class="benefit-desc">Vollständig konform mit EU-Bio-Richtlinien — ideal für bestehende Biobetriebe ohne Zusatzaufwand.</div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- QUOTE -->
 <section id="quote">
   <div class="container">
     <div class="quote-inner">
-      <div class="quote-mark">“</div>
-      <p class="quote-text">Als Biohof wollte ich meine Fläche effizienter nutzen, ohne dabei meinen Werten zu widersprechen. Mit Pilzboks habe ich eine Lösung gefunden, die perfekt in unseren Kreislauf passt.</p>
+      <div class="quote-mark">"</div>
+      <p class="quote-text">Als Biohof wollte ich meine Fläche effizienter nutzen, ohne dabei meinen Werten zu widersprechen. Mit Pilzboks habe ich eine Lösung gefunden, die perfekt in unseren Kreislauf passt und nebenbei ein verlässliches Zusatzeinkommen schafft.</p>
       <div class="quote-author">Jürgen Feurle</div>
       <div class="quote-role">Biohof Langen bei Bregenz — Pilotbetrieb</div>
     </div>
   </div>
 </section>
+
+<!-- CONTACT -->
 <section id="contact">
   <div class="container">
     <div class="contact-inner">
       <div>
         <p class="section-eyebrow">Kontakt</p>
         <div class="section-divider"></div>
-        <h2 class="section-title">Jetzt ins Gespräch kommen</h2>
-        <p class="section-body">Schreiben Sie uns — wir melden uns innerhalb von 48 Stunden.</p>
+        <h2 class="section-title">Jetzt ins<br>Gespräch kommen</h2>
+        <p class="section-body">Wir freuen uns auf Ihren Betrieb. Schreiben Sie uns oder nutzen Sie das Formular — wir melden uns innerhalb von 48 Stunden.</p>
         <div class="contact-info">
-          <div class="contact-detail"><span class="contact-label">E-Mail</span><a href="mailto:hallo@pilzboks.com" class="contact-val">hallo@pilzboks.com</a></div>
-          <div class="contact-detail"><span class="contact-label">Standort</span><span class="contact-val">Vorarlberg, Österreich</span></div>
-          <div class="contact-detail"><span class="contact-label">Region</span><span class="contact-val">Vorarlberg &amp; DACH</span></div>
+          <div class="contact-detail">
+            <span class="contact-label">E-Mail</span>
+            <a href="mailto:hallo@pilzboks.com" class="contact-val">hallo@pilzboks.com</a>
+          </div>
+          <div class="contact-detail">
+            <span class="contact-label">Standort</span>
+            <span class="contact-val">Vorarlberg, Österreich</span>
+          </div>
+          <div class="contact-detail">
+            <span class="contact-label">Region</span>
+            <span class="contact-val">Vorarlberg & DACH-Region</span>
+          </div>
         </div>
       </div>
       <div>
         <form class="contact-form" onsubmit="handleSubmit(event)">
-          <div class="form-group"><label class="form-label" for="n">Name</label><input class="form-input" type="text" id="n" placeholder="Ihr Name" required></div>
-          <div class="form-group"><label class="form-label" for="em">E-Mail</label><input class="form-input" type="email" id="em" placeholder="ihre@email.com" required></div>
-          <div class="form-group"><label class="form-label" for="hof">Betrieb</label><input class="form-input" type="text" id="hof" placeholder="Biohof ..."></div>
-          <div class="form-group"><label class="form-label" for="msg">Nachricht</label><textarea class="form-textarea" id="msg" placeholder="Erzählen Sie uns von Ihrem Hof..." required></textarea></div>
+          <div class="form-group">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-input" type="text" id="name" placeholder="Ihr Name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">E-Mail</label>
+            <input class="form-input" type="email" id="email" placeholder="ihre@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="hof">Betrieb (optional)</label>
+            <input class="form-input" type="text" id="hof" placeholder="Biohof ...">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Nachricht</label>
+            <textarea class="form-textarea" id="message" placeholder="Erzählen Sie uns von Ihrem Hof..." required></textarea>
+          </div>
           <button type="submit" class="form-submit">Nachricht senden</button>
         </form>
       </div>
     </div>
   </div>
 </section>
+
+<!-- FOOTER -->
 <footer>
-  <span class="footer-logo">Pilzboks</span>
-  <span class="footer-text">© 2025 Pilzboks — Bio-Pilze direkt vom Hof</span>
+  <span class="footer-logo"><img src="pilzboks-logo-transparent.png" alt="Pilzboks" style="height:30px;filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);opacity:0.7;"></span>
+  <span class="footer-text">© 2025 Pilzboks. Bio-Pilze direkt vom Hof.</span>
   <span class="footer-badge">🌿 100% Bio</span>
 </footer>
+
 <script>
-(function(){var c=document.getElementById('globe-canvas'),x=c.getContext('2d'),N=1800,g=(1+Math.sqrt(5))/2,d=[],r=0,w,h,R;function W(){return Math.min(window.innerWidth*.72,700)}function sz(){w=W();h=w;R=w*.44;c.width=w*devicePixelRatio;c.height=h*devicePixelRatio;c.style.width=w+'px';c.style.height=h+'px';x.scale(devicePixelRatio,devicePixelRatio)}function bd(){d=[];for(var i=0;i<N;i++){d.push({t:2*Math.PI*i/g,p:Math.acos(1-2*(i+.5)/N)})}}function draw(){x.clearRect(0,0,w,h);var cx=w/2,cy=h/2,gr=x.createRadialGradient(cx,cy,R*.6,cx,cy,R*1.15);gr.addColorStop(0,'rgba(74,222,128,0)');gr.addColorStop(.7,'rgba(74,222,128,.025)');gr.addColorStop(1,'rgba(74,222,128,0)');x.fillStyle=gr;x.fillRect(0,0,w,h);var pts=d.map(function(v){var xv=Math.sin(v.p)*Math.cos(v.t+r);var yv=-Math.cos(v.p);var zv=Math.sin(v.p)*Math.sin(v.t+r);return{x:xv,y:yv,z:zv,px:cx+xv*R,py:cy+yv*R}}).sort(function(a,b){return a.z-b.z});pts.forEach(function(p){var f=p.z>=0;var a=f?.12+p.z*.65:.06+(p.z+1)*.06;var s=f?.8+p.z*1.8:.5;x.beginPath();x.arc(p.px,p.py,s,0,Math.PI*2);x.fillStyle='rgba(74,222,128,'+a.toFixed(3)+')';x.fill()});r+=.0012;requestAnimationFrame(draw)}sz();bd();draw();window.addEventListener('resize',sz)})();
-(function(){var c=document.getElementById('particles-canvas'),x=c.getContext('2d'),w,h,ps=[];function sz(){w=window.innerWidth;h=window.innerHeight;c.width=w*devicePixelRatio;c.height=h*devicePixelRatio;c.style.width=w+'px';c.style.height=h+'px';x.scale(devicePixelRatio,devicePixelRatio)}function sp(){return{x:Math.random()*w,y:h+10,r:Math.random()*1.2+.3,s:Math.random()*.4+.15,d:(Math.random()-.5)*.3,a:Math.random()*.35+.05,l:0,m:Math.random()*300+200}}for(var i=0;i<55;i++){var p=sp();p.y=Math.random()*h;p.l=Math.random()*p.m;ps.push(p)}function draw(){x.clearRect(0,0,w,h);ps.forEach(function(p,i){p.y-=p.s;p.x+=p.d;p.l++;var f=p.l<40?p.l/40:p.l>p.m-40?(p.m-p.l)/40:1;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle='rgba(74,222,128,'+(p.a*f).toFixed(3)+')';x.fill();if(p.y<-10||p.l>p.m)ps[i]=sp()});requestAnimationFrame(draw)}sz();draw();window.addEventListener('resize',sz)})();
-function handleSubmit(e){e.preventDefault();var b=e.target.querySelector('.form-submit');b.textContent='Gesendet ✓';e.target.reset();setTimeout(function(){b.textContent='Nachricht senden'},4000)}
+// ─── GLOBE CANVAS ───────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('globe-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = () => Math.min(window.innerWidth * 0.72, 700);
+  const H = () => W();
+  let w, h, R, dots = [], rotation = 0;
+  const N = 1800;
+  const golden = (1 + Math.sqrt(5)) / 2;
+
+  function buildDots(){
+    dots = [];
+    for(let i = 0; i < N; i++){
+      const theta = 2 * Math.PI * i / golden;
+      const phi = Math.acos(1 - 2 * (i + 0.5) / N);
+      dots.push({ theta, phi });
+    }
+  }
+
+  function resize(){
+    w = W(); h = H(); R = w * 0.44;
+    canvas.width = w * devicePixelRatio;
+    canvas.height = h * devicePixelRatio;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+
+  function projectDot(theta, phi, rot){
+    // rotate around Y axis
+    const x0 = Math.sin(phi) * Math.cos(theta + rot);
+    const y0 = -Math.cos(phi);
+    const z0 = Math.sin(phi) * Math.sin(theta + rot);
+    return { x: x0, y: y0, z: z0 };
+  }
+
+  function render(){
+    ctx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2;
+
+    // atmosphere glow
+    const grd = ctx.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 1.15);
+    grd.addColorStop(0, 'rgba(74,222,128,0.0)');
+    grd.addColorStop(0.7, 'rgba(74,222,128,0.025)');
+    grd.addColorStop(1, 'rgba(74,222,128,0.0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, w, h);
+
+    // project and sort by z
+    const projected = dots.map(d => {
+      const p = projectDot(d.theta, d.phi, rotation);
+      return { ...p, px: cx + p.x * R, py: cy + p.y * R };
+    }).sort((a, b) => a.z - b.z);
+
+    for(const d of projected){
+      const front = d.z >= 0;
+      let alpha, size;
+      if(front){
+        // map z 0→1 to alpha 0.12→0.77
+        alpha = 0.12 + d.z * 0.65;
+        size = 0.8 + d.z * 1.8;
+      } else {
+        alpha = 0.06 + (d.z + 1) * 0.06;
+        size = 0.5;
+      }
+      ctx.beginPath();
+      ctx.arc(d.px, d.py, size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(74,222,128,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+
+    // subtle equator ring
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, R, R * 0.08, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(74,222,128,0.06)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    rotation += 0.0012;
+    requestAnimationFrame(render);
+  }
+
+  resize();
+  buildDots();
+  render();
+  window.addEventListener('resize', () => { resize(); });
+})();
+
+// ─── PARTICLE CANVAS ────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+
+  function resize(){
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * devicePixelRatio;
+    canvas.height = h * devicePixelRatio;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+
+  function spawn(){
+    return {
+      x: Math.random() * w,
+      y: h + Math.random() * 20,
+      r: Math.random() * 1.2 + 0.3,
+      speed: Math.random() * 0.4 + 0.15,
+      drift: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.35 + 0.05,
+      life: 0,
+      maxLife: Math.random() * 300 + 200
+    };
+  }
+
+  for(let i = 0; i < 55; i++){
+    const p = spawn();
+    p.y = Math.random() * h;
+    p.life = Math.random() * p.maxLife;
+    particles.push(p);
+  }
+
+  function render(){
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach((p, i) => {
+      p.y -= p.speed;
+      p.x += p.drift;
+      p.life++;
+      const fade = p.life < 40 ? p.life / 40 : p.life > p.maxLife - 40 ? (p.maxLife - p.life) / 40 : 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(74,222,128,${(p.alpha * fade).toFixed(3)})`;
+      ctx.fill();
+      if(p.y < -10 || p.life > p.maxLife) particles[i] = spawn();
+    });
+    requestAnimationFrame(render);
+  }
+
+  resize();
+  render();
+  window.addEventListener('resize', resize);
+})();
+
+// ─── FORM HANDLER ────────────────────────────────────────
+function handleSubmit(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('.form-submit');
+  btn.textContent = 'Gesendet ✓';
+  btn.style.background = 'var(--green-dim)';
+  btn.style.color = 'var(--text)';
+  e.target.reset();
+  setTimeout(() => {
+    btn.textContent = 'Nachricht senden';
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 4000);
+}
+
+// ─── SCROLL FADE IN ──────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.step,.mushroom-card,.benefit,.contact-detail').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
 </script>
 </body>
 </html>
