@@ -357,7 +357,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 }
 .btn:hover::after{transform:translateX(130%)}
 .btn-primary{color:var(--bg);background:var(--green)}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 38px rgba(74,222,128,0.3)}
+.btn-primary:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 14px 38px rgba(74,222,128,0.3)}
 .btn-ghost{
   color:var(--text);background:rgba(74,222,128,0.04);
   border-color:var(--border-bright);
@@ -365,6 +365,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 .btn-ghost:hover{
   transform:translateY(-3px);border-color:var(--green);
   background:rgba(74,222,128,0.1);
+  box-shadow:0 0 0 1px rgba(74,222,128,0.35),0 0 24px rgba(74,222,128,0.28),inset 0 0 14px rgba(74,222,128,0.08);
 }
 .btn-arrow{
   display:inline-block;transition:transform 0.4s var(--ease);
@@ -1050,7 +1051,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
   <div class="hero-inner">
   <div class="hero-content">
-    <p class="hero-eyebrow"><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
+    <p class="hero-eyebrow" data-hero-fade><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
     <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
     <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
     <div class="hero-actions" data-hero-fade>
