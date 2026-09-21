@@ -986,15 +986,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .mushroom-grid,.benefits-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:960px){
-  /* stack: the globe gets its own space above the copy instead of
-     sitting behind it, so the continents stay readable.
-     Kein Sticky/Zoom auf Mobile — Inhalte scrollen normal untereinander */
-  .hero-pin{position:relative;height:auto;overflow:visible}
-  .hero-globe{position:relative;width:100%;height:auto;min-height:0;order:0}
-  .hero-steps{width:100%;max-width:620px;margin:0 auto}
+  /* Mobile Scrollytelling: Globus gepinnt im Vollbild,
+     Text scrollt mit Abdunklungs-Scrim darüber — Zoom läuft wie am Desktop */
+  .hero-globe{
+    position:absolute;inset:0;width:100%;height:100%;
+    place-items:start center;padding-top:11vh;
+  }
+  .hero-steps{width:100%;max-width:620px}
   .hero-step{
-    min-height:0;padding:3rem 0;
+    position:relative;
+    justify-content:flex-end;
+    padding:0 0 13vh;
     text-align:center;align-items:center;
+  }
+  .hero-step::before{
+    content:'';position:absolute;z-index:-1;
+    left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));bottom:0;height:64%;
+    background:linear-gradient(to top, rgba(5,13,7,0.94) 30%, rgba(5,13,7,0.55) 65%, transparent);
+    pointer-events:none;
   }
   .hero-step .hero-actions{justify-content:center}
   .hero-content{
@@ -1002,8 +1011,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     max-width:620px;margin:0 auto;
   }
   .hero-content::before{content:none}
-  .hero-h1,.hero-sub{text-shadow:none}
-  #hero{padding-top:calc(var(--nav-h) + 1rem);padding-bottom:3.5rem}
+  .hero-h1,.hero-sub{text-shadow:0 2px 24px rgba(5,13,7,0.95)}
+  #hero{padding:0 var(--gut)}
 }
 @media(max-width:860px){
   .nav-links{display:none}
@@ -1827,7 +1836,7 @@ if(!isTouch && !reduce){
     mobile = window.innerWidth < 960;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     if(mobile){
-      box = Math.min(window.innerWidth * 0.88, Math.max(220, window.innerHeight * 0.35), 350);
+      box = Math.min(window.innerWidth * 0.92, Math.max(240, window.innerHeight * 0.42), 420);
     } else {
       var host = canvas.parentElement;
       box = Math.max(340, Math.min(host.clientWidth || 520, host.clientHeight || 520, 560));
@@ -1846,7 +1855,7 @@ if(!isTouch && !reduce){
        ersten Textblöcke zoomt die Kamera stetig auf die DACH-Region. */
     var total = globeHero ? (globeHero.offsetHeight - window.innerHeight) : 0;
     var p = 0;
-    if(!mobile && total > 0){
+    if(total > 0){   /* Zoom läuft auf Mobile genauso wie am Desktop */
       p = window.scrollY / total;
       if(p < 0) p = 0; if(p > 1) p = 1;
     }
