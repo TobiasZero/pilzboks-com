@@ -1584,7 +1584,7 @@ if(!isTouch && !reduce){
   var velY = 0, velP = 0;
   var dragging = false, lastX = 0, lastY = 0, lastT = 0;
   var visible = true, ready = false;
-  var AUTO = 0.00022, DIST = 4.2;   // langsame Drehung (~0,8°/s): Europa bleibt lange im Blick; Kugel bei ~78% geframed
+  var AUTO = 0.0005, DIST = 4.2;   // gemäßigte Drehung (~1,7°/s) — Mitte zwischen Original und Slow-Modus; Kugel bei ~78% geframed
 
   /* Standort-Marker: Vorarlberg, Österreich (47.25°N, 9.9°O) */
   var markerEl = document.getElementById('globe-marker');
