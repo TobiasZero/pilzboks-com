@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050d07">
+<meta name="description" content="Datenschutzerklärung der Pilzboks GmbH – Bio-Pilze direkt vom Hof, Vorarlberg, Österreich.">
+<meta name="robots" content="noindex">
+<title>Datenschutz – Pilzboks</title>
+<link rel="icon" href="pilzboks-logo-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#050d07;
+  --bg2:#091410;
+  --bg3:#0d1f12;
+  --green:#4ade80;
+  --green-light:#86efac;
+  --green-deep:#16a34a;
+  --green-glow:rgba(74,222,128,0.14);
+  --green-glow2:rgba(74,222,128,0.05);
+  --text:#e8f5ec;
+  --text-muted:rgba(232,245,236,0.48);
+  --text-dim:rgba(232,245,236,0.26);
+  --border:rgba(74,222,128,0.12);
+  --border-bright:rgba(74,222,128,0.32);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease-soft:cubic-bezier(0.4,0,0.2,1);
+  --nav-h:72px;
+  --gut:clamp(1.15rem,5vw,2.5rem);
+}
+
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+  scroll-padding-top:var(--nav-h);
+  overflow-x:clip;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  overflow-x:clip;
+  width:100%;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+img{max-width:100%;display:block}
+a{font-family:inherit}
+::selection{background:var(--green);color:var(--bg)}
+
+/* ══ AMBIENT BACKGROUND ══ */
+.ambient{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(74,222,128,0.07),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 40%,rgba(22,163,74,0.05),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(74,222,128,0.04),transparent 60%);
+}
+.grid-tex{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  background-image:
+    linear-gradient(rgba(74,222,128,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,222,128,0.025) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
+}
+
+/* ══ NAV ══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:160;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem var(--gut);
+  height:var(--nav-h);
+  background:rgba(5,13,7,0.78);
+  backdrop-filter:blur(18px) saturate(180%);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  display:flex;align-items:center;text-decoration:none;
+  transition:transform 0.4s var(--ease);
+  flex-shrink:0;
+}
+.nav-logo:hover{transform:scale(1.04)}
+.nav-logo img{
+  height:40px;width:auto;
+  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
+}
+.nav-back{
+  position:relative;
+  font-size:0.72rem;font-weight:500;letter-spacing:0.13em;
+  text-transform:uppercase;color:var(--text-muted);text-decoration:none;
+  transition:color 0.3s;padding:0.4rem 0;
+}
+.nav-back::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:100%;height:1px;background:var(--green);
+  transform:scaleX(0);transform-origin:right;
+  transition:transform 0.45s var(--ease);
+}
+.nav-back:hover{color:var(--green)}
+.nav-back:hover::after{transform:scaleX(1);transform-origin:left}
+
+/* ══ CONTENT ══ */
+main{
+  position:relative;z-index:2;flex:1;
+  padding:calc(var(--nav-h) + clamp(2.5rem,7vw,5rem)) var(--gut) clamp(3.5rem,8vw,6rem);
+}
+.impressum-inner{max-width:860px;margin:0 auto}
+
+.section-eyebrow{
+  font-size:0.64rem;font-weight:600;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--green);margin-bottom:1.1rem;
+}
+.section-divider{
+  width:40px;height:1px;background:var(--green);margin-bottom:1.8rem;
+}
+.section-title{
+  font-size:clamp(1.85rem,5vw,3.1rem);font-weight:700;
+  line-height:1.1;letter-spacing:-0.028em;margin-bottom:1.5rem;
+  text-wrap:balance;
+}
+.section-body{
+  font-size:clamp(0.92rem,2.2vw,1.02rem);font-weight:300;
+  color:var(--text-muted);max-width:56ch;
+}
+
+.legal-stack{
+  display:flex;flex-direction:column;
+  gap:1.1rem;margin-top:2.2rem;
+}
+.impressum-block{
+  border:1px solid var(--border);border-radius:14px;
+  padding:1.3rem 1.5rem;background:var(--green-glow2);
+  transition:border-color 0.35s,background 0.35s,transform 0.35s var(--ease);
+}
+.impressum-block:hover{
+  border-color:var(--border-bright);background:var(--green-glow);
+  transform:translateY(-2px);
+}
+.impressum-block h3{
+  font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--green);font-weight:600;margin-bottom:0.7rem;
+}
+.impressum-block p{font-size:0.86rem;color:var(--text-muted);line-height:1.75}
+.impressum-block p + p{margin-top:0.6rem}
+.impressum-block a{
+  color:var(--green-light);text-decoration:none;
+  border-bottom:1px solid var(--border-bright);transition:color 0.3s;
+}
+.impressum-block a:hover{color:var(--green)}
+.impressum-note{
+  margin-top:1.8rem;font-size:0.72rem;color:var(--text-dim);
+  letter-spacing:0.03em;line-height:1.7;
+}
+
+/* ══ FOOTER ══ */
+footer{
+  position:relative;z-index:2;
+  border-top:1px solid var(--border);
+  padding:2.3rem var(--gut);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1.3rem;flex-wrap:wrap;
+  background:rgba(5,13,7,0.7);
+}
+.footer-logo img{
+  height:30px;width:auto;
+  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
+  opacity:0.62;transition:opacity 0.4s;
+}
+.footer-logo:hover img{opacity:1}
+.footer-text{font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em}
+.footer-links{display:flex;align-items:center;gap:1.2rem}
+.footer-links a{
+  font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em;
+  text-decoration:none;transition:color 0.3s;
+}
+.footer-links a:hover{color:var(--green)}
+.footer-badge{
+  font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--green);border:1px solid var(--border);
+  padding:0.42rem 0.9rem;border-radius:100px;
+  background:rgba(74,222,128,0.04);
+}
+
+/* ══ FOCUS ══ */
+a:focus-visible{
+  outline:2px solid var(--green);outline-offset:3px;border-radius:2px;
+}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:640px){
+  footer{flex-direction:column;text-align:center;gap:1.1rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="grid-tex"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="index.html" class="nav-logo" aria-label="Zurück zur Pilzboks Startseite">
+    <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
+  </a>
+  <a href="index.html" class="nav-back">← Zurück zur Startseite</a>
+</nav>
+
+<!-- ═══ DATENSCHUTZ ═══ -->
+<main>
+  <div class="impressum-inner">
+    <p class="section-eyebrow">Rechtliches</p>
+    <div class="section-divider"></div>
+    <h1 class="section-title">Datenschutz&shy;erklärung</h1>
+    <p class="section-body">Informationen zur Verarbeitung personenbezogener Daten auf dieser Website gemäß Datenschutz-Grundverordnung (DSGVO) und österreichischem Datenschutzgesetz (DSG).</p>
+    <div class="legal-stack">
+      <div class="impressum-block">
+        <h3>1. Verantwortlicher</h3>
+        <p>Pilzboks GmbH<br>Musterstraße 12<br>6850 Dornbirn<br>Vorarlberg, Österreich</p>
+        <p>E-Mail: <a href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a></p>
+      </div>
+      <div class="impressum-block">
+        <h3>2. Hosting</h3>
+        <p>Diese Website wird über GitHub Pages bereitgestellt. Anbieter ist die GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA.</p>
+        <p>Beim Aufruf der Seiten werden durch den Hosting-Anbieter automatisch Informationen in sogenannten Server-Logfiles erfasst (z. B. IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Browsertyp). Diese Verarbeitung erfolgt auf Grundlage des berechtigten Interesses an einem sicheren und stabilen Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO).</p>
+      </div>
+      <div class="impressum-block">
+        <h3>3. Kontaktformular &amp; E-Mail</h3>
+        <p>Wenn Sie uns über das Kontaktformular oder per E-Mail kontaktieren, verarbeiten wir die von Ihnen angegebenen Daten (Name, E-Mail-Adresse, Betrieb, Nachricht) ausschließlich zur Bearbeitung Ihrer Anfrage. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen).</p>
+        <p>Die Daten werden gelöscht, sobald sie für die Bearbeitung nicht mehr erforderlich sind und keine gesetzlichen Aufbewahrungspflichten bestehen.</p>
+      </div>
+      <div class="impressum-block">
+        <h3>4. Schriftarten (Google Fonts)</h3>
+        <p>Zur Darstellung der Schriftart „Space Grotesk“ wird Google Fonts eingebunden. Beim Laden der Seite stellt Ihr Browser eine Verbindung zu Servern von Google her, wobei Ihre IP-Adresse an Google übertragen wird. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
+      </div>
+      <div class="impressum-block">
+        <h3>5. Cookies &amp; Tracking</h3>
+        <p>Diese Website verwendet keine Cookies, kein Tracking und keine Analyse-Tools. Es findet kein Aufbau von Nutzungsprofilen statt.</p>
+      </div>
+      <div class="impressum-block">
+        <h3>6. Ihre Rechte</h3>
+        <p>Sie haben im Rahmen der gesetzlichen Bestimmungen das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch gegen die Verarbeitung Ihrer personenbezogenen Daten.</p>
+        <p>Zudem haben Sie das Recht auf Beschwerde bei der zuständigen Aufsichtsbehörde: <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer">Österreichische Datenschutzbehörde</a>, Barichgasse 40–42, 1030 Wien.</p>
+      </div>
+    </div>
+    <p class="impressum-note">Hinweis: Dies ist eine Muster-Datenschutzerklärung für eine Demonstrations-Website mit fiktiven Beispieldaten. Alle Angaben ohne Gewähr. Stand: September 2026.</p>
+  </div>
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <a href="index.html" class="footer-logo" aria-label="Zurück zur Startseite">
+    <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
+  </a>
+  <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
+  <div class="footer-links" aria-label="Rechtliches">
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </div>
+  <span class="footer-badge">🌿 100% Bio</span>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  /* aktuelles Jahr im Footer */
+  var text = document.querySelector('.footer-text');
+  if(text){
+    text.innerHTML = text.innerHTML.replace(/© \d{4}/, '© ' + new Date().getFullYear());
+  }
+})();
+</script>
+</body>
+</html>

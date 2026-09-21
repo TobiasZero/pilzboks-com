@@ -180,6 +180,12 @@ footer{
 }
 .footer-logo:hover img{opacity:1}
 .footer-text{font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em}
+.footer-links{display:flex;align-items:center;gap:1.2rem}
+.footer-links a{
+  font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em;
+  text-decoration:none;transition:color 0.3s;
+}
+.footer-links a:hover{color:var(--green)}
 .footer-badge{
   font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
   color:var(--green);border:1px solid var(--border);
@@ -259,6 +265,10 @@ a:focus-visible{
     <img src="pilzboks-logo-transparent.png" alt="Pilzboks">
   </a>
   <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
+  <div class="footer-links" aria-label="Rechtliches">
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </div>
   <span class="footer-badge">🌿 100% Bio</span>
 </footer>
 
