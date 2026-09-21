@@ -291,23 +291,6 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   70%,100%{transform:scale(3.4);opacity:0}
 }
 
-/* pulsierender Standort-Marker auf dem Globus (Vorarlberg) */
-.globe-marker{
-  position:absolute;left:0;top:0;width:10px;height:10px;z-index:4;
-  pointer-events:none;opacity:0;transition:opacity 0.35s;
-  will-change:transform;
-}
-.globe-marker .gm-dot{
-  position:absolute;inset:2px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 10px rgba(74,222,128,0.9),0 0 24px rgba(74,222,128,0.5);
-}
-.globe-marker .gm-ring{
-  position:absolute;inset:0;border-radius:50%;
-  background:rgba(74,222,128,0.55);
-  animation:pulseRing 2.2s var(--ease-soft) infinite;
-}
-
 .hero-h1{
   font-size:clamp(2.3rem,7.5vw,5.1rem);
   font-weight:700;line-height:1.04;
@@ -380,7 +363,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   position:absolute;
   font-size:0.6rem;font-weight:500;letter-spacing:0.17em;
   text-transform:uppercase;color:var(--green-light);
-  display:flex;align-items:center;gap:0.55rem;
+  display:inline-flex;align-items:center;
   white-space:nowrap;
   padding:0.34rem 0.66rem;border-radius:7px;
   background:rgba(5,13,7,0.45);
@@ -391,29 +374,17 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   animation:labelIn 1.1s var(--ease) forwards;
 }
 @keyframes labelIn{to{opacity:1}}
-.label::before{
-  content:'';width:30px;height:2px;border-radius:2px;
-  background:linear-gradient(90deg,transparent,var(--green));
-  box-shadow:0 0 8px rgba(74,222,128,0.55);
-  animation:lineGrow 1.2s var(--ease) forwards;transform-origin:left;
-}
-.label.right{flex-direction:row-reverse}
-.label.right::before{
-  background:linear-gradient(270deg,transparent,var(--green));
-  transform-origin:right;
-}
-@keyframes lineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .label.float{animation:labelIn 1.1s var(--ease) forwards,floaty 7s ease-in-out infinite}
 @keyframes floaty{
   0%,100%{transform:translateY(0)}
   50%{transform:translateY(-7px)}
 }
-.l1{top:14%;left:-2%;animation-delay:1.1s,0s}
-.l2{top:34%;left:-8%;animation-delay:1.25s,0.9s}
-.l3{top:78%;left:2%;animation-delay:1.4s,1.8s}
-.l4{top:20%;right:-2%;animation-delay:1.55s,0.5s}
-.l5{top:48%;right:-7%;animation-delay:1.7s,1.4s}
-.l6{top:72%;right:0%;animation-delay:1.85s,2.2s}
+.l1{top:12%;left:-3%;animation-delay:1.1s,0s}
+.l2{top:34%;left:-9%;animation-delay:1.25s,0.9s}
+.l3{top:80%;left:1%;animation-delay:1.4s,1.8s}
+.l4{top:18%;right:-3%;animation-delay:1.55s,0.5s}
+.l5{top:48%;right:-12%;animation-delay:1.7s,1.4s}
+.l6{top:74%;right:-1%;animation-delay:1.85s,2.2s}
 
 /* scroll cue */
 .scroll-cue{
@@ -1062,10 +1033,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
   <div class="hero-globe">
     <canvas id="globe-canvas"></canvas>
-    <div class="globe-marker" id="globe-marker" aria-hidden="true">
-      <span class="gm-ring"></span>
-      <span class="gm-dot"></span>
-    </div>
     <div class="globe-labels">
       <div class="label float l1">Klimaneutral</div>
       <div class="label float l2">100% Bio</div>
@@ -1586,12 +1553,6 @@ if(!isTouch && !reduce){
   var visible = true, ready = false;
   var AUTO = 0.0005, DIST = 4.2;   // gemäßigte Drehung (~1,7°/s) — Mitte zwischen Original und Slow-Modus; Kugel bei ~78% geframed
 
-  /* Standort-Marker: Vorarlberg, Österreich (47.25°N, 9.9°O) */
-  var markerEl = document.getElementById('globe-marker');
-  var M_LAT = 47.25 * Math.PI/180, M_LON = 9.9 * Math.PI/180;
-  var M_CL = Math.cos(M_LAT), M_SL = Math.sin(M_LAT);
-  var M_X = M_CL*Math.sin(M_LON), M_Y = M_SL, M_Z = M_CL*Math.cos(M_LON);
-
   /* ── sphere mesh ── */
   function buildSphere(slices, stacks){
     var pos = [], uv = [], idx = [];
@@ -1769,20 +1730,6 @@ if(!isTouch && !reduce){
     gl.bindBuffer(gl.ARRAY_BUFFER, bufU); gl.enableVertexAttribArray(aUV);  gl.vertexAttribPointer(aUV, 2,gl.FLOAT,false,0,0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufI);
     gl.drawElements(gl.TRIANGLES, nIdx, gl.UNSIGNED_SHORT, 0);
-
-    /* Standort-Marker auf die sichtbare Kugel projizieren */
-    if(markerEl){
-      /* Welt -> Kamera: rot ist spaltenweise (column-major), Zeile r = rot[r], rot[3+r], rot[6+r] */
-      var vx = rot[0]*M_X + rot[3]*M_Y + rot[6]*M_Z;
-      var vy = rot[1]*M_X + rot[4]*M_Y + rot[7]*M_Z;
-      var vz = rot[2]*M_X + rot[5]*M_Y + rot[8]*M_Z;
-      var f = 1/Math.tan(0.62/2);              // gleiche Brennweite wie perspective(0.62,...)
-      var wClip = DIST - vz;                   // clip.w der perspektivischen Projektion
-      var sx = canvas.offsetLeft + (f*vx/wClip * 0.5 + 0.5) * w;
-      var sy = canvas.offsetTop  + (1 - (f*vy/wClip * 0.5 + 0.5)) * h;
-      markerEl.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) translate(-50%,-50%)';
-      markerEl.style.opacity = (vz > 0.12) ? 1 : 0;   // ausblenden, sobald der Punkt auf der Rückseite liegt
-    }
   }
 
   function loop(){ if(visible && ready) draw(); requestAnimationFrame(loop); }
