@@ -226,23 +226,44 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 /* ══ HERO ══ */
 #hero{
   position:relative;
-  min-height:100svh;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;padding:calc(var(--nav-h) + 2rem) var(--gut) 5rem;
+  padding:0 var(--gut);
   z-index:2;
+  /* WICHTIG: kein overflow:hidden — das würde den Sticky-Globus brechen */
 }
-.hero-inner{
-  position:relative;z-index:4;
-  width:100%;max-width:1280px;margin:0 auto;
-  display:grid;grid-template-columns:1.02fr 0.98fr;
-  align-items:center;gap:clamp(1.5rem,4vw,3rem);
+.hero-pin{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  overflow:hidden;z-index:2;
 }
 .hero-globe{
-  position:relative;
+  position:absolute;right:0;top:0;height:100%;
+  width:48%;min-width:0;
   display:grid;place-items:center;
-  min-height:min(70vh,560px);
-  min-width:0;
 }
+.hero-steps{
+  position:relative;z-index:5;
+  width:50%;max-width:640px;
+  margin-top:-100vh;margin-top:-100svh;   /* Schritt 1 liegt über dem gepinnten ersten Viewport */
+}
+.hero-step{
+  min-height:100vh;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:calc(var(--nav-h) + 1rem) 0 3rem;
+}
+.hero-step-title{
+  font-size:clamp(1.7rem,4.2vw,2.6rem);font-weight:700;
+  line-height:1.08;letter-spacing:-0.026em;margin-bottom:1.1rem;
+  text-wrap:balance;
+  text-shadow:0 2px 30px rgba(5,13,7,0.95);
+}
+.hero-step-title em{font-style:normal;color:var(--green)}
+.hero-step-sub{
+  font-size:clamp(0.92rem,2vw,1.02rem);font-weight:300;
+  color:rgba(232,245,236,0.72);max-width:480px;
+  text-shadow:0 2px 20px rgba(5,13,7,0.95);
+}
+.hero-step .hero-actions{margin-top:2.2rem;justify-content:flex-start}
+#hero.zoomed .scroll-cue{opacity:0 !important;transition:opacity 0.4s}
 /* soft atmosphere behind the earth */
 .hero-globe::before{
   content:'';position:absolute;z-index:0;
@@ -314,7 +335,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   pointer-events:none;opacity:0;transition:opacity 0.6s var(--ease-soft);
   will-change:transform;
 }
-.hero-globe.zoomed .globe-frame{opacity:1}
+#hero.zoomed .globe-frame{opacity:1}
 .globe-frame .gf-ring{
   position:absolute;inset:0;border-radius:50%;
   border:1.5px solid rgba(74,222,128,0.7);
@@ -405,7 +426,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 
 /* peripheral labels */
 .globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3;transition:opacity 0.5s var(--ease-soft)}
-.hero-globe.zoomed .globe-labels{opacity:0}
+#hero.zoomed .globe-labels{opacity:0}
 .hero-globe .label{font-size:0.64rem}
 .label{
   position:absolute;
@@ -956,15 +977,17 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 }
 @media(max-width:960px){
   /* stack: the globe gets its own space above the copy instead of
-     sitting behind it, so the continents stay readable */
-  .hero-inner{
-    grid-template-columns:1fr;
-    gap:clamp(0.75rem,3vw,1.6rem);
-    justify-items:center;
+     sitting behind it, so the continents stay readable.
+     Kein Sticky/Zoom auf Mobile — Inhalte scrollen normal untereinander */
+  .hero-pin{position:relative;height:auto;overflow:visible}
+  .hero-globe{position:relative;width:100%;height:auto;min-height:0;order:0}
+  .hero-steps{width:100%;max-width:620px;margin:0 auto}
+  .hero-step{
+    min-height:0;padding:3rem 0;
+    text-align:center;align-items:center;
   }
-  .hero-globe{order:1;min-height:0}
+  .hero-step .hero-actions{justify-content:center}
   .hero-content{
-    order:2;
     text-align:center;align-items:center;
     max-width:620px;margin:0 auto;
   }
@@ -1064,46 +1087,72 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   </div>
 </div>
 
-<!-- ═══ HERO ═══ -->
+<!-- ═══ HERO (Scrollytelling: Globus sticky rechts, Text scrollt links) ═══ -->
 <section id="hero">
-  <canvas id="particles-canvas"></canvas>
+  <div class="hero-pin">
+    <canvas id="particles-canvas"></canvas>
 
-  <div class="hero-inner">
-  <div class="hero-content">
-    <p class="hero-eyebrow" data-hero-fade><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
-    <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
-    <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
-    <div class="hero-actions" data-hero-fade>
-      <a href="#how" class="btn btn-primary"><span>Mehr erfahren</span><span class="btn-arrow">→</span></a>
-      <a href="#contact" class="btn btn-ghost"><span>Gespräch vereinbaren</span></a>
+    <div class="hero-globe">
+      <canvas id="globe-canvas"></canvas>
+      <div class="globe-marker" id="globe-marker" aria-hidden="true">
+        <span class="gm-ring"></span>
+        <span class="gm-dot"></span>
+      </div>
+      <div class="globe-frame" id="globe-frame" aria-hidden="true">
+        <span class="gf-ring"></span>
+        <span class="gf-pulse"></span>
+        <span class="gf-label">DACH-Region</span>
+      </div>
+      <div class="globe-labels">
+        <div class="label float l1">Klimaneutral</div>
+        <div class="label float l2">100% Bio</div>
+        <div class="label float l3">Kreislauf</div>
+        <div class="label float right l4">Vorarlberg</div>
+        <div class="label float right l5">DACH-Region</div>
+        <div class="label float right l6">Pilzanbau</div>
+      </div>
+    </div>
+
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
     </div>
   </div>
 
-  <div class="hero-globe">
-    <canvas id="globe-canvas"></canvas>
-    <div class="globe-marker" id="globe-marker" aria-hidden="true">
-      <span class="gm-ring"></span>
-      <span class="gm-dot"></span>
+  <div class="hero-steps">
+    <div class="hero-step">
+      <div class="hero-content">
+        <p class="hero-eyebrow" data-hero-fade><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
+        <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
+        <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
+        <div class="hero-actions" data-hero-fade>
+          <a href="#how" class="btn btn-primary"><span>Mehr erfahren</span><span class="btn-arrow">→</span></a>
+          <a href="#contact" class="btn btn-ghost"><span>Gespräch vereinbaren</span></a>
+        </div>
+      </div>
     </div>
-    <div class="globe-frame" id="globe-frame" aria-hidden="true">
-      <span class="gf-ring"></span>
-      <span class="gf-pulse"></span>
-      <span class="gf-label">DACH-Region</span>
-    </div>
-    <div class="globe-labels">
-      <div class="label float l1">Klimaneutral</div>
-      <div class="label float l2">100% Bio</div>
-      <div class="label float l3">Kreislauf</div>
-      <div class="label float right l4">Vorarlberg</div>
-      <div class="label float right l5">DACH-Region</div>
-      <div class="label float right l6">Pilzanbau</div>
-    </div>
-  </div>
-  </div>
 
-  <div class="scroll-cue">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
+    <div class="hero-step" data-reveal>
+      <p class="hero-eyebrow"><span class="pulse-dot"></span>Unsere Heimat</p>
+      <h2 class="hero-step-title">Mitten in der <em>DACH-Region</em></h2>
+      <p class="hero-step-sub">Unsere Container stehen dort, wo gegessen wird: Von Vorarlberg aus erreichen wir Höfe, Märkte und Küchen in Österreich, Deutschland und der Schweiz — ohne Umwege, ohne Langstrecke.</p>
+    </div>
+
+    <div class="hero-step" data-reveal>
+      <p class="hero-eyebrow"><span class="pulse-dot"></span>Kurze Wege</p>
+      <h2 class="hero-step-title">Geerntet heute, <em>geliefert morgen</em></h2>
+      <p class="hero-step-sub">Weil Produktion und Absatz in derselben Region liegen, sind unsere Pilze innerhalb von 24 bis 48 Stunden vom Container in der Küche — frischer geht es nicht.</p>
+    </div>
+
+    <div class="hero-step" data-reveal>
+      <p class="hero-eyebrow"><span class="pulse-dot"></span>Gemeinsam stark</p>
+      <h2 class="hero-step-title">Partnerbetriebe <em>in ganz DACH</em></h2>
+      <p class="hero-step-sub">Ob Biohof im Bregenzerwald oder Genossenschaft in Bayern: Unser Netzwerk wächst mit jedem Betrieb, der dazukommt. Der Standort ist der Vorteil — die Region ist das Prinzip.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary"><span>Jetzt Hof werden</span><span class="btn-arrow">→</span></a>
+        <a href="#how" class="btn btn-ghost"><span>So funktioniert's</span></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1621,6 +1670,8 @@ if(!isTouch && !reduce){
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
   var ZOOM_DIST = 2.8, ZOOM_PITCH = 0.44;
+  var globeHero = document.getElementById('hero');
+  var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
 
   /* ── sphere mesh ── */
   function buildSphere(slices, stacks){
@@ -1773,26 +1824,37 @@ if(!isTouch && !reduce){
   }
 
   function draw(){
-    /* ab ~60px Scroll: Auto-Rotation parken und sanft auf DACH zoomen */
-    var zoomed = window.scrollY > 60;
-    if(zoomed && !dragging){
-      var k = reduce ? 1 : 0.055;
+    /* Zoom-Fortschritt aus der Scroll-Position: die Hero-Section ist
+       (Steps + 1) × 100vh hoch, der Globus bleibt gepinnt. Während der
+       ersten Textblöcke zoomt die Kamera stetig auf die DACH-Region. */
+    var total = globeHero ? (globeHero.offsetHeight - window.innerHeight) : 0;
+    var p = 0;
+    if(!mobile && total > 0){
+      p = window.scrollY / total;
+      if(p < 0) p = 0; if(p > 1) p = 1;
+    }
+    /* Zoom läuft über die ersten ~45% der Strecke, mit smoothstep geglättet */
+    var z = (p - 0.05) / 0.40;
+    if(z < 0) z = 0; if(z > 1) z = 1;
+    z = z*z*(3 - 2*z);
+    zoomZ = z;
+    var ek = reduce ? 1 : 0.07;
+    if(z > 0.001 && !dragging){
       var dYaw = (((-HOME_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
-      yaw   += dYaw * k;
-      pitch += (ZOOM_PITCH - pitch) * k;
-      dist  += (ZOOM_DIST - dist) * k;
-    } else {
-      dist += (DIST - dist) * (reduce ? 1 : 0.05);
-      if(!dragging){
-        yaw += AUTO + velY; pitch += velP;
-        velY *= 0.94; velP *= 0.94;
-        if(Math.abs(velY) < 1e-5) velY = 0;
-        if(Math.abs(velP) < 1e-5) velP = 0;
-      }
+      yaw   += dYaw * z * ek;
+      pitch += ((0.30 + (ZOOM_PITCH - 0.30) * z) - pitch) * ek;
+    }
+    dist += ((DIST + (ZOOM_DIST - DIST) * z) - dist) * ek;
+    if(!dragging){
+      /* Auto-Rotation klingt mit dem Zoom aus und kommt beim Zurückscrollen wieder */
+      yaw += AUTO * (1 - z) + velY; pitch += velP;
+      velY *= 0.94; velP *= 0.94;
+      if(Math.abs(velY) < 1e-5) velY = 0;
+      if(Math.abs(velP) < 1e-5) velP = 0;
     }
     if(pitch >  0.9) pitch =  0.9;
     if(pitch < -0.9) pitch = -0.9;
-    globeHost.classList.toggle('zoomed', zoomed && dist < 3.4);
+    globeHero.classList.toggle('zoomed', z > 0.55);
 
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1828,7 +1890,7 @@ if(!isTouch && !reduce){
       markerEl.style.opacity = front ? 1 : 0;
       if(frameEl){
         frameEl.style.transform = pos;
-        frameEl.style.opacity = (front && zoomed) ? 1 : 0;
+        frameEl.style.opacity = (front && zoomZ > 0.55) ? 1 : 0;
       }
     }
   }
@@ -1866,7 +1928,7 @@ if(!isTouch && !reduce){
   }
   if(!isTouch && !reduce){
     window.addEventListener('mousemove', function(e){
-      if(dragging) return;
+      if(dragging || zoomZ > 0.25) return;   // Parallaxe pausiert während des DACH-Zooms
       var ny=(e.clientY/window.innerHeight)-0.5, nx=(e.clientX/window.innerWidth)-0.5;
       pitch += ((0.30 + ny*0.24) - pitch)*0.015;
       velY  += (nx*0.00035 - velY)*0.03;
