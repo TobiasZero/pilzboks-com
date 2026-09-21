@@ -1670,7 +1670,7 @@ if(!isTouch && !reduce){
 
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
-  var ZOOM_DIST = 2.3, ZOOM_PITCH = 0.62;   // deutlich näher dran + stärkere Neigung, damit DACH mittig im Frame sitzt
+  var ZOOM_DIST = 1.9, ZOOM_PITCH = 0.78;   // ganz nah dran: Kugel füllt den Frame, Neigung ~45° zentriert DACH vertikal
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
 
@@ -1800,6 +1800,14 @@ if(!isTouch && !reduce){
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.generateMipmap(gl.TEXTURE_2D);
+      /* anisotrope Filterung: hält die Textur bei schrägem Blickwinkel scharf */
+      var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
+               || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+               || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
+      if(aniso){
+        var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+        gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
+      }
       ready = true;
       canvas.style.opacity = 1;
     };
@@ -1890,11 +1898,16 @@ if(!isTouch && !reduce){
       markerEl.style.transform = pos;
       markerEl.style.opacity = front ? 1 : 0;
       if(frameEl){
-        /* Rahmen skaliert mit dem Zoom, damit er die DACH-Region auch
-           bei der Nahaufnahme noch einrahmt (~0.24 rad ≈ Ausdehnung N-S) */
-        var fs = (f * 0.24 / wClip * w) / 110;
-        if(fs < 0.7) fs = 0.7; if(fs > 2.4) fs = 2.4;
-        frameEl.style.transform = pos + ' scale(' + fs.toFixed(2) + ')';
+        /* Rahmengröße direkt in px setzen (statt CSS-scale) — bleibt
+           bei jedem Zoom-Level gestochen scharf. ~0.16 rad ≈ DACH N-S */
+        var fpx = Math.round(f * 0.16 / wClip * w);
+        if(fpx < 90) fpx = 90; if(fpx > w) fpx = w;
+        if(frameEl._w !== fpx){
+          frameEl._w = fpx;
+          frameEl.style.width  = fpx + 'px';
+          frameEl.style.height = fpx + 'px';
+        }
+        frameEl.style.transform = pos;
         frameEl.style.opacity = (front && zoomZ > 0.55) ? 1 : 0;
       }
     }
