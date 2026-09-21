@@ -1669,7 +1669,7 @@ if(!isTouch && !reduce){
 
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
-  var ZOOM_DIST = 2.8, ZOOM_PITCH = 0.44;
+  var ZOOM_DIST = 2.3, ZOOM_PITCH = 0.62;   // deutlich näher dran + stärkere Neigung, damit DACH mittig im Frame sitzt
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
 
@@ -1889,7 +1889,11 @@ if(!isTouch && !reduce){
       markerEl.style.transform = pos;
       markerEl.style.opacity = front ? 1 : 0;
       if(frameEl){
-        frameEl.style.transform = pos;
+        /* Rahmen skaliert mit dem Zoom, damit er die DACH-Region auch
+           bei der Nahaufnahme noch einrahmt (~0.24 rad ≈ Ausdehnung N-S) */
+        var fs = (f * 0.24 / wClip * w) / 110;
+        if(fs < 0.7) fs = 0.7; if(fs > 2.4) fs = 2.4;
+        frameEl.style.transform = pos + ' scale(' + fs.toFixed(2) + ')';
         frameEl.style.opacity = (front && zoomZ > 0.55) ? 1 : 0;
       }
     }
