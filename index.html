@@ -2030,7 +2030,7 @@ function startGlobe(){
     zoomZ = z;
     if(!dragging){
       /* Auto-Rotation klingt mit dem Zoom aus und kommt beim Zurückscrollen wieder */
-      yaw += (reduce ? 0 : AUTO) * (1 - z) * frameK + velY; pitch += velP;
+      yaw += (reduce ? 0 : AUTO) * (1 - z) + velY; pitch += velP;
       velY *= 0.94; velP *= 0.94;
       if(Math.abs(velY) < 1e-5) velY = 0;
       if(Math.abs(velP) < 1e-5) velP = 0;
@@ -2134,7 +2134,6 @@ function startGlobe(){
       if(settled && !active && idleFrames >= 45){
         /* Standbild — nichts zu tun */
       } else {
-        frameK = lastDraw ? Math.min(4, (now - lastDraw) / 16.667) : 1;
         if(active) idleFrames = 0; else idleFrames++;
         draw();
         if(active && lastT && now - readyAt > 3000) adapt(now - lastT);
