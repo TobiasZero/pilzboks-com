@@ -1711,7 +1711,7 @@ function startGlobe(){
   var ZOOM_DIST = 1.35, ZOOM_PITCH = 0.88;   // User-Einstellung: sehr nah an der DACH-Region
   var globeHero = document.getElementById('hero');
   var zoomZ = 0, lastRad = -1, lastLO = -1, zoomYaw = null, lastGO = -1;
-  var frameK = 1, raf = 0, lastDraw = 0, lastT = 0, slow = [], dprCap = 2;
+  var frameK = 1, readyAt = Infinity, raf = 0, lastDraw = 0, lastT = 0, slow = [], dprCap = 2;
   var globeWrap = canvas.parentElement;
   var labelsEl = document.querySelector('.globe-labels');
   var pinTrack = document.querySelector('.hero-pin-track');   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
@@ -1945,7 +1945,7 @@ function startGlobe(){
       function(img){
         uploadTex(img);
         if(img.close) img.close();
-        ready = true;
+        ready = true; readyAt = performance.now();
         canvas.style.opacity = 1;
         if(mobile) return;
         var later = function(){
@@ -2121,8 +2121,7 @@ function startGlobe(){
   var lastSY = -1, idleFrames = 0;
   /* Render-Schleife:
      - läuft nur, solange der Hero sichtbar und der Tab aktiv ist
-     - Scrollen/Ziehen: volle Bildrate; reine Auto-Rotation: ~30 fps
-       (0,05°/Frame — sieht identisch aus, halbiert die GPU-Last)
+     - volle Bildrate
      - Standbild bei vollem Zoom ohne Bewegung
      - schwache GPU (anhaltend < 40 fps beim Scrollen) → Auflösung stufenweise runter */
   function loop(now){
@@ -2134,13 +2133,11 @@ function startGlobe(){
       var settled = zoomZ >= 0.999 && !dragging && !velY && !velP;
       if(settled && !active && idleFrames >= 45){
         /* Standbild — nichts zu tun */
-      } else if(!active && now - lastDraw < 31){
-        /* Auto-Rotation gedrosselt */
       } else {
         frameK = lastDraw ? Math.min(4, (now - lastDraw) / 16.667) : 1;
         if(active) idleFrames = 0; else idleFrames++;
         draw();
-        if(active && lastT) adapt(now - lastT);
+        if(active && lastT && now - readyAt > 3000) adapt(now - lastT);
         lastDraw = now;
       }
       lastSY = sy;
@@ -2152,6 +2149,7 @@ function startGlobe(){
   function kick(){ if(!raf && !reduce){ lastT = 0; lastDraw = 0; raf = requestAnimationFrame(loop); } }
   function adapt(dt){
     if(dprCap <= 1 || (window.devicePixelRatio || 1) <= 1) return;
+    if(dt > 100) return;   // einzelne Hänger (Tab-Wechsel, GC) nicht werten
     slow.push(dt);
     if(slow.length < 90) return;
     slow.sort(function(a,b){ return a-b; });
