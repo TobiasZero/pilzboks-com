@@ -1989,8 +1989,10 @@ if(!isTouch && !reduce){
       if(p < 0) p = 0; if(p > 1) p = 1;
       if(p > 0.02) loadHD();   /* Zoom beginnt → HD-Textur sofort nachladen */
     }
-    /* Zoom läuft über die mittlere Strecke des einen Swipes, smoothstep-geglättet */
-    var z = (p - 0.08) / 0.62;
+    /* Zoom läuft über fast den gesamten Scroll-Weg: links und rechts sind
+       gleichmäßig in Bewegung und kommen gemeinsam ans Ende — danach
+       scrollen beide Seiten synchron weiter (kein Stehenbleiben des Globus) */
+    var z = (p - 0.02) / 0.90;
     if(z < 0) z = 0; if(z > 1) z = 1;
     z = z*z*(3 - 2*z);
     zoomZ = z;
