@@ -1694,6 +1694,7 @@ if(!isTouch && !reduce){
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
   var ZOOM_DIST = 1.7, ZOOM_PITCH = 0.88;   // ganz nah dran, Neigung ~50°: DACH-Mitte sitzt im Zentrum des Frames
+  if(sv && isFinite(sv.zoom)) ZOOM_DIST = sv.zoom;   // Zoom-Feinjustage aus dem Ring-Editor
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
   var editMode = /ringeditor/i.test(location.hash || '');   // Ring-Editor-Modus
@@ -2008,21 +2009,27 @@ if(!isTouch && !reduce){
       'font:13px/1.5 "Space Grotesk",sans-serif;color:#e8f5ec;box-shadow:0 12px 40px rgba(0,0,0,0.5)';
     panel.innerHTML =
       '<div style="font-weight:600;color:#4ade80;margin-bottom:6px">DACH-Rahmen Editor</div>' +
-      '<div style="opacity:0.75;margin-bottom:8px">Globus so drehen, dass die gewünschte Rahmen-Mitte in der Bildmitte liegt, dann Zentrum setzen. Danach Radius regeln.</div>' +
+      '<div style="opacity:0.75;margin-bottom:8px">Globus so drehen, dass die gewünschte Rahmen-Mitte in der Bildmitte liegt, dann Zentrum setzen. Danach Radius und Zoom regeln.</div>' +
       '<button id="rf-center" style="width:100%;margin-bottom:8px;padding:8px;background:#4ade80;border:0;border-radius:8px;font-weight:600;cursor:pointer">Zentrum hier setzen</button>' +
       '<label style="display:block;margin-bottom:2px">Radius: <b id="rf-radval"></b>°</label>' +
       '<input id="rf-rad" type="range" min="3" max="14" step="0.1" style="width:100%;margin-bottom:8px">' +
+      '<label style="display:block;margin-bottom:2px">Zoom (kleiner = näher): <b id="rf-zoomval"></b></label>' +
+      '<input id="rf-zoom" type="range" min="1.4" max="3.2" step="0.05" style="width:100%;margin-bottom:8px">' +
       '<div id="rf-read" style="font-family:monospace;font-size:11px;opacity:0.8;margin-bottom:8px;word-break:break-all"></div>' +
       '<button id="rf-save" style="width:100%;padding:8px;background:transparent;border:1px solid #4ade80;color:#4ade80;border-radius:8px;font-weight:600;cursor:pointer">Übernehmen (speichern)</button>';
     document.body.appendChild(panel);
     var radEl = panel.querySelector('#rf-rad'), radVal = panel.querySelector('#rf-radval'),
+        zoomEl = panel.querySelector('#rf-zoom'), zoomVal = panel.querySelector('#rf-zoomval'),
         readEl = panel.querySelector('#rf-read'), saveBtn = panel.querySelector('#rf-save');
     function rfRead(){
       radVal.textContent = (F_RAD*180/Math.PI).toFixed(1);
-      readEl.textContent = 'LAT ' + (F_LAT*180/Math.PI).toFixed(2) + ' · LON ' + (F_LON*180/Math.PI).toFixed(2) + ' · RAD ' + F_RAD.toFixed(3);
+      zoomVal.textContent = ZOOM_DIST.toFixed(2);
+      readEl.textContent = 'LAT ' + (F_LAT*180/Math.PI).toFixed(2) + ' · LON ' + (F_LON*180/Math.PI).toFixed(2) + ' · RAD ' + F_RAD.toFixed(3) + ' · ZOOM ' + ZOOM_DIST.toFixed(2);
     }
     radEl.value = (F_RAD*180/Math.PI).toFixed(1);
     radEl.addEventListener('input', function(){ F_RAD = (+radEl.value)*Math.PI/180; rfRead(); });
+    zoomEl.value = ZOOM_DIST.toFixed(2);
+    zoomEl.addEventListener('input', function(){ ZOOM_DIST = +zoomEl.value; rfRead(); });
     panel.querySelector('#rf-center').addEventListener('click', function(){
       /* Punkt, der der Kamera aktuell zugewandt ist, wird Rahmen-Mitte */
       F_LON = -yaw; F_LAT = pitch;
@@ -2032,7 +2039,7 @@ if(!isTouch && !reduce){
     });
     saveBtn.addEventListener('click', function(){
       try{
-        localStorage.setItem('dachFrame', JSON.stringify({lat:F_LAT*180/Math.PI, lon:F_LON*180/Math.PI, rad:F_RAD}));
+        localStorage.setItem('dachFrame', JSON.stringify({lat:F_LAT*180/Math.PI, lon:F_LON*180/Math.PI, rad:F_RAD, zoom:ZOOM_DIST}));
         saveBtn.textContent = 'Gespeichert ✓ — gilt ab jetzt auf dieser Seite';
       }catch(e){ saveBtn.textContent = 'Speichern fehlgeschlagen'; }
     });
