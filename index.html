@@ -1153,7 +1153,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
     <div class="hero-step" data-reveal>
       <figure class="hero-step-media">
-        <img src="container-hof.png" alt="Pilzanbau-Container mit grüner Beleuchtung auf einem Biohof in den Alpen" loading="lazy">
+        <img src="container-hof.webp" alt="Pilzanbau-Container mit grüner Beleuchtung auf einem Biohof in den Alpen" loading="lazy">
       </figure>
       <p class="hero-eyebrow"><span class="pulse-dot"></span>Unsere Heimat</p>
       <h2 class="hero-step-title">Mitten in der <em>DACH-Region</em></h2>
@@ -1860,22 +1860,49 @@ if(!isTouch && !reduce){
     dirty = true;
   }
 
+  /* Bild async im Hintergrund-Thread dekodieren (createImageBitmap) —
+     hält den Main-Thread frei (PageSpeed: Total Blocking Time) */
+  function loadImg(url, cb, errCb){
+    if(window.fetch && window.createImageBitmap){
+      fetch(url).then(function(r){ return r.blob(); })
+        .then(function(b){ return createImageBitmap(b); })
+        .then(function(bmp){ cb(bmp); })
+        .catch(function(){
+          var im = new Image();
+          im.onload = function(){ cb(im); };
+          im.onerror = function(){ if(errCb) errCb(); };
+          im.src = url;
+        });
+    } else {
+      var im = new Image();
+      im.onload = function(){ cb(im); };
+      im.onerror = function(){ if(errCb) errCb(); };
+      im.src = url;
+    }
+  }
+
+  var hdStarted = false;
+  function loadHD(){
+    /* HD-Textur (16k) erst beim ersten Scroll Richtung Zoom nachladen —
+     blockiert so nicht den Seitenstart. Mobile bleibt bei 4k. */
+    if(hdStarted || mobile || reduce) return;
+    hdStarted = true;
+    loadImg('earth-hd.webp', function(hd){ uploadTex(hd); });
+  }
+
   function loadTexture(){
-    var img = new Image();
-    img.onload = function(){
-      uploadTex(img);
-      ready = true;
-      canvas.style.opacity = 1;
-      /* HD-Textur (16k) im Hintergrund nachladen — für tiefe Zooms scharf.
-         Mobile bleibt bei 8k (kleineres Canvas, spart Datenvolumen) */
-      if(!mobile && !reduce){
-        var hd = new Image();
-        hd.onload = function(){ uploadTex(hd); };
-        hd.src = 'earth-hd.webp';
-      }
-    };
-    img.onerror = function(){ canvas.style.opacity = 1; };
-    img.src = mobile ? 'earth-mobile.webp' : 'earth.webp';   // Mobile: 4K-Textur, lädt deutlich schneller
+    loadImg(mobile ? 'earth-mobile.webp' : 'earth.webp',   // Mobile: 4K-Textur, lädt deutlich schneller
+      function(img){
+        uploadTex(img);
+        ready = true;
+        canvas.style.opacity = 1;
+        /* Desktop: HD vorsorglich laden, sobald der Browser idle ist */
+        if(!mobile && !reduce){
+          if('requestIdleCallback' in window) requestIdleCallback(loadHD, {timeout: 4000});
+          else setTimeout(loadHD, 3000);
+        }
+      },
+      function(){ canvas.style.opacity = 1; });   /* Fehlerfall: Bereich trotzdem einblenden */
   }
 
   function sizeIt(){
@@ -1905,6 +1932,7 @@ if(!isTouch && !reduce){
     if(total > 0){   /* Zoom läuft auf Mobile genauso wie am Desktop */
       p = window.scrollY / total;
       if(p < 0) p = 0; if(p > 1) p = 1;
+      if(p > 0.02) loadHD();   /* Zoom beginnt → HD-Textur sofort nachladen */
     }
     /* Zoom läuft über die mittlere Strecke des einen Swipes, smoothstep-geglättet */
     var z = (p - 0.08) / 0.62;
