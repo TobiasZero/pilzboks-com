@@ -1891,16 +1891,15 @@ if(!isTouch && !reduce){
   }
 
   function loadTexture(){
-    loadImg(mobile ? 'earth-mobile.webp' : 'earth.webp',   // Mobile: 4K-Textur, lädt deutlich schneller
+    loadImg('earth-4k.webp',   /* 4K reicht für die Ausgangsansicht überall —
+                                   hält den ersten Render frei von Blockaden */
       function(img){
         uploadTex(img);
         ready = true;
         canvas.style.opacity = 1;
-        /* Desktop: HD vorsorglich laden, sobald der Browser idle ist */
-        if(!mobile && !reduce){
-          if('requestIdleCallback' in window) requestIdleCallback(loadHD, {timeout: 4000});
-          else setTimeout(loadHD, 3000);
-        }
+        /* HD (16K) wird NICHT automatisch geladen — erst beim ersten Scroll
+           Richtung Zoom (loadHD in draw()). So bleibt der Seitenstart frei
+           von Main-Thread-Blockaden. */
       },
       function(){ canvas.style.opacity = 1; });   /* Fehlerfall: Bereich trotzdem einblenden */
   }
