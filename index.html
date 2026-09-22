@@ -376,13 +376,14 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   text-wrap:balance;
   text-shadow:0 2px 34px rgba(5,13,7,0.95),0 0 14px rgba(5,13,7,0.8);
 }
-.hero-h1 em{font-style:normal;text-shadow:none}
-/* Marker-Highlight: sattes Grün hinter dunkler Schrift (überlebt den Word-Split) */
+.hero-h1 em{font-style:normal}
+/* gradient applied to the innermost text box so it survives the word-split */
 .hero-h1 em,.hero-h1 em .w>i{
-  background:var(--green);
-  color:#04140a;-webkit-text-fill-color:#04140a;
+  background-image:linear-gradient(120deg,var(--green-light),var(--green) 45%,var(--green-deep));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:var(--green);
 }
-.hero-h1 em .w>i{padding:0 0.12em;line-height:0.84;border-radius:2px}
 /* word mask reveal */
 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.08em}
 .w>i{
