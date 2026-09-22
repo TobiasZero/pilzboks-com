@@ -1652,10 +1652,14 @@ if(!isTouch && !reduce){
   var canvas = document.getElementById('globe-canvas');
   if(!canvas) return;
 
-  var gl = null;
+  var gl = null, gl2 = false;
   try {
-    gl = canvas.getContext('webgl', {alpha:true, antialias:true, premultipliedAlpha:false})
-      || canvas.getContext('experimental-webgl', {alpha:true, antialias:true});
+    gl = canvas.getContext('webgl2', {alpha:true, antialias:true, premultipliedAlpha:false});
+    if(gl){ gl2 = true; }
+    else {
+      gl = canvas.getContext('webgl', {alpha:true, antialias:true, premultipliedAlpha:false})
+        || canvas.getContext('experimental-webgl', {alpha:true, antialias:true});
+    }
   } catch(e){}
 
   /* ── state ── */
@@ -1827,18 +1831,31 @@ if(!isTouch && !reduce){
       src = c2;
     }
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    /* anisotrope Filterung: hält die Textur bei schrägem Blickwinkel scharf */
-    var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
-             || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
-             || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
-    if(aniso){
-      var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-      gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
+    /* Zweierpotenz-Check: WebGL1 kann NPOT-Texturen nur ohne Mipmaps/Repeat
+       darstellen — sonst gilt die Textur als „incomplete“ und wird SCHWARZ.
+       (Die 16K-WebP ist 16380 px breit, weil WebP max. 16383 px kann.) */
+    var pot = (src.width  & (src.width  - 1)) === 0 &&
+              (src.height & (src.height - 1)) === 0;
+    if(pot || gl2){
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      /* anisotrope Filterung: hält die Textur bei schrägem Blickwinkel scharf */
+      var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
+               || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+               || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
+      if(aniso){
+        var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+        gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
+      }
+    } else {
+      /* WebGL1-Fallback für NPOT: kein Mipmapping, kein Repeat */
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     }
     dirty = true;
   }
