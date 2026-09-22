@@ -71,6 +71,7 @@ button,input,textarea,a{font-family:inherit}
 /* ══ AMBIENT BACKGROUND GLOW ══ */
 .ambient{
   position:fixed;inset:0;z-index:0;pointer-events:none;
+  transform:translateZ(0);contain:strict;   /* eigene GPU-Ebene: wird beim Scrollen nie neu gemalt */
   background:
     radial-gradient(ellipse 80% 50% at 50% -10%,rgba(74,222,128,0.07),transparent 60%),
     radial-gradient(ellipse 60% 50% at 10% 40%,rgba(22,163,74,0.05),transparent 60%),
@@ -79,6 +80,7 @@ button,input,textarea,a{font-family:inherit}
 /* subtle grid texture */
 .grid-tex{
   position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  transform:translateZ(0);contain:strict;
   background-image:
     linear-gradient(rgba(74,222,128,0.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(74,222,128,0.025) 1px,transparent 1px);
@@ -89,9 +91,9 @@ button,input,textarea,a{font-family:inherit}
 
 /* ══ SCROLL PROGRESS ══ */
 #progress{
-  position:fixed;top:0;left:0;height:2px;width:0%;
+  position:fixed;top:0;left:0;height:2px;width:100%;
   background:linear-gradient(90deg,var(--green-deep),var(--green),var(--green-light));
-  z-index:200;transition:width 0.1s linear;
+  z-index:200;transform:scaleX(0);transform-origin:0 50%;will-change:transform;
   box-shadow:0 0 12px var(--green-glow);
 }
 
@@ -110,15 +112,12 @@ nav{
   padding:1.1rem var(--gut);
   height:var(--nav-h);
   transition:background 0.45s var(--ease-soft),
-             backdrop-filter 0.45s var(--ease-soft),
              border-color 0.45s var(--ease-soft),
              height 0.45s var(--ease-soft);
   border-bottom:1px solid transparent;
 }
 nav.scrolled{
-  background:rgba(5,13,7,0.78);
-  backdrop-filter:blur(18px) saturate(180%);
-  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  background:rgba(5,13,7,0.93);   /* deckend statt backdrop-blur: kein Neu-Weichzeichnen bei jedem Scroll-Frame */
   border-bottom-color:var(--border);
   height:62px;
 }
@@ -183,7 +182,7 @@ nav.scrolled .nav-logo img{height:33px}
   border-radius:2px;
 }
 .burger span:nth-child(2){width:16px}
-body.menu-open nav{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent}
+body.menu-open nav{background:transparent;border-bottom-color:transparent}
 body.menu-open .burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 body.menu-open .burger span:nth-child(2){opacity:0;width:22px}
 body.menu-open .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
@@ -191,7 +190,7 @@ body.menu-open .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45
 /* mobile overlay menu */
 #mobile-menu{
   position:fixed;inset:0;z-index:155;
-  background:rgba(5,13,7,0.98);   /* ohne backdrop-blur: glitchfrei auf Mobile-Chrome */
+  background:#050d07;   /* deckend, ohne backdrop-blur: glitchfrei auf Mobile-Chrome */
   display:flex;flex-direction:column;justify-content:center;
   padding:var(--nav-h) var(--gut) 3rem;
   opacity:0;visibility:hidden;
@@ -241,6 +240,18 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   z-index:2;
   /* WICHTIG: kein overflow:hidden — das würde den Sticky-Globus brechen */
 }
+.hero-pin-track{
+  position:absolute;top:0;left:var(--gut);right:var(--gut);
+  height:200vh;height:200svh;
+  pointer-events:none;z-index:2;
+}
+.hero-pin-track .hero-pin{pointer-events:auto}
+@media(min-width:961px){
+  .hero-steps>.hero-step:last-child{
+    justify-content:flex-start;
+    padding-top:var(--globe-top,18vh);
+  }
+}
 .hero-pin{
   position:sticky;top:0;
   height:100vh;height:100svh;
@@ -254,7 +265,6 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 .hero-steps{
   position:relative;z-index:5;
   width:50%;max-width:640px;
-  margin-top:-100vh;margin-top:-100svh;   /* Schritt 1 liegt über dem gepinnten ersten Viewport */
 }
 .hero-step{
   min-height:100vh;min-height:100svh;
@@ -284,7 +294,6 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   width:100%;height:auto;display:block;
   aspect-ratio:3/2;object-fit:cover;
 }
-#hero.zoomed .scroll-cue{opacity:0 !important;transition:opacity 0.4s}
 /* soft atmosphere behind the earth */
 .hero-globe::before{
   content:'';position:absolute;z-index:0;
@@ -294,15 +303,14 @@ body.menu-open .mm-foot{opacity:1;transform:none}
     rgba(74,222,128,0.09) 45%,
     rgba(74,222,128,0.03) 62%,
     transparent 74%);
-  filter:blur(6px);pointer-events:none;
+  pointer-events:none;
 }
 #globe-canvas{
   display:block;position:relative;z-index:1;
   touch-action:pan-y;
-  border-radius:0;transition:border-radius 0.7s var(--ease-soft);
+  border-radius:0;
 }
 /* im DACH-Zoom füllt die Erde die Fläche — dann runde Ecken wie die Karten */
-#hero.zoomed #globe-canvas{border-radius:28px}
 
 .hero-content{
   position:relative;z-index:5;
@@ -320,7 +328,6 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   padding:0.45rem 1rem;
   border:1px solid rgba(74,222,128,0.3);border-radius:100px;
   background:rgba(74,222,128,0.1);
-  backdrop-filter:blur(8px);
 }
 .pulse-dot{
   width:6px;height:6px;border-radius:50%;background:var(--green);
@@ -355,10 +362,9 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 /* pulsierender Rahmen um die DACH-Region (erscheint beim Reinzoomen) */
 .globe-frame{
   position:absolute;left:0;top:0;width:110px;height:110px;z-index:3;
-  pointer-events:none;opacity:0;transition:opacity 0.6s var(--ease-soft);
-  will-change:transform;
+  pointer-events:none;opacity:0;
+  will-change:transform,opacity;
 }
-#hero.zoomed .globe-frame{opacity:1}
 .globe-frame .gf-ring{
   position:absolute;inset:0;border-radius:50%;
   border:1.5px solid rgba(74,222,128,0.7);
@@ -448,8 +454,7 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 .btn:hover .btn-arrow{transform:translateX(5px)}
 
 /* peripheral labels */
-.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3;transition:opacity 0.5s var(--ease-soft)}
-#hero.zoomed .globe-labels{opacity:0}
+.globe-labels{position:absolute;inset:0;pointer-events:none;z-index:3}
 .hero-globe .label{font-size:0.64rem}
 .label{
   position:absolute;
@@ -477,26 +482,6 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 .l5{top:48%;right:0;animation-delay:1.7s,1.4s}
 .l6{top:74%;right:2%;animation-delay:1.85s,2.2s}
 
-/* scroll cue */
-.scroll-cue{
-  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-  z-index:4;display:flex;flex-direction:column;align-items:center;gap:0.6rem;
-  opacity:0;animation:labelIn 1s var(--ease) 2.1s forwards;
-}
-.scroll-cue span{
-  font-size:0.58rem;letter-spacing:0.22em;text-transform:uppercase;
-  color:var(--text-dim);
-}
-.scroll-line{
-  width:1px;height:38px;background:linear-gradient(var(--green),transparent);
-  position:relative;overflow:hidden;
-}
-.scroll-line::after{
-  content:'';position:absolute;top:-38px;left:0;width:1px;height:38px;
-  background:linear-gradient(transparent,var(--green-light));
-  animation:scrollDot 2.2s var(--ease-soft) infinite;
-}
-@keyframes scrollDot{0%{top:-38px}100%{top:38px}}
 
 /* ══ MARQUEE TICKER ══ */
 .ticker{
@@ -694,7 +679,6 @@ section{position:relative;z-index:2}
   background:var(--bg-card);
   border:1px solid var(--border);border-radius:4px;
   transition:transform 0.55s var(--ease),border-color 0.45s,box-shadow 0.55s;
-  backdrop-filter:blur(6px);
 }
 .mushroom-card:hover{
   transform:translateY(-8px);
@@ -781,7 +765,6 @@ section{position:relative;z-index:2}
   border:1px solid var(--border);border-radius:4px;
   background:var(--bg-card);
   transition:transform 0.55s var(--ease),border-color 0.45s,background 0.45s,box-shadow 0.55s;
-  backdrop-filter:blur(6px);
 }
 .member:hover{
   transform:translateY(-5px);
@@ -919,6 +902,8 @@ footer{
   gap:1.3rem;flex-wrap:wrap;
   background:rgba(5,13,7,0.7);
 }
+/* Platz für den fixierten Nach-oben-Button, damit er das Badge nicht überdeckt */
+@media(min-width:641px){footer{padding-right:calc(var(--gut) + 64px)}}
 .footer-logo img{
   height:30px;width:auto;
   filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
@@ -977,7 +962,7 @@ footer{
   position:fixed;right:clamp(1rem,3vw,2rem);bottom:clamp(1rem,3vw,2rem);
   width:46px;height:46px;border-radius:50%;z-index:140;
   border:1px solid var(--border-bright);
-  background:rgba(9,20,16,0.85);backdrop-filter:blur(12px);
+  background:rgba(9,20,16,0.92);
   color:var(--green);cursor:pointer;
   display:grid;place-items:center;font-size:1rem;
   opacity:0;visibility:hidden;transform:translateY(14px);
@@ -998,6 +983,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .mushroom-grid,.benefits-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:960px){
+  .hero-pin-track{height:100%}
   /* Mobile Scrollytelling: Globus gepinnt im Vollbild,
      Text scrollt mit Abdunklungs-Scrim darüber — Zoom läuft wie am Desktop */
   .hero-globe{
@@ -1027,11 +1013,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   #hero{padding:0 var(--gut)}
   /* Mobile: Badge oben ausblenden (User-Wunsch) */
   .hero-step:first-child .hero-eyebrow{display:none}
-  /* backdrop-filter glitcht auf Mobile-Chrome (weiße Flächen) und bremst
-     beim schnellen Scrollen — auf Mobile komplett durch deckende Flächen ersetzen */
-  nav.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(5,13,7,0.94)}
-  .hero-eyebrow{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(9,20,16,0.85)}
-  .globe-frame .gf-label{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(5,13,7,0.85)}
+  .hero-eyebrow{background:rgba(9,20,16,0.85)}
 }
 @media(max-width:860px){
   .nav-links{display:none}
@@ -1043,7 +1025,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .stats-bar{grid-template-columns:1fr 1fr}
   .stat:nth-child(2n){border-right:none}
   .stat:nth-child(n+3){border-top:1px solid var(--border)}
-  .scroll-cue{display:none}
 }
 @media(max-width:640px){
   .steps{grid-template-columns:1fr}
@@ -1078,7 +1059,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   }
   [data-reveal]{opacity:1 !important;transform:none !important}
   .w>i{transform:none !important}
-  .label,.scroll-cue{opacity:1 !important}
+  .label{opacity:1 !important}
   .section-divider{transform:scaleX(1) !important}
   #cursor-glow{display:none}
 }
@@ -1128,6 +1109,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <!-- ═══ HERO (Scrollytelling: Globus sticky rechts, Text scrollt links) ═══ -->
 <main>
 <section id="hero">
+  <div class="hero-pin-track">
   <div class="hero-pin">
     <div class="hero-globe">
       <canvas id="globe-canvas"></canvas>
@@ -1149,11 +1131,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
         <div class="label float right l6">Pilzanbau</div>
       </div>
     </div>
-
-    <div class="scroll-cue">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
+  </div>
   </div>
 
   <div class="hero-steps">
@@ -1169,7 +1147,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       </div>
     </div>
 
-    <div class="hero-step" data-reveal>
+    <div class="hero-step">
       <figure class="hero-step-media">
         <img src="container-hof.webp" alt="Pilzanbau-Container mit grüner Beleuchtung auf einem Biohof in den Alpen" width="1200" height="800" loading="lazy" decoding="async">
       </figure>
@@ -1533,7 +1511,7 @@ var mobile = window.innerWidth < 860;
   function onScroll(){
     var y = window.scrollY || window.pageYOffset;
     var max = document.documentElement.scrollHeight - window.innerHeight;
-    if(bar) bar.style.width = (max > 0 ? (y/max*100) : 0) + '%';
+    if(bar) bar.style.transform = 'scaleX(' + (max > 0 ? (y/max) : 0).toFixed(4) + ')';
     if(nav) nav.classList.toggle('scrolled', y > 40);
     if(top) top.classList.toggle('show', y > 600);
     ticking = false;
@@ -1651,16 +1629,20 @@ if(!isTouch && !reduce){
 if(!isTouch && !reduce){
   var glow = document.getElementById('cursor-glow');
   var gx = 0, gy = 0, cx = 0, cy = 0, gactive = false;
-  document.addEventListener('mousemove', function(e){
-    gx = e.clientX; gy = e.clientY;
-    if(!gactive){ gactive = true; glow.style.opacity = 1; }
-  });
-  (function loop(){
+  var grun = false;
+  function gloop(){
     cx += (gx - cx) * 0.09;
     cy += (gy - cy) * 0.09;
-    glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
-    requestAnimationFrame(loop);
-  })();
+    glow.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0) translate(-50%,-50%)';
+    /* Schleife nur solange die Maus sich bewegt — im Ruhezustand kein Dauer-Rendern */
+    if(Math.abs(gx - cx) + Math.abs(gy - cy) > 0.5) requestAnimationFrame(gloop);
+    else grun = false;
+  }
+  document.addEventListener('mousemove', function(e){
+    gx = e.clientX; gy = e.clientY;
+    if(!gactive){ gactive = true; cx = gx; cy = gy; glow.style.opacity = 1; }
+    if(!grun){ grun = true; requestAnimationFrame(gloop); }
+  }, {passive:true});
 }
 
 /* ─── GLOBE ─────────────────────────────────────────
@@ -1670,17 +1652,19 @@ if(!isTouch && !reduce){
    Rendered with plain WebGL — no library.
    Convention: +x east, +y north, +z toward camera.
 ─────────────────────────────────────────────────── */
-(function(){
+function startGlobe(){
   var canvas = document.getElementById('globe-canvas');
   if(!canvas) return;
 
   var gl = null, gl2 = false;
   try {
-    gl = canvas.getContext('webgl2', {alpha:true, antialias:true, premultipliedAlpha:false});
+    /* MSAA nur bei normaler Pixeldichte — auf Retina/HiDPI unsichtbar, kostet aber GPU */
+    var aa = (window.devicePixelRatio || 1) < 1.5;
+    gl = canvas.getContext('webgl2', {alpha:true, antialias:aa, premultipliedAlpha:false});
     if(gl){ gl2 = true; }
     else {
-      gl = canvas.getContext('webgl', {alpha:true, antialias:true, premultipliedAlpha:false})
-        || canvas.getContext('experimental-webgl', {alpha:true, antialias:true});
+      gl = canvas.getContext('webgl', {alpha:true, antialias:aa, premultipliedAlpha:false})
+        || canvas.getContext('experimental-webgl', {alpha:true, antialias:aa});
     }
   } catch(e){}
 
@@ -1713,7 +1697,10 @@ if(!isTouch && !reduce){
   var dist = DIST;
   var ZOOM_DIST = 1.35, ZOOM_PITCH = 0.88;   // User-Einstellung: sehr nah an der DACH-Region
   var globeHero = document.getElementById('hero');
-  var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
+  var zoomZ = 0, lastRad = -1, lastLO = -1, zoomYaw = null, lastGO = -1;
+  var globeWrap = canvas.parentElement;
+  var labelsEl = document.querySelector('.globe-labels');
+  var pinTrack = document.querySelector('.hero-pin-track');   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
   var dirty = false;   // erzwingt einen Neu-Render (Resize, neue Textur)
 
   /* ── sphere mesh ── */
@@ -1957,6 +1944,14 @@ if(!isTouch && !reduce){
       function(){ canvas.style.opacity = 1; });   /* Fehlerfall: Bereich trotzdem einblenden */
   }
 
+  /* Oberkante des Globus-Quadrats → CSS-Variable, damit die Bildkarte
+     links am Ende des Zooms exakt auf derselben Höhe steht */
+  function setGlobeTop(){
+    var pin = canvas.closest('.hero-pin');
+    if(!pin) return;
+    var t = Math.round((pin.clientHeight - box) / 2);
+    globeHero.style.setProperty('--globe-top', t + 'px');
+  }
   function sizeIt(){
     mobile = window.innerWidth < 960;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1974,6 +1969,7 @@ if(!isTouch && !reduce){
     if(canvas.width > 0 && Math.abs(canvas.width - pw) < 40 && Math.abs(canvas.height - ph) < 40){
       canvas.style.width  = w + 'px';
       canvas.style.height = h + 'px';
+      setGlobeTop();
       return;
     }
     canvas.width  = pw;
@@ -1981,6 +1977,7 @@ if(!isTouch && !reduce){
     canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
     if(gl) gl.viewport(0, 0, canvas.width, canvas.height);
+    setGlobeTop();
     dirty = true;
   }
 
@@ -1988,46 +1985,67 @@ if(!isTouch && !reduce){
     /* Zoom-Fortschritt aus der Scroll-Position: die Hero-Section ist
        (Steps + 1) × 100vh hoch, der Globus bleibt gepinnt. Während der
        ersten Textblöcke zoomt die Kamera stetig auf die DACH-Region. */
-    var total = globeHero ? (globeHero.offsetHeight - window.innerHeight) : 0;
+    /* Desktop: Pin-Strecke = .hero-pin-track (200vh) → Zoom endet genau dann,
+       wenn die Bildkarte links bündig mit dem Globus-Quadrat steht und der
+       Pin sich löst; ab da scrollen beide gemeinsam weiter. */
+    var trackH = (pinTrack && pinTrack.offsetHeight > window.innerHeight) ? pinTrack.offsetHeight : globeHero.offsetHeight;
+    var total = globeHero ? (trackH - window.innerHeight) : 0;
     var p = 0;
     if(total > 0){   /* Zoom läuft auf Mobile genauso wie am Desktop */
-      p = window.scrollY / total;
+      p = (window.scrollY - globeHero.offsetTop) / total;
       if(p < 0) p = 0; if(p > 1) p = 1;
       if(p > 0.02) loadHD();   /* Zoom beginnt → HD-Textur sofort nachladen */
     }
     /* Zoom läuft über fast den gesamten Scroll-Weg: links und rechts sind
        gleichmäßig in Bewegung und kommen gemeinsam ans Ende — danach
        scrollen beide Seiten synchron weiter (kein Stehenbleiben des Globus) */
-    var z = (p - 0.02) / 0.90;
-    if(z < 0) z = 0; if(z > 1) z = 1;
+    /* Zoom hängt 1:1 an der Scroll-Position (kein Nachziehen/Easing):
+       links scrollt das Bild herein, rechts zoomt der Globus — beide
+       erreichen ihre Endposition exakt gleichzeitig (p = 1, Pin endet). */
+    var z = p;
     z = z*z*(3 - 2*z);
-    zoomZ = z;
-    if(mobile){ z = 0; zoomZ = 0; }     // Mobile: kein DACH-Zoom, Globus bleibt einfach sichtbar
-    var ek = reduce ? 1 : 0.07;
-    if(z > 0.001 && !dragging){
-      /* Zoom-Ziel folgt der Rahmen-Mitte: Kreis sitzt am Ende immer zentrisch */
-      var dYaw = (((-F_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
-      yaw   += dYaw * z * ek;
-      pitch += ((0.30 + (F_LAT - 0.30) * z) - pitch) * ek;
+    if(mobile){
+      z = 0;                            // Mobile: kein DACH-Zoom
+      /* Globus blendet aus, während die Bildkarte hereinscrollt — sonst
+         schaut er unter der Karte hervor */
+      var go = 1 - Math.min(1, Math.max(0, (p - 0.3) / 0.35));
+      go = Math.round(go * 100) / 100;
+      if(go !== lastGO){ lastGO = go; globeWrap.style.opacity = go; }
     }
-    dist += ((DIST + (ZOOM_DIST - DIST) * z) - dist) * ek;
+    else if(lastGO !== 1){ lastGO = 1; globeWrap.style.opacity = 1; }
+    zoomZ = z;
     if(!dragging){
       /* Auto-Rotation klingt mit dem Zoom aus und kommt beim Zurückscrollen wieder */
-      yaw += AUTO * (1 - z) + velY; pitch += velP;
+      yaw += (reduce ? 0 : AUTO) * (1 - z) + velY; pitch += velP;
       velY *= 0.94; velP *= 0.94;
       if(Math.abs(velY) < 1e-5) velY = 0;
       if(Math.abs(velP) < 1e-5) velP = 0;
     }
     if(pitch >  0.9) pitch =  0.9;
     if(pitch < -0.9) pitch = -0.9;
-    globeHero.classList.toggle('zoomed', z > 0.55);
+    /* Kamera = freie Drehung, deterministisch Richtung Vorarlberg überblendet */
+    /* Zielwinkel beim Zoom-Start einmal festlegen (kürzester Weg) und
+       danach nicht neu wrappen — sonst springt der Globus, wenn die
+       freie Drehung die Gegenseite passiert */
+    if(z > 0){
+      if(zoomYaw === null) zoomYaw = yaw + ((((-F_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI);
+    } else zoomYaw = null;
+    var ry = z > 0 ? yaw + (zoomYaw - yaw) * z : yaw;
+    var rp = pitch + (F_LAT - pitch) * z;
+    dist = DIST + (ZOOM_DIST - DIST) * z;
+    /* Ecken, Labels und Rahmen ebenfalls direkt aus dem Scroll-Fortschritt */
+    var rad = Math.round(28 * Math.min(1, Math.max(0, (z - 0.45) / 0.35)));
+    if(rad !== lastRad){ lastRad = rad; canvas.style.borderRadius = rad + 'px'; }
+    var lo = Math.max(0, 1 - z / 0.3);
+    if(labelsEl && lo !== lastLO){ lastLO = lo; labelsEl.style.opacity = lo; }
+    if(globeHero.classList.contains('zoomed') !== (z > 0.55)) globeHero.classList.toggle('zoomed', z > 0.55);
     canvas.style.cursor = (z > 0.25) ? 'default' : (dragging ? 'grabbing' : 'grab');
 
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var proj = perspective(0.62, 1, 0.1, 100);
-    var rot  = rotMat(yaw, pitch);
+    var rot  = rotMat(ry, rp);
     gl.useProgram(prog);
     gl.uniformMatrix4fv(uMVP, false, mvp(proj, rot, dist));
     gl.uniformMatrix3fv(uRot, false, rot);
@@ -2079,7 +2097,7 @@ if(!isTouch && !reduce){
           frameEl.style.height = fpx + 'px';
         }
         frameEl.style.transform = 'translate(' + fsx.toFixed(1) + 'px,' + fsy.toFixed(1) + 'px) translate(-50%,-50%)';
-        frameEl.style.opacity = (fvz > 0.12 && F_RAD > 0.005 && zoomZ > 0.55) ? 1 : 0;   // Radius ~0 = Rahmen aus
+        frameEl.style.opacity = (fvz > 0.12 && F_RAD > 0.005) ? Math.min(1, Math.max(0, (zoomZ - 0.6) / 0.25)).toFixed(3) : 0;   // Radius ~0 = Rahmen aus
       }
     }
   }
@@ -2153,8 +2171,18 @@ if(!isTouch && !reduce){
     }, {passive:true});
   }
   else loop();
+}
+/* WebGL-Kontext + Shader erst nach dem ersten Paint anlegen — hält den
+   Seitenstart frei (Total Blocking Time); Globus blendet ohnehin weich ein */
+(function(){
+  var go = function(){ startGlobe(); };
+  var kick = function(){
+    if('requestIdleCallback' in window) requestIdleCallback(go, {timeout: 700});
+    else setTimeout(go, 200);
+  };
+  if(document.readyState === 'complete') kick();
+  else window.addEventListener('load', kick, {once:true});
 })();
-
 
 /* ─── FORM ─────────────────────────────────────── */
 (function(){
