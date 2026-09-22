@@ -977,6 +977,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   outline:2px solid var(--green);outline-offset:3px;border-radius:2px;
 }
 
+/* Endlos-Animationen außerhalb des Viewports anhalten (spart Compositing/GPU) */
+.anim-off *,.anim-off *::before,.anim-off *::after{animation-play-state:paused !important}
+
 /* ══ RESPONSIVE ══ */
 @media(max-width:1000px){
   .steps{grid-template-columns:1fr 1fr}
@@ -1576,6 +1579,16 @@ var mobile = window.innerWidth < 860;
   for(var i=0;i<els.length;i++) io.observe(els[i]);
 })();
 
+/* ─── OFFSCREEN-ANIMATIONEN PAUSIEREN ──────────── */
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ en.target.classList.toggle('anim-off', !en.isIntersecting); });
+  }, {rootMargin: '100px 0px'});
+  var els = document.querySelectorAll('main > section, main > div, footer');
+  for(var i=0;i<els.length;i++) io.observe(els[i]);
+})();
+
 /* ─── COUNT-UP STATS ───────────────────────────── */
 (function(){
   var nums = document.querySelectorAll('[data-count]');
@@ -1698,6 +1711,7 @@ function startGlobe(){
   var ZOOM_DIST = 1.35, ZOOM_PITCH = 0.88;   // User-Einstellung: sehr nah an der DACH-Region
   var globeHero = document.getElementById('hero');
   var zoomZ = 0, lastRad = -1, lastLO = -1, zoomYaw = null, lastGO = -1;
+  var frameK = 1, raf = 0, lastDraw = 0, lastT = 0, slow = [], dprCap = 2;
   var globeWrap = canvas.parentElement;
   var labelsEl = document.querySelector('.globe-labels');
   var pinTrack = document.querySelector('.hero-pin-track');   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
@@ -1954,7 +1968,7 @@ function startGlobe(){
   }
   function sizeIt(){
     mobile = window.innerWidth < 960;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     if(mobile){
       box = Math.min(window.innerWidth * 0.92, Math.max(240, window.innerHeight * 0.42), 420);
     } else {
@@ -2016,7 +2030,7 @@ function startGlobe(){
     zoomZ = z;
     if(!dragging){
       /* Auto-Rotation klingt mit dem Zoom aus und kommt beim Zurückscrollen wieder */
-      yaw += (reduce ? 0 : AUTO) * (1 - z) + velY; pitch += velP;
+      yaw += (reduce ? 0 : AUTO) * (1 - z) * frameK + velY; pitch += velP;
       velY *= 0.94; velP *= 0.94;
       if(Math.abs(velY) < 1e-5) velY = 0;
       if(Math.abs(velP) < 1e-5) velP = 0;
@@ -2037,7 +2051,7 @@ function startGlobe(){
     var rad = Math.round(28 * Math.min(1, Math.max(0, (z - 0.45) / 0.35)));
     if(rad !== lastRad){ lastRad = rad; canvas.style.borderRadius = rad + 'px'; }
     var lo = Math.max(0, 1 - z / 0.3);
-    if(labelsEl && lo !== lastLO){ lastLO = lo; labelsEl.style.opacity = lo; }
+    if(labelsEl && lo !== lastLO){ lastLO = lo; labelsEl.style.opacity = lo; labelsEl.style.visibility = lo > 0 ? '' : 'hidden'; }
     if(globeHero.classList.contains('zoomed') !== (z > 0.55)) globeHero.classList.toggle('zoomed', z > 0.55);
     canvas.style.cursor = (z > 0.25) ? 'default' : (dragging ? 'grabbing' : 'grab');
 
@@ -2105,19 +2119,49 @@ function startGlobe(){
   /* Bei vollem DACH-Zoom und ruhigem Scroll wird der Globus zum Standbild:
      nach ~45 Frames (Easing zu Ende) wird nicht mehr gerendert — spart GPU/Akku */
   var lastSY = -1, idleFrames = 0;
-  function loop(){
-    if(visible && ready){
+  /* Render-Schleife:
+     - läuft nur, solange der Hero sichtbar und der Tab aktiv ist
+     - Scrollen/Ziehen: volle Bildrate; reine Auto-Rotation: ~30 fps
+       (0,05°/Frame — sieht identisch aus, halbiert die GPU-Last)
+     - Standbild bei vollem Zoom ohne Bewegung
+     - schwache GPU (anhaltend < 40 fps beim Scrollen) → Auflösung stufenweise runter */
+  function loop(now){
+    raf = 0;
+    if(!visible || document.hidden) return;          // pausiert — Observer startet neu
+    if(ready){
+      var sy = window.scrollY;
+      var active = sy !== lastSY || dragging || velY || velP || dirty;
       var settled = zoomZ >= 0.999 && !dragging && !velY && !velP;
-      if(settled && window.scrollY === lastSY && !dirty && idleFrames >= 45){
+      if(settled && !active && idleFrames >= 45){
         /* Standbild — nichts zu tun */
+      } else if(!active && now - lastDraw < 31){
+        /* Auto-Rotation gedrosselt */
       } else {
-        if(window.scrollY !== lastSY || dirty) idleFrames = 0; else idleFrames++;
+        frameK = lastDraw ? Math.min(4, (now - lastDraw) / 16.667) : 1;
+        if(active) idleFrames = 0; else idleFrames++;
         draw();
+        if(active && lastT) adapt(now - lastT);
+        lastDraw = now;
       }
-      lastSY = window.scrollY;
+      lastSY = sy;
       dirty = false;
     }
-    requestAnimationFrame(loop);
+    lastT = now;
+    raf = requestAnimationFrame(loop);
+  }
+  function kick(){ if(!raf && !reduce){ lastT = 0; lastDraw = 0; raf = requestAnimationFrame(loop); } }
+  function adapt(dt){
+    if(dprCap <= 1 || (window.devicePixelRatio || 1) <= 1) return;
+    slow.push(dt);
+    if(slow.length < 90) return;
+    slow.sort(function(a,b){ return a-b; });
+    var med = slow[slow.length >> 1];
+    slow = [];
+    if(med > 25){
+      dprCap = Math.max(1, Math.min(dprCap, window.devicePixelRatio || 1) - 0.25);
+      canvas.width = 0;   // Neuaufbau erzwingen
+      sizeIt();
+    }
   }
 
   /* ── drag to spin ── (gesperrt, sobald der DACH-Zoom aktiv ist) */
@@ -2153,8 +2197,11 @@ function startGlobe(){
     canvas.addEventListener('pointerleave', up);
   }
   if('IntersectionObserver' in window){
-    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },
+    new IntersectionObserver(function(en){ visible = en[0].isIntersecting; if(visible) kick(); },
       {threshold:0}).observe(document.getElementById('hero'));
+  }
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) kick(); });
+  if(false){
   }
 
   var rt;
@@ -2170,7 +2217,7 @@ function startGlobe(){
       clearTimeout(st); st = setTimeout(function(){ if(ready && visible) draw(); }, 80);
     }, {passive:true});
   }
-  else loop();
+  else kick();
 }
 /* WebGL-Kontext + Shader erst nach dem ersten Paint anlegen — hält den
    Seitenstart frei (Total Blocking Time); Globus blendet ohnehin weich ein */
