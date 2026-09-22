@@ -1931,6 +1931,7 @@ if(!isTouch && !reduce){
     if(pitch >  0.9) pitch =  0.9;
     if(pitch < -0.9) pitch = -0.9;
     globeHero.classList.toggle('zoomed', z > 0.55);
+    canvas.style.cursor = (!editMode && z > 0.25) ? 'default' : (dragging ? 'grabbing' : 'grab');
 
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -2006,8 +2007,11 @@ if(!isTouch && !reduce){
     requestAnimationFrame(loop);
   }
 
-  /* ── drag to spin ── */
-  function down(e){ dragging=true; lastX=e.clientX; lastY=e.clientY; lastT=performance.now(); canvas.style.cursor='grabbing'; }
+  /* ── drag to spin ── (gesperrt, sobald der DACH-Zoom aktiv ist) */
+  function down(e){
+    if(!editMode && zoomZ > 0.25) return;   // im Zoom gelockt
+    dragging=true; lastX=e.clientX; lastY=e.clientY; lastT=performance.now(); canvas.style.cursor='grabbing';
+  }
   function move(e){
     if(!dragging) return;
     var dx=e.clientX-lastX, dy=e.clientY-lastY;
@@ -2034,14 +2038,6 @@ if(!isTouch && !reduce){
     canvas.addEventListener('pointerup', up);
     canvas.addEventListener('pointercancel', up);
     canvas.addEventListener('pointerleave', up);
-  }
-  if(!isTouch && !reduce){
-    window.addEventListener('mousemove', function(e){
-      if(dragging || zoomZ > 0.25) return;   // Parallaxe pausiert während des DACH-Zooms
-      var ny=(e.clientY/window.innerHeight)-0.5, nx=(e.clientX/window.innerWidth)-0.5;
-      pitch += ((0.30 + ny*0.24) - pitch)*0.015;
-      velY  += (nx*0.00035 - velY)*0.03;
-    }, {passive:true});
   }
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },
