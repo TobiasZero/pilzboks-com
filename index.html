@@ -1814,35 +1814,46 @@ if(!isTouch && !reduce){
     return true;
   }
 
+  function uploadTex(img){
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);   // row 0 of the image is 90N
+    /* Geräte mit kleiner Texturgrenze (v. a. Mobile-GPUs) bekommen eine verkleinerte Kopie */
+    var src = img, maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096;
+    if(img.width > maxTex){
+      var c2 = document.createElement('canvas');
+      c2.width = maxTex; c2.height = maxTex / 2;
+      c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
+      src = c2;
+    }
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    /* anisotrope Filterung: hält die Textur bei schrägem Blickwinkel scharf */
+    var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
+             || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+             || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
+    if(aniso){
+      var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
+    }
+  }
+
   function loadTexture(){
     var img = new Image();
     img.onload = function(){
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);   // row 0 of the image is 90N
-      /* Geräte mit kleiner Texturgrenze (v. a. Mobile-GPUs) bekommen eine verkleinerte Kopie */
-      var src = img, maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096;
-      if(img.width > maxTex){
-        var c2 = document.createElement('canvas');
-        c2.width = maxTex; c2.height = maxTex / 2;
-        c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
-        src = c2;
-      }
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      /* anisotrope Filterung: hält die Textur bei schrägem Blickwinkel scharf */
-      var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
-               || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
-               || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
-      if(aniso){
-        var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-        gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
-      }
+      uploadTex(img);
       ready = true;
       canvas.style.opacity = 1;
+      /* HD-Textur (16k) im Hintergrund nachladen — für tiefe Zooms scharf.
+         Mobile bleibt bei 8k (kleineres Canvas, spart Datenvolumen) */
+      if(!mobile && !reduce){
+        var hd = new Image();
+        hd.onload = function(){ uploadTex(hd); };
+        hd.src = 'earth-hd.jpg';
+      }
     };
     img.onerror = function(){ canvas.style.opacity = 1; };
     img.src = 'earth.jpg';
@@ -1883,9 +1894,10 @@ if(!isTouch && !reduce){
     if(editMode){ z = 1; zoomZ = 1; }   // Editor: immer voller Zoom, frei drehbar
     var ek = reduce ? 1 : 0.07;
     if(z > 0.001 && !dragging && !editMode){
-      var dYaw = (((-HOME_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
+      /* Zoom-Ziel folgt der Rahmen-Mitte: Kreis sitzt am Ende immer zentrisch */
+      var dYaw = (((-F_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
       yaw   += dYaw * z * ek;
-      pitch += ((0.30 + (ZOOM_PITCH - 0.30) * z) - pitch) * ek;
+      pitch += ((0.30 + (F_LAT - 0.30) * z) - pitch) * ek;
     }
     dist += ((DIST + (ZOOM_DIST - DIST) * z) - dist) * ek;
     if(!dragging){
@@ -2010,11 +2022,12 @@ if(!isTouch && !reduce){
     panel.innerHTML =
       '<div style="font-weight:600;color:#4ade80;margin-bottom:6px">DACH-Rahmen Editor</div>' +
       '<div style="opacity:0.75;margin-bottom:8px">Globus so drehen, dass die gewünschte Rahmen-Mitte in der Bildmitte liegt, dann Zentrum setzen. Danach Radius und Zoom regeln.</div>' +
-      '<button id="rf-center" style="width:100%;margin-bottom:8px;padding:8px;background:#4ade80;border:0;border-radius:8px;font-weight:600;cursor:pointer">Zentrum hier setzen</button>' +
+      '<button id="rf-center" style="width:100%;margin-bottom:6px;padding:8px;background:#4ade80;border:0;border-radius:8px;font-weight:600;cursor:pointer">Zentrum hier setzen</button>' +
+      '<button id="rf-aim" style="width:100%;margin-bottom:8px;padding:8px;background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.4);color:#4ade80;border-radius:8px;font-weight:600;cursor:pointer">Rahmen exakt zentrieren</button>' +
       '<label style="display:block;margin-bottom:2px">Radius: <b id="rf-radval"></b>°</label>' +
       '<input id="rf-rad" type="range" min="3" max="14" step="0.1" style="width:100%;margin-bottom:8px">' +
       '<label style="display:block;margin-bottom:2px">Zoom (kleiner = näher): <b id="rf-zoomval"></b></label>' +
-      '<input id="rf-zoom" type="range" min="1.4" max="3.2" step="0.05" style="width:100%;margin-bottom:8px">' +
+      '<input id="rf-zoom" type="range" min="1.25" max="3.2" step="0.05" style="width:100%;margin-bottom:8px">' +
       '<div id="rf-read" style="font-family:monospace;font-size:11px;opacity:0.8;margin-bottom:8px;word-break:break-all"></div>' +
       '<button id="rf-save" style="width:100%;padding:8px;background:transparent;border:1px solid #4ade80;color:#4ade80;border-radius:8px;font-weight:600;cursor:pointer">Übernehmen (speichern)</button>';
     document.body.appendChild(panel);
@@ -2036,6 +2049,10 @@ if(!isTouch && !reduce){
       F_CL = Math.cos(F_LAT); F_SL = Math.sin(F_LAT);
       F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
       rfRead();
+    });
+    panel.querySelector('#rf-aim').addEventListener('click', function(){
+      /* Kamera exakt auf die Rahmen-Mitte ausrichten (Kreis zentrisch im Bild) */
+      yaw = -F_LON; pitch = F_LAT; velY = 0; velP = 0;
     });
     saveBtn.addEventListener('click', function(){
       try{
