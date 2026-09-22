@@ -1680,12 +1680,23 @@ if(!isTouch && !reduce){
   var F_LAT = 50.5 * Math.PI/180, F_LON = 10.5 * Math.PI/180;
   var F_CL = Math.cos(F_LAT), F_SL = Math.sin(F_LAT);
   var F_X = F_CL*Math.sin(F_LON), F_Y = F_SL, F_Z = F_CL*Math.cos(F_LON);
+  var F_RAD = 0.18;   // Rahmen-Durchmesser in rad (~10.3°)
+  /* gespeicherte Werte aus dem Ring-Editor (#ringeditor) haben Vorrang */
+  try{
+    var sv = JSON.parse(localStorage.getItem('dachFrame') || 'null');
+    if(sv && isFinite(sv.lat) && isFinite(sv.lon) && isFinite(sv.rad)){
+      F_LAT = sv.lat*Math.PI/180; F_LON = sv.lon*Math.PI/180; F_RAD = sv.rad;
+      F_CL = Math.cos(F_LAT); F_SL = Math.sin(F_LAT);
+      F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
+    }
+  }catch(e){}
 
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
   var ZOOM_DIST = 1.7, ZOOM_PITCH = 0.88;   // ganz nah dran, Neigung ~50°: DACH-Mitte sitzt im Zentrum des Frames
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
+  var editMode = /ringeditor/i.test(location.hash || '');   // Ring-Editor-Modus
 
   /* ── sphere mesh ── */
   function buildSphere(slices, stacks){
@@ -1868,8 +1879,9 @@ if(!isTouch && !reduce){
     if(z < 0) z = 0; if(z > 1) z = 1;
     z = z*z*(3 - 2*z);
     zoomZ = z;
+    if(editMode){ z = 1; zoomZ = 1; }   // Editor: immer voller Zoom, frei drehbar
     var ek = reduce ? 1 : 0.07;
-    if(z > 0.001 && !dragging){
+    if(z > 0.001 && !dragging && !editMode){
       var dYaw = (((-HOME_LON - yaw) + Math.PI) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI) - Math.PI;
       yaw   += dYaw * z * ek;
       pitch += ((0.30 + (ZOOM_PITCH - 0.30) * z) - pitch) * ek;
@@ -1929,7 +1941,7 @@ if(!isTouch && !reduce){
         var fsy = canvas.offsetTop  + (1 - (f*fvy/fwClip * 0.5 + 0.5)) * h;
         /* Größe direkt in px (statt CSS-scale) — bleibt bei jedem
            Zoom-Level gestochen scharf. ~0.18 rad ≈ 10° Durchmesser */
-        var fpx = Math.round(f * 0.18 / fwClip * w);
+        var fpx = Math.round(f * F_RAD / fwClip * w);
         if(fpx < 90) fpx = 90; if(fpx > w) fpx = w;
         if(frameEl._w !== fpx){
           frameEl._w = fpx;
@@ -1984,6 +1996,47 @@ if(!isTouch && !reduce){
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(en){ visible = en[0].isIntersecting; },
       {threshold:0}).observe(document.getElementById('hero'));
+  }
+
+  /* ── Ring-Editor: index.html#ringeditor ─────────────
+     Globus ziehen bis die Region passt, „Zentrum hier setzen“,
+     Radius per Regler, Übernehmen speichert lokal. */
+  if(editMode){
+    var panel = document.createElement('div');
+    panel.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:300;background:rgba(5,13,7,0.92);' +
+      'border:1px solid rgba(74,222,128,0.4);border-radius:12px;padding:14px 16px;max-width:270px;' +
+      'font:13px/1.5 "Space Grotesk",sans-serif;color:#e8f5ec;box-shadow:0 12px 40px rgba(0,0,0,0.5)';
+    panel.innerHTML =
+      '<div style="font-weight:600;color:#4ade80;margin-bottom:6px">DACH-Rahmen Editor</div>' +
+      '<div style="opacity:0.75;margin-bottom:8px">Globus so drehen, dass die gewünschte Rahmen-Mitte in der Bildmitte liegt, dann Zentrum setzen. Danach Radius regeln.</div>' +
+      '<button id="rf-center" style="width:100%;margin-bottom:8px;padding:8px;background:#4ade80;border:0;border-radius:8px;font-weight:600;cursor:pointer">Zentrum hier setzen</button>' +
+      '<label style="display:block;margin-bottom:2px">Radius: <b id="rf-radval"></b>°</label>' +
+      '<input id="rf-rad" type="range" min="3" max="14" step="0.1" style="width:100%;margin-bottom:8px">' +
+      '<div id="rf-read" style="font-family:monospace;font-size:11px;opacity:0.8;margin-bottom:8px;word-break:break-all"></div>' +
+      '<button id="rf-save" style="width:100%;padding:8px;background:transparent;border:1px solid #4ade80;color:#4ade80;border-radius:8px;font-weight:600;cursor:pointer">Übernehmen (speichern)</button>';
+    document.body.appendChild(panel);
+    var radEl = panel.querySelector('#rf-rad'), radVal = panel.querySelector('#rf-radval'),
+        readEl = panel.querySelector('#rf-read'), saveBtn = panel.querySelector('#rf-save');
+    function rfRead(){
+      radVal.textContent = (F_RAD*180/Math.PI).toFixed(1);
+      readEl.textContent = 'LAT ' + (F_LAT*180/Math.PI).toFixed(2) + ' · LON ' + (F_LON*180/Math.PI).toFixed(2) + ' · RAD ' + F_RAD.toFixed(3);
+    }
+    radEl.value = (F_RAD*180/Math.PI).toFixed(1);
+    radEl.addEventListener('input', function(){ F_RAD = (+radEl.value)*Math.PI/180; rfRead(); });
+    panel.querySelector('#rf-center').addEventListener('click', function(){
+      /* Punkt, der der Kamera aktuell zugewandt ist, wird Rahmen-Mitte */
+      F_LON = -yaw; F_LAT = pitch;
+      F_CL = Math.cos(F_LAT); F_SL = Math.sin(F_LAT);
+      F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
+      rfRead();
+    });
+    saveBtn.addEventListener('click', function(){
+      try{
+        localStorage.setItem('dachFrame', JSON.stringify({lat:F_LAT*180/Math.PI, lon:F_LON*180/Math.PI, rad:F_RAD}));
+        saveBtn.textContent = 'Gespeichert ✓ — gilt ab jetzt auf dieser Seite';
+      }catch(e){ saveBtn.textContent = 'Speichern fehlgeschlagen'; }
+    });
+    rfRead();
   }
   var rt;
   window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(sizeIt,180); });
