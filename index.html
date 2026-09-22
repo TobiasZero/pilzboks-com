@@ -1697,6 +1697,7 @@ if(!isTouch && !reduce){
   if(sv && isFinite(sv.zoom)) ZOOM_DIST = sv.zoom;   // Zoom-Feinjustage aus dem Ring-Editor
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
+  var dirty = false;   // erzwingt einen Neu-Render (Resize, neue Textur)
   var editMode = /ringeditor/i.test(location.hash || '');   // Ring-Editor-Modus
 
   /* ── sphere mesh ── */
@@ -1839,6 +1840,7 @@ if(!isTouch && !reduce){
       var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
       gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
     }
+    dirty = true;
   }
 
   function loadTexture(){
@@ -1856,7 +1858,7 @@ if(!isTouch && !reduce){
       }
     };
     img.onerror = function(){ canvas.style.opacity = 1; };
-    img.src = 'earth.webp';
+    img.src = mobile ? 'earth-mobile.webp' : 'earth.webp';   // Mobile: 4K-Textur, lädt deutlich schneller
   }
 
   function sizeIt(){
@@ -1874,6 +1876,7 @@ if(!isTouch && !reduce){
     canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
     if(gl) gl.viewport(0, 0, canvas.width, canvas.height);
+    dirty = true;
   }
 
   function draw(){
@@ -1892,6 +1895,7 @@ if(!isTouch && !reduce){
     z = z*z*(3 - 2*z);
     zoomZ = z;
     if(editMode){ z = 1; zoomZ = 1; }   // Editor: immer voller Zoom, frei drehbar
+    if(mobile){ z = 0; zoomZ = 0; }     // Mobile: kein DACH-Zoom, Globus bleibt einfach sichtbar
     var ek = reduce ? 1 : 0.07;
     if(z > 0.001 && !dragging && !editMode){
       /* Zoom-Ziel folgt der Rahmen-Mitte: Kreis sitzt am Ende immer zentrisch */
@@ -1967,7 +1971,23 @@ if(!isTouch && !reduce){
     }
   }
 
-  function loop(){ if(visible && ready) draw(); requestAnimationFrame(loop); }
+  /* Bei vollem DACH-Zoom und ruhigem Scroll wird der Globus zum Standbild:
+     nach ~45 Frames (Easing zu Ende) wird nicht mehr gerendert — spart GPU/Akku */
+  var lastSY = -1, idleFrames = 0;
+  function loop(){
+    if(visible && ready){
+      var settled = zoomZ >= 0.999 && !dragging && !editMode && !velY && !velP;
+      if(settled && window.scrollY === lastSY && !dirty && idleFrames >= 45){
+        /* Standbild — nichts zu tun */
+      } else {
+        if(window.scrollY !== lastSY || dirty) idleFrames = 0; else idleFrames++;
+        draw();
+      }
+      lastSY = window.scrollY;
+      dirty = false;
+    }
+    requestAnimationFrame(loop);
+  }
 
   /* ── drag to spin ── */
   function down(e){ dragging=true; lastX=e.clientX; lastY=e.clientY; lastT=performance.now(); canvas.style.cursor='grabbing'; }
