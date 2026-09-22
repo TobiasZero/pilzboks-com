@@ -376,14 +376,13 @@ body.menu-open .mm-foot{opacity:1;transform:none}
   text-wrap:balance;
   text-shadow:0 2px 34px rgba(5,13,7,0.95),0 0 14px rgba(5,13,7,0.8);
 }
-.hero-h1 em{font-style:normal}
-/* gradient applied to the innermost text box so it survives the word-split */
+.hero-h1 em{font-style:normal;text-shadow:none}
+/* Marker-Highlight: sattes Grün hinter dunkler Schrift (überlebt den Word-Split) */
 .hero-h1 em,.hero-h1 em .w>i{
-  background-image:linear-gradient(120deg,var(--green-light),var(--green) 45%,var(--green-deep));
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  color:var(--green);
+  background:var(--green);
+  color:#04140a;-webkit-text-fill-color:#04140a;
 }
+.hero-h1 em .w>i{padding:0.01em 0.14em 0.05em;border-radius:2px}
 /* word mask reveal */
 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.08em}
 .w>i{
@@ -1700,6 +1699,13 @@ if(!isTouch && !reduce){
       F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
     }
   }catch(e){}
+  /* Rahmen-Mitte auf den aktuell der Kamera zugewandten Punkt setzen */
+  function syncFrameToCamera(){
+    F_LON = -yaw; F_LAT = pitch;
+    F_CL = Math.cos(F_LAT); F_SL = Math.sin(F_LAT);
+    F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
+  }
+  var rfLock = true;   // Editor: Ring bleibt zentrisch zum Punkt (Checkbox)
 
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
@@ -2004,7 +2010,7 @@ if(!isTouch && !reduce){
     if(z < 0) z = 0; if(z > 1) z = 1;
     z = z*z*(3 - 2*z);
     zoomZ = z;
-    if(editMode){ z = 1; zoomZ = 1; }   // Editor: immer voller Zoom, frei drehbar
+    if(editMode){ z = 1; zoomZ = 1; if(rfLock) syncFrameToCamera(); }   // Editor: voller Zoom, Ring folgt der Mitte
     if(mobile){ z = 0; zoomZ = 0; }     // Mobile: kein DACH-Zoom, Globus bleibt einfach sichtbar
     var ek = reduce ? 1 : 0.07;
     if(z > 0.001 && !dragging && !editMode){
@@ -2150,6 +2156,7 @@ if(!isTouch && !reduce){
       '<div style="opacity:0.75;margin-bottom:8px">Globus so drehen, dass die gewünschte Rahmen-Mitte in der Bildmitte liegt, dann Zentrum setzen. Danach Radius und Zoom regeln.</div>' +
       '<button id="rf-center" style="width:100%;margin-bottom:6px;padding:8px;background:#4ade80;border:0;border-radius:8px;font-weight:600;cursor:pointer">Zentrum hier setzen</button>' +
       '<button id="rf-aim" style="width:100%;margin-bottom:8px;padding:8px;background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.4);color:#4ade80;border-radius:8px;font-weight:600;cursor:pointer">Rahmen exakt zentrieren</button>' +
+      '<label style="display:flex;align-items:center;gap:7px;margin-bottom:8px;cursor:pointer;font-size:12px"><input id="rf-lock" type="checkbox" checked style="accent-color:#4ade80"> Ring zentrisch zum Punkt (folgt der Mitte)</label>' +
       '<label style="display:block;margin-bottom:2px">Radius: <b id="rf-radval"></b>°</label>' +
       '<input id="rf-rad" type="range" min="0" max="14" step="0.1" style="width:100%;margin-bottom:8px">' +
       '<label style="display:block;margin-bottom:2px">Zoom (kleiner = näher): <b id="rf-zoomval"></b></label>' +
@@ -2171,10 +2178,11 @@ if(!isTouch && !reduce){
     zoomEl.addEventListener('input', function(){ ZOOM_DIST = +zoomEl.value; rfRead(); });
     panel.querySelector('#rf-center').addEventListener('click', function(){
       /* Punkt, der der Kamera aktuell zugewandt ist, wird Rahmen-Mitte */
-      F_LON = -yaw; F_LAT = pitch;
-      F_CL = Math.cos(F_LAT); F_SL = Math.sin(F_LAT);
-      F_X = F_CL*Math.sin(F_LON); F_Y = F_SL; F_Z = F_CL*Math.cos(F_LON);
+      syncFrameToCamera();
       rfRead();
+    });
+    panel.querySelector('#rf-lock').addEventListener('change', function(e){
+      rfLock = e.target.checked;   /* an: Ring folgt der Bildmitte beim Drehen */
     });
     panel.querySelector('#rf-aim').addEventListener('click', function(){
       /* Kamera exakt auf die Rahmen-Mitte ausrichten (Kreis zentrisch im Bild) */
