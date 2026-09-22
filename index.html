@@ -1484,12 +1484,14 @@ var mobile = window.innerWidth < 860;
 
   // fade in the rest after words
   var fades = document.querySelectorAll('[data-hero-fade]');
+  /* Mobile: kürzere Verzögerung — der Subtext ist dort das LCP-Element (PageSpeed) */
+  var fadeBase = mobile ? 220 : 700, fadeStep = mobile ? 90 : 130, fadeDur = mobile ? '.55s' : '.9s';
   for(var f=0;f<fades.length;f++){
     (function(el,idx){
       el.style.opacity = 0;
       el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)';
-      setTimeout(function(){ el.style.opacity=1; el.style.transform='none'; }, 700 + idx*130);
+      el.style.transition = 'opacity ' + fadeDur + ' cubic-bezier(.16,1,.3,1), transform ' + fadeDur + ' cubic-bezier(.16,1,.3,1)';
+      setTimeout(function(){ el.style.opacity=1; el.style.transform='none'; }, fadeBase + idx*fadeStep);
     })(fades[f], f);
   }
 })();
@@ -1937,8 +1939,7 @@ if(!isTouch && !reduce){
   }
 
   function loadTexture(){
-    loadImg('earth-4k.webp',   /* 4K reicht für die Ausgangsansicht überall —
-                                   hält den ersten Render frei von Blockaden */
+    loadImg(mobile ? 'earth-2k.webp' : 'earth-4k.webp',   /* Mobile: 2K (187 KB) — LCP/ Speed; Desktop: 4K */
       function(img){
         uploadTex(img);
         ready = true;
