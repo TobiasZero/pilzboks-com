@@ -1860,6 +1860,55 @@ if(!isTouch && !reduce){
     dirty = true;
   }
 
+  /* Große HD-Textur in horizontalen Streifen über viele Frames hochladen —
+     kein einzelner langer GPU-Upload = kein Scroll-Ruckler */
+  function uploadTexChunked(img, strips){
+    try{
+      var maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096;
+      if(img.width > maxTex){ uploadTex(img); return; }
+      /* eigene Textur erst komplett aufbauen, dann erst tauschen —
+         sonst würden halb geladene Streifen schwarz aufblitzen */
+      var newTex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, newTex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      var pot = (img.width  & (img.width  - 1)) === 0 &&
+                (img.height & (img.height - 1)) === 0;
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, img.width, img.height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, (pot || gl2) ? gl.REPEAT : gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      var i = 0, sh = Math.ceil(img.height / strips);
+      function step(){
+        if(i >= strips){
+          if(pot || gl2){
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            var aniso = gl.getExtension('EXT_texture_filter_anisotropic')
+                     || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+                     || gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
+            if(aniso){
+              var maxA = gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+              gl.texParameteri(gl.TEXTURE_2D, aniso.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, maxA));
+            }
+          }
+          tex = newTex;   /* fertig — jetzt erst umschalten */
+          dirty = true;
+          return;
+        }
+        var y = i * sh, hh = Math.min(sh, img.height - y);
+        i++;
+        createImageBitmap(img, 0, y, img.width, hh).then(function(strip){
+          gl.bindTexture(gl.TEXTURE_2D, newTex);
+          gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, y, gl.RGB, gl.UNSIGNED_BYTE, strip);
+          strip.close();
+          setTimeout(step, 0);   /* nächster Streifen im nächsten Task */
+        }).catch(function(){ uploadTex(img); });
+      }
+      step();
+    }catch(e){ uploadTex(img); }
+  }
+
   /* Bild async im Hintergrund-Thread dekodieren (createImageBitmap) —
      hält den Main-Thread frei (PageSpeed: Total Blocking Time) */
   function loadImg(url, cb, errCb){
@@ -1883,11 +1932,12 @@ if(!isTouch && !reduce){
 
   var hdStarted = false;
   function loadHD(){
-    /* HD-Textur (16k) erst beim ersten Scroll Richtung Zoom nachladen —
-     blockiert so nicht den Seitenstart. Mobile bleibt bei 4k. */
+    /* HD (16K) wird frühzeitig geladen, aber in Streifen über viele Frames
+       hochgeladen — scharf bevor gezoomt wird, ohne den Start zu blockieren.
+       Mobile bleibt bei 4K. */
     if(hdStarted || mobile || reduce) return;
     hdStarted = true;
-    loadImg('earth-hd.webp', function(hd){ uploadTex(hd); });
+    loadImg('earth-hd.webp', function(hd){ uploadTexChunked(hd, 24); });
   }
 
   function loadTexture(){
@@ -1897,9 +1947,10 @@ if(!isTouch && !reduce){
         uploadTex(img);
         ready = true;
         canvas.style.opacity = 1;
-        /* HD (16K) wird NICHT automatisch geladen — erst beim ersten Scroll
-           Richtung Zoom (loadHD in draw()). So bleibt der Seitenstart frei
-           von Main-Thread-Blockaden. */
+        /* HD-Preload sobald die Seite steht — Download läuft im Hintergrund,
+           der Upload ist gestückelt, also keine Blockade */
+        if('requestIdleCallback' in window) requestIdleCallback(loadHD, {timeout: 2000});
+        else setTimeout(loadHD, 1500);
       },
       function(){ canvas.style.opacity = 1; });   /* Fehlerfall: Bereich trotzdem einblenden */
   }
