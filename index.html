@@ -179,8 +179,7 @@ body.menu-open .burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45
 /* mobile overlay menu */
 #mobile-menu{
   position:fixed;inset:0;z-index:155;
-  background:rgba(5,13,7,0.97);
-  backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+  background:rgba(5,13,7,0.98);   /* ohne backdrop-blur: glitchfrei auf Mobile-Chrome */
   display:flex;flex-direction:column;justify-content:center;
   padding:var(--nav-h) var(--gut) 3rem;
   opacity:0;visibility:hidden;
@@ -1013,6 +1012,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .hero-content::before{content:none}
   .hero-h1,.hero-sub{text-shadow:0 2px 24px rgba(5,13,7,0.95)}
   #hero{padding:0 var(--gut)}
+  /* Mobile: Badge oben ausblenden (User-Wunsch) */
+  .hero-step:first-child .hero-eyebrow{display:none}
+  /* backdrop-filter glitcht auf Mobile-Chrome (weiße Flächen) und bremst
+     beim schnellen Scrollen — auf Mobile komplett durch deckende Flächen ersetzen */
+  nav.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(5,13,7,0.94)}
+  .hero-eyebrow{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(9,20,16,0.85)}
+  .globe-frame .gf-label{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(5,13,7,0.85)}
 }
 @media(max-width:860px){
   .nav-links{display:none}
@@ -1965,8 +1971,17 @@ if(!isTouch && !reduce){
       box = Math.max(340, Math.min(host.clientWidth || 520, host.clientHeight || 520, 560));
     }
     w = h = box;
-    canvas.width  = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
+    var pw = Math.round(w * dpr), ph = Math.round(h * dpr);
+    /* Keine Reallokation bei Mini-Änderungen (Mobile: die Adressleiste
+       feuert beim Scrollen resize und würde sonst die GPU-Canvas
+       jedes Mal neu aufbauen = Lag + weißes Aufblitzen) */
+    if(canvas.width > 0 && Math.abs(canvas.width - pw) < 40 && Math.abs(canvas.height - ph) < 40){
+      canvas.style.width  = w + 'px';
+      canvas.style.height = h + 'px';
+      return;
+    }
+    canvas.width  = pw;
+    canvas.height = ph;
     canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
     if(gl) gl.viewport(0, 0, canvas.width, canvas.height);
