@@ -1676,10 +1676,14 @@ if(!isTouch && !reduce){
   var M_LAT = 47.25 * Math.PI/180, M_LON = 9.9 * Math.PI/180;
   var M_CL = Math.cos(M_LAT), M_SL = Math.sin(M_LAT);
   var M_X = M_CL*Math.sin(M_LON), M_Y = M_SL, M_Z = M_CL*Math.cos(M_LON);
+  /* DACH-Rahmen-Mitte: ~50.5°N, 10.5°O (deckt AT/DE/CH ab) */
+  var F_LAT = 50.5 * Math.PI/180, F_LON = 10.5 * Math.PI/180;
+  var F_CL = Math.cos(F_LAT), F_SL = Math.sin(F_LAT);
+  var F_X = F_CL*Math.sin(F_LON), F_Y = F_SL, F_Z = F_CL*Math.cos(F_LON);
 
   /* Scroll-Zoom auf die DACH-Region */
   var dist = DIST;
-  var ZOOM_DIST = 1.7, ZOOM_PITCH = 0.78;   // ganz nah dran: Kugel füllt den Frame, Neigung ~45° zentriert DACH vertikal
+  var ZOOM_DIST = 1.7, ZOOM_PITCH = 0.88;   // ganz nah dran, Neigung ~50°: DACH-Mitte sitzt im Zentrum des Frames
   var globeHero = document.getElementById('hero');
   var zoomZ = 0;   // 0 = weit weg, 1 = DACH im Fokus — aus dem Scroll-Fortschritt abgeleitet
 
@@ -1915,17 +1919,25 @@ if(!isTouch && !reduce){
       markerEl.style.transform = pos;
       markerEl.style.opacity = front ? 1 : 0;
       if(frameEl){
-        /* Rahmengröße direkt in px setzen (statt CSS-scale) — bleibt
-           bei jedem Zoom-Level gestochen scharf. ~0.16 rad ≈ DACH N-S */
-        var fpx = Math.round(f * 0.16 / wClip * w);
+        /* Rahmen zentriert auf die DACH-Mitte (~50.5°N, 10.5°O), nicht auf
+           den Vorarlberg-Marker — so liegen AT/DE/CH im Kreis */
+        var fvx = rot[0]*F_X + rot[3]*F_Y + rot[6]*F_Z;
+        var fvy = rot[1]*F_X + rot[4]*F_Y + rot[7]*F_Z;
+        var fvz = rot[2]*F_X + rot[5]*F_Y + rot[8]*F_Z;
+        var fwClip = dist - fvz;
+        var fsx = canvas.offsetLeft + (f*fvx/fwClip * 0.5 + 0.5) * w;
+        var fsy = canvas.offsetTop  + (1 - (f*fvy/fwClip * 0.5 + 0.5)) * h;
+        /* Größe direkt in px (statt CSS-scale) — bleibt bei jedem
+           Zoom-Level gestochen scharf. ~0.18 rad ≈ 10° Durchmesser */
+        var fpx = Math.round(f * 0.18 / fwClip * w);
         if(fpx < 90) fpx = 90; if(fpx > w) fpx = w;
         if(frameEl._w !== fpx){
           frameEl._w = fpx;
           frameEl.style.width  = fpx + 'px';
           frameEl.style.height = fpx + 'px';
         }
-        frameEl.style.transform = pos;
-        frameEl.style.opacity = (front && zoomZ > 0.55) ? 1 : 0;
+        frameEl.style.transform = 'translate(' + fsx.toFixed(1) + 'px,' + fsy.toFixed(1) + 'px) translate(-50%,-50%)';
+        frameEl.style.opacity = (fvz > 0.12 && zoomZ > 0.55) ? 1 : 0;
       }
     }
   }
