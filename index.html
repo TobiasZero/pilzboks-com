@@ -45,6 +45,10 @@
   --ease-soft:cubic-bezier(0.4,0,0.2,1);
   --nav-h:72px;
   --gut:clamp(1.15rem,5vw,2.5rem);
+  /* Seitenrand für Nav/Hero/Footer: bis 1440 px Fensterbreite identisch mit --gut
+     (Surface/13"-Layout bleibt pixelgleich), darüber wächst der Rand mit →
+     Inhalt bleibt als 1440-px-Block mittig, Hintergrund weiter vollflächig */
+  --edge:max(var(--gut), calc((100% - 1440px) / 2 + var(--gut)));
 }
 
 html{
@@ -97,11 +101,19 @@ button,input,textarea,a{font-family:inherit}
   box-shadow:0 0 12px var(--green-glow);
 }
 
+/* ══ CURSOR GLOW (desktop only) ══ */
+#cursor-glow{
+  position:fixed;width:460px;height:460px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,0.055),transparent 65%);
+  pointer-events:none;z-index:1;transform:translate(-50%,-50%);
+  transition:opacity 0.5s;opacity:0;will-change:transform;
+}
+
 /* ══ NAV ══ */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:160;
   display:flex;align-items:center;justify-content:space-between;
-  padding:1.1rem var(--gut);
+  padding:1.1rem var(--edge);
   height:var(--nav-h);
   transition:background 0.45s var(--ease-soft),
              border-color 0.45s var(--ease-soft),
@@ -228,12 +240,12 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 /* ══ HERO ══ */
 #hero{
   position:relative;
-  padding:0 var(--gut);
+  padding:0 var(--edge);
   z-index:2;
   /* WICHTIG: kein overflow:hidden — das würde den Sticky-Globus brechen */
 }
 .hero-pin-track{
-  position:absolute;top:0;left:var(--gut);right:var(--gut);
+  position:absolute;top:0;left:var(--edge);right:var(--edge);
   height:200vh;height:200svh;
   pointer-events:none;z-index:2;
 }
@@ -889,13 +901,13 @@ a.contact-val:hover::after{transform:scaleX(1);transform-origin:left}
 footer{
   position:relative;z-index:2;
   border-top:1px solid var(--border);
-  padding:2.3rem var(--gut);
+  padding:2.3rem var(--edge);
   display:flex;align-items:center;justify-content:space-between;
   gap:1.3rem;flex-wrap:wrap;
   background:rgba(5,13,7,0.7);
 }
 /* Platz für den fixierten Nach-oben-Button, damit er das Badge nicht überdeckt */
-@media(min-width:641px){footer{padding-right:calc(var(--gut) + 64px)}}
+@media(min-width:641px){footer{padding-right:max(calc(var(--gut) + 64px), var(--edge))}}
 .footer-logo img{
   height:30px;width:auto;
   filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
@@ -1056,6 +1068,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .w>i{transform:none !important}
   .label{opacity:1 !important}
   .section-divider{transform:scaleX(1) !important}
+  #cursor-glow{display:none}
 }
 </style>
 </head>
@@ -1063,6 +1076,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <div class="ambient"></div>
 <div class="grid-tex"></div>
 <div id="progress"></div>
+<div id="cursor-glow"></div>
 
 <!-- ═══ NAV ═══ -->
 <nav id="nav">
@@ -1628,6 +1642,26 @@ if(!isTouch && !reduce){
   }
 }
 
+/* ─── CURSOR GLOW ──────────────────────────────── */
+if(!isTouch && !reduce){
+  var glow = document.getElementById('cursor-glow');
+  var gx = 0, gy = 0, cx = 0, cy = 0, gactive = false;
+  var grun = false;
+  function gloop(){
+    cx += (gx - cx) * 0.09;
+    cy += (gy - cy) * 0.09;
+    glow.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0) translate(-50%,-50%)';
+    /* Schleife nur solange die Maus sich bewegt — im Ruhezustand kein Dauer-Rendern */
+    if(Math.abs(gx - cx) + Math.abs(gy - cy) > 0.5) requestAnimationFrame(gloop);
+    else grun = false;
+  }
+  document.addEventListener('mousemove', function(e){
+    gx = e.clientX; gy = e.clientY;
+    if(!gactive){ gactive = true; cx = gx; cy = gy; glow.style.opacity = 1; }
+    if(!grun){ grun = true; requestAnimationFrame(gloop); }
+  }, {passive:true});
+}
+
 /* ─── GLOBE ─────────────────────────────────────────
    Real textured earth. Satellite colour map from the
    CGTrader "Earth globe" model (NASA Blue Marble
@@ -1943,7 +1977,9 @@ function startGlobe(){
       box = Math.min(window.innerWidth * 0.92, Math.max(240, window.innerHeight * 0.42), 420);
     } else {
       var host = canvas.parentElement;
-      box = Math.max(340, Math.min(host.clientWidth || 520, host.clientHeight || 520, 560));
+      /* bis 1440 px Breite max. 560 (unverändert), auf großen Monitoren bis 680 */
+      var cap = 560 + Math.min(120, Math.max(0, window.innerWidth - 1440) * 0.25);
+      box = Math.max(340, Math.min(host.clientWidth || 520, host.clientHeight || 520, cap));
     }
     w = h = box;
     var pw = Math.round(w * dpr), ph = Math.round(h * dpr);
