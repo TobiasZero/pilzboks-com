@@ -974,6 +974,34 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   outline:2px solid var(--green);outline-offset:3px;border-radius:2px;
 }
 
+/* ══ VORSCHLAG: kompakte Startseite ══ */
+.support-label{text-align:center;font-size:0.72rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(232,245,236,0.55);margin-bottom:1.6rem}
+#support{padding:clamp(3rem,7vw,4.5rem) 0;border-top:1px solid var(--border)}
+.support-logos{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem}
+.support-logo{display:grid;place-items:center;background:#e9ece9;border-radius:10px;padding:0.9rem 1.8rem;transition:transform .3s,background .3s}
+.support-logo:hover{transform:translateY(-2px);background:#fff}
+.support-logo img{height:52px;width:auto;display:block}
+.contact-mail{margin-top:1.4rem;font-size:0.92rem;color:rgba(232,245,236,0.62)}
+.contact-mail a{color:var(--green);text-decoration:none}
+.hero-proof{margin-top:1.4rem;font-size:0.78rem;letter-spacing:0.04em;color:rgba(232,245,236,0.55)}
+.steps-3{grid-template-columns:repeat(3,1fr)}
+.facts{display:flex;flex-wrap:wrap;gap:0.8rem 2.2rem;margin-top:2.4rem;font-size:0.9rem;color:rgba(232,245,236,0.62)}
+.facts b{color:var(--green);font-weight:600;margin-right:0.35rem}
+#faq .quote-inner{margin-bottom:clamp(3rem,7vw,5rem)}
+.faq{max-width:780px;margin:0 auto}
+.faq-title{margin-bottom:1.4rem;font-size:clamp(1.5rem,3.4vw,2rem)}
+.faq details{border-top:1px solid var(--border);padding:1.1rem 0}
+.faq details:last-child{border-bottom:1px solid var(--border)}
+.faq summary{cursor:pointer;list-style:none;font-weight:500;font-size:1.02rem;display:flex;justify-content:space-between;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--green);font-size:1.3rem;line-height:1;transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin-top:0.7rem;color:rgba(232,245,236,0.68);font-size:0.95rem;line-height:1.65;max-width:62ch}
+.team-line{display:flex;align-items:center;gap:0.5rem;margin-top:1.6rem;font-size:0.88rem;color:rgba(232,245,236,0.62)}
+.team-line .m-avatar{width:34px;height:34px;font-size:0.7rem;flex:none}
+.team-line .m-avatar+.m-avatar{margin-left:-14px;margin-right:0.4rem}
+@media(max-width:1000px){.steps-3{grid-template-columns:1fr}}
+
 /* Endlos-Animationen außerhalb des Viewports anhalten (spart Compositing/GPU) */
 .anim-off *,.anim-off *::before,.anim-off *::after{animation-play-state:paused !important}
 
@@ -1074,14 +1102,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <a href="#hero" class="nav-logo" aria-label="Pilzboks Startseite">
     <img src="pilzboks-logo.webp" alt="Pilzboks" width="276" height="120" decoding="async">
   </a>
-  <ul class="nav-links">
-    <li><a href="#how">Wie es funktioniert</a></li>
-    <li><a href="#mushrooms">Pilze</a></li>
-    <li><a href="#farmers">Für Landwirte</a></li>
-    <li><a href="#team">Team</a></li>
-  </ul>
   <div class="nav-right">
-    <a href="#contact" class="nav-cta"><span>Jetzt starten</span></a>
+    <a href="#contact" class="nav-cta"><span>Hof-Check anfragen</span></a>
     <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -1091,11 +1113,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <!-- ═══ MOBILE MENU ═══ -->
 <div id="mobile-menu">
   <ul>
-    <li><a href="#how"><i>01</i>Wie es funktioniert</a></li>
-    <li><a href="#mushrooms"><i>02</i>Pilze</a></li>
-    <li><a href="#farmers"><i>03</i>Für Landwirte</a></li>
-    <li><a href="#team"><i>04</i>Team</a></li>
-    <li><a href="#contact"><i>05</i>Kontakt</a></li>
+    <li><a href="#hero"><i>01</i>Start</a></li>
+    <li><a href="#contact"><i>02</i>Hof-Check anfragen</a></li>
   </ul>
   <div class="mm-foot">
     <span>Kontakt</span>
@@ -1135,13 +1154,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <div class="hero-steps">
     <div class="hero-step">
       <div class="hero-content">
-        <p class="hero-eyebrow" data-hero-fade><span class="pulse-dot"></span>Nachhaltige Landwirtschaft · Vorarlberg</p>
-        <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
-        <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
+        <p class="hero-eyebrow" data-hero-fade><span class="pulse-dot"></span>Für Biohöfe in Vorarlberg &amp; DACH</p>
+        <h1 class="hero-h1" id="hero-h1">Bio-Pilze vom<br>eigenen <em>Hof</em></h1>
+        <p class="hero-sub" data-hero-fade>Wir stellen Ihnen einen schlüsselfertigen Pilz-Container auf 22,5 m². Sie ernten — wir kaufen alles zu fixen Preisen ab.</p>
         <div class="hero-actions" data-hero-fade>
-          <a href="#how" class="btn btn-primary"><span>Mehr erfahren</span><span class="btn-arrow">→</span></a>
-          <a href="#contact" class="btn btn-ghost"><span>Gespräch vereinbaren</span></a>
+          <a href="#contact" class="btn btn-primary"><span>Kostenlosen Hof-Check anfragen</span><span class="btn-arrow">→</span></a>
+          <a href="#contact" class="btn btn-ghost"><span>Kontakt</span></a>
         </div>
+        <p class="hero-proof" data-hero-fade>Pilotbetrieb: Biohof Feurle, Langen bei Bregenz</p>
       </div>
     </div>
 
@@ -1151,222 +1171,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       </figure>
       <p class="hero-eyebrow"><span class="pulse-dot"></span>Unsere Heimat</p>
       <h2 class="hero-step-title">Mitten in der <em>DACH-Region</em></h2>
-      <p class="hero-step-sub">Von Vorarlberg aus erreichen wir Höfe, Märkte und Küchen in Österreich, Deutschland und der Schweiz — geerntet heute, geliefert morgen, ohne Umwege, ohne Langstrecke.</p>
+      <p class="hero-step-sub">Geerntet heute, geliefert morgen — an Märkte und Küchen in Österreich, Deutschland und der Schweiz.</p>
       <div class="hero-actions">
-        <a href="#contact" class="btn btn-primary"><span>Jetzt Hof werden</span><span class="btn-arrow">→</span></a>
-        <a href="#how" class="btn btn-ghost"><span>So funktioniert's</span></a>
+        <a href="#contact" class="btn btn-primary"><span>Hof-Check anfragen</span><span class="btn-arrow">→</span></a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ TICKER ═══ -->
-<div class="ticker">
-  <div class="ticker-track" id="ticker-track"></div>
-</div>
-
-<!-- ═══ STATS ═══ -->
-<div class="stats-bar">
-  <div class="stat"><div class="stat-val" data-count="3">0</div><div class="stat-label">Pilzarten</div></div>
-  <div class="stat"><div class="stat-val" data-count="100" data-suffix="%">0</div><div class="stat-label">Bio-zertifiziert</div></div>
-  <div class="stat"><div class="stat-val" data-count="22.5" data-suffix=" m²" data-dec="1">0</div><div class="stat-label">Container-Footprint</div></div>
-  <div class="stat"><div class="stat-val">DACH</div><div class="stat-label">Vertriebsregion</div></div>
-</div>
-
-<!-- ═══ MISSION ═══ -->
-<section id="mission">
-  <div class="container">
-    <div class="mission-grid">
-      <div data-reveal="left">
-        <p class="section-eyebrow">Unsere Mission</p>
-        <div class="section-divider"></div>
-        <h2 class="section-title">Pilze als Teil des<br>Ökosystems</h2>
-        <p class="section-body" style="margin-bottom:1.4rem">
-          Pilzboks bringt biologischen Pilzanbau direkt auf den Hof — ressourcenschonend, klimaneutral und in den natürlichen Kreislauf eingebettet.
-        </p>
-        <p class="section-body">
-          Mit kompakten Container-Einheiten ermöglichen wir Biobetrieben eine zusätzliche Einkommensquelle, die kaum Fläche benötigt und vollständig in bestehende Strukturen integriert werden kann.
-        </p>
-      </div>
-      <div class="mission-visual" data-reveal="scale">
-        <div class="mission-ring">
-          <div class="orbit"></div>
-          <div class="mission-ring-inner">
-            <strong>Myzel</strong>
-            verbindet<br>Boden · Pflanze<br>Mensch · Zukunft
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ HOW ═══ -->
-<section id="how">
-  <div class="container">
-    <div class="section-head" data-reveal>
-      <p class="section-eyebrow">Wie es funktioniert</p>
-      <div class="section-divider"></div>
-      <h2 class="section-title">Vier Schritte zum<br>Anbau</h2>
-    </div>
-    <div class="steps">
-      <div class="step" data-reveal data-stagger="0">
-        <div class="step-num"><b>01</b>Setup</div>
-        <div class="step-title">Container auf dem Hof</div>
-        <div class="step-body">Wir liefern und installieren den schlüsselfertigen Pilz-Container direkt auf Ihrem Betrieb. Minimaler Platzbedarf, maximale Integration.</div>
-      </div>
-      <div class="step" data-reveal data-stagger="1">
-        <div class="step-num"><b>02</b>Abnahme</div>
-        <div class="step-title">Garantierte Abnahme</div>
-        <div class="step-body">Pilzboks garantiert die Abnahme aller Erträge zu fairen, vertraglich gesicherten Preisen — unabhängig von Marktschwankungen.</div>
-      </div>
-      <div class="step" data-reveal data-stagger="2">
-        <div class="step-num"><b>03</b>Produktion</div>
-        <div class="step-title">Verarbeitung &amp; Branding</div>
-        <div class="step-body">Wir übernehmen Verarbeitung, Verpackung und den Aufbau einer eigenen Markenidentität für Ihre Hofprodukte.</div>
-      </div>
-      <div class="step" data-reveal data-stagger="3">
-        <div class="step-num"><b>04</b>Kreislauf</div>
-        <div class="step-title">Regionale Kreislaufwirtschaft</div>
-        <div class="step-body">Substrate werden regional beschafft, Restmaterialien als Kompost zurückgeführt — ein vollständiger biologischer Kreislauf.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ MUSHROOMS ═══ -->
-<section id="mushrooms">
-  <div class="container">
-    <div class="section-head" data-reveal>
-      <p class="section-eyebrow">Unsere Pilze</p>
-      <div class="section-divider"></div>
-      <h2 class="section-title">Drei Arten,<br>ein Ökosystem</h2>
-    </div>
-    <div class="mushroom-grid">
-      <div class="mushroom-card spot" data-reveal data-stagger="0">
-        <span class="mushroom-icon">🦔</span>
-        <div class="mushroom-latin">Hericium erinaceus</div>
-        <div class="mushroom-name">Igelstachelbart</div>
-        <div class="mushroom-desc">Der außergewöhnlichste unserer Pilze — bekannt für seinen intensiv-meeresfrüchtigen Geschmack und herausragende Nährstoffe. Beliebt in der gehobenen Küche.</div>
-        <span class="mushroom-badge">Premium</span>
-      </div>
-      <div class="mushroom-card spot" data-reveal data-stagger="1">
-        <span class="mushroom-icon">🍄</span>
-        <div class="mushroom-latin">Lentinula edodes</div>
-        <div class="mushroom-name">Shiitake</div>
-        <div class="mushroom-desc">Asiatischer Klassiker mit tiefem Umami-Aroma. Shiitake ist vielseitig einsetzbar und weltweit einer der beliebtesten Kulturpilze.</div>
-        <span class="mushroom-badge">Klassiker</span>
-      </div>
-      <div class="mushroom-card spot" data-reveal data-stagger="2">
-        <span class="mushroom-icon">🌿</span>
-        <div class="mushroom-latin">Pleurotus ostreatus</div>
-        <div class="mushroom-name">Austernpilz</div>
-        <div class="mushroom-desc">Zart, mild und unglaublich vielseitig. Der Austernpilz gedeiht auch auf landwirtschaftlichen Reststoffen und ist das Herzstück unserer Kreislaufwirtschaft.</div>
-        <span class="mushroom-badge">Kernprodukt</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ FARMERS ═══ -->
-<section id="farmers">
-  <div class="container">
-    <div class="section-head" data-reveal>
-      <p class="section-eyebrow">Für Landwirte</p>
-      <div class="section-divider"></div>
-      <h2 class="section-title">Was Pilzboks<br>bietet</h2>
-    </div>
-    <div class="benefits-grid">
-      <div class="benefit" data-reveal data-stagger="0">
-        <span class="benefit-icon">📐</span>
-        <div class="benefit-title">Kleiner Footprint</div>
-        <div class="benefit-desc">22,5 m² Stellfläche genügen — nutzbar auf versiegelten oder benachteiligten Flächen.</div>
-      </div>
-      <div class="benefit" data-reveal data-stagger="1">
-        <span class="benefit-icon">📋</span>
-        <div class="benefit-title">Planungssicherheit</div>
-        <div class="benefit-desc">Feste Abnahmeverträge sorgen für kalkulierbares Zusatzeinkommen über die gesamte Laufzeit.</div>
-      </div>
-      <div class="benefit" data-reveal data-stagger="2">
-        <span class="benefit-icon">💶</span>
-        <div class="benefit-title">Förderung möglich</div>
-        <div class="benefit-desc">Das System ist förderfähig über AMA, Ländliche Entwicklung und andere Agrarprogramme.</div>
-      </div>
-      <div class="benefit" data-reveal data-stagger="3">
-        <span class="benefit-icon">♻️</span>
-        <div class="benefit-title">Kreislaufwirtschaft</div>
-        <div class="benefit-desc">Substrate aus regionaler Landwirtschaft, Rückführung als Bodenverbesserer — geschlossener Kreislauf.</div>
-      </div>
-      <div class="benefit" data-reveal data-stagger="4">
-        <span class="benefit-icon">🔧</span>
-        <div class="benefit-title">Technischer Support</div>
-        <div class="benefit-desc">Wir begleiten Einrichtung, Schulung und laufenden Betrieb — Sie müssen kein Experte sein.</div>
-      </div>
-      <div class="benefit" data-reveal data-stagger="5">
-        <span class="benefit-icon">🌱</span>
-        <div class="benefit-title">Bio-Integration</div>
-        <div class="benefit-desc">Vollständig konform mit EU-Bio-Richtlinien — ideal für bestehende Biobetriebe ohne Zusatzaufwand.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ QUOTE ═══ -->
-<section id="quote">
-  <div class="container">
-    <div class="quote-inner" data-reveal>
-      <div class="quote-mark">"</div>
-      <p class="quote-text">Als Biohof wollte ich meine Fläche effizienter nutzen, ohne dabei meinen Werten zu widersprechen. Mit Pilzboks habe ich eine Lösung gefunden, die perfekt in unseren Kreislauf passt und nebenbei ein verlässliches Zusatzeinkommen schafft.</p>
-      <div class="quote-author">Jürgen Feurle</div>
-      <div class="quote-role">Biohof Langen bei Bregenz — Pilotbetrieb</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ TEAM ═══ -->
-<section id="team">
-  <div class="container">
-    <div class="section-head" data-reveal>
-      <p class="section-eyebrow">Das Team</p>
-      <div class="section-divider"></div>
-      <h2 class="section-title">Die Menschen<br>hinter Pilzboks</h2>
-      <p class="section-body">Zwei Ingenieure aus Vorarlberg, die Landwirtschaft und Technik zusammenbringen.</p>
-    </div>
-
-    <div class="team-stack">
-      <article class="member spot" data-reveal data-stagger="0">
-        <div class="m-avatar">TW</div>
-        <div class="m-info">
-          <div class="m-role">Gründer &amp; Geschäftsführung</div>
-          <h3 class="m-name">Tobias Willi</h3>
-          <p class="m-bio">Elektro- und Elektronikingenieur. Treibt Produktentwicklung, Partnerschaften mit Biobetrieben und die strategische Ausrichtung von Pilzboks voran.</p>
-          <div class="m-tags">
-            <span class="m-tag">Strategie</span>
-            <span class="m-tag">Produkt</span>
-            <span class="m-tag">Partnerbetriebe</span>
-          </div>
-        </div>
-        <div class="m-num">01</div>
-      </article>
-
-      <article class="member spot" data-reveal data-stagger="1">
-        <div class="m-avatar">JA</div>
-        <div class="m-info">
-          <div class="m-role">Mitgründer</div>
-          <h3 class="m-name">Jakob</h3>
-          <p class="m-bio">Ingenieur mit Fokus auf Anlagentechnik. Verantwortet Aufbau, Klimasteuerung und den zuverlässigen Betrieb der Container-Systeme.</p>
-          <div class="m-tags">
-            <span class="m-tag">Technik</span>
-            <span class="m-tag">Anlagenbau</span>
-            <span class="m-tag">Betrieb</span>
-          </div>
-        </div>
-        <div class="m-num">02</div>
-      </article>
-    </div>
-  </div>
-</section>
-
 <!-- ═══ CONTACT ═══ -->
 <section id="contact">
   <div class="container">
@@ -1374,22 +1187,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <div data-reveal="left">
         <p class="section-eyebrow">Kontakt</p>
         <div class="section-divider"></div>
-        <h2 class="section-title">Jetzt ins<br>Gespräch kommen</h2>
-        <p class="section-body">Wir freuen uns auf Ihren Betrieb. Schreiben Sie uns oder nutzen Sie das Formular — wir melden uns innerhalb von 48 Stunden.</p>
-        <div class="contact-info">
-          <div class="contact-detail">
-            <span class="contact-label">E-Mail</span>
-            <a href="mailto:hallo@pilzboks.com" class="contact-val">hallo@pilzboks.com</a>
-          </div>
-          <div class="contact-detail">
-            <span class="contact-label">Standort</span>
-            <span class="contact-val">Vorarlberg, Österreich</span>
-          </div>
-          <div class="contact-detail">
-            <span class="contact-label">Region</span>
-            <span class="contact-val">Vorarlberg &amp; DACH-Region</span>
-          </div>
-        </div>
+        <h2 class="section-title">Kostenloser<br>Hof-Check</h2>
+        <p class="section-body">Erzählen Sie uns kurz von Ihrem Hof. Wir melden uns innerhalb von 48 Stunden und prüfen gemeinsam, ob ein Pilz-Container passt.</p>
+        <p class="team-line"><span class="m-avatar">TW</span><span class="m-avatar">JS</span>Gegründet von Tobias Willi &amp; Jakob Schreiber — zwei Ingenieure aus Vorarlberg.</p>
+        <p class="contact-mail">Oder direkt: <a href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a></p>
       </div>
       <div data-reveal="right">
         <form class="contact-form" id="contact-form" novalidate>
@@ -1407,11 +1208,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
           </div>
           <div class="form-group">
             <label class="form-label" for="message">Nachricht</label>
-            <textarea class="form-textarea" id="message" name="message" placeholder="Erzählen Sie uns von Ihrem Hof..." required></textarea>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Wo liegt Ihr Hof, was bauen Sie an?" required></textarea>
           </div>
-          <button type="submit" class="form-submit" id="submit-btn">Nachricht senden</button>
+          <button type="submit" class="form-submit" id="submit-btn">Hof-Check anfragen</button>
         </form>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ UNTERSTÜTZT VON ═══ -->
+<section id="support" aria-label="Unterstützt von">
+  <div class="container">
+    <p class="support-label">Unterstützt von</p>
+    <div class="support-logos">
+      <a class="support-logo" href="https://startup-vorarlberg.at/" target="_blank" rel="noopener">
+        <img src="startup-vorarlberg.svg" alt="Startup Vorarlberg" width="250" height="164" loading="lazy" decoding="async">
+      </a>
     </div>
   </div>
 </section>
