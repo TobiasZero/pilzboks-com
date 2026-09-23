@@ -395,13 +395,21 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 }
 .hero-h1 em{font-style:normal}
 /* gradient applied to the innermost text box so it survives the word-split */
-/* „nähren“ im Markier-Look (wie ::selection): grüner Block, dunkler Text — echter Text */
 .hero-h1 em,.hero-h1 em .w>i{
-  background:var(--green);color:var(--bg);-webkit-text-fill-color:var(--bg);
-  text-shadow:none;padding:0 .06em;
-  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  background-image:linear-gradient(120deg,var(--green-light),var(--green) 45%,var(--green-deep));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:var(--green);
 }
-.hero-h1 em:has(.w){background:none;padding:0}
+/* Desktop: „nähren“ im Markier-Look (wie ::selection): grüner Block, dunkler Text — echter Text. Mobil bleibt der Verlauf. */
+@media (min-width:961px){
+  .hero-h1 em,.hero-h1 em .w>i{
+    background:var(--green);color:var(--bg);-webkit-text-fill-color:var(--bg);
+    text-shadow:none;padding:0 .06em;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  }
+  .hero-h1 em:has(.w){background:none;padding:0}
+}
 /* word mask reveal */
 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.08em}
 .w>i{
