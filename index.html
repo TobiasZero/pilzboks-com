@@ -395,12 +395,13 @@ body.menu-open .mm-foot{opacity:1;transform:none}
 }
 .hero-h1 em{font-style:normal}
 /* gradient applied to the innermost text box so it survives the word-split */
+/* „nähren“ im Markier-Look (wie ::selection): grüner Block, dunkler Text — echter Text */
 .hero-h1 em,.hero-h1 em .w>i{
-  background-image:linear-gradient(120deg,var(--green-light),var(--green) 45%,var(--green-deep));
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  color:var(--green);
+  background:var(--green);color:var(--bg);-webkit-text-fill-color:var(--bg);
+  text-shadow:none;padding:0 .06em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
 }
+.hero-h1 em:has(.w){background:none;padding:0}
 /* word mask reveal */
 .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.08em}
 .w>i{
@@ -981,6 +982,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .support-logo{display:grid;place-items:center;background:#e9ece9;border-radius:10px;padding:0.9rem 1.8rem;transition:transform .3s,background .3s}
 .support-logo:hover{transform:translateY(-2px);background:#fff}
 .support-logo img{height:52px;width:auto;display:block}
+#heimat{scroll-margin-top:calc(-1 * var(--nav-h, 72px))}
+.contact-simple{max-width:720px}
+.contact-links{display:flex;flex-direction:column;gap:0.6rem;margin-top:1.8rem}
+.contact-big{font-size:clamp(1.35rem,3.6vw,2rem);font-weight:600;color:var(--green);text-decoration:none;letter-spacing:-0.01em;width:fit-content;border-bottom:1px solid transparent;transition:border-color .3s}
+.contact-big:hover{border-bottom-color:var(--green)}
 .contact-mail{margin-top:1.4rem;font-size:0.92rem;color:rgba(232,245,236,0.62)}
 .contact-mail a{color:var(--green);text-decoration:none}
 .steps-3{grid-template-columns:repeat(3,1fr)}
@@ -1102,7 +1108,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <img src="pilzboks-logo.webp" alt="Pilzboks" width="276" height="120" decoding="async">
   </a>
   <div class="nav-right">
-    <a href="#contact" class="nav-cta"><span>Hof-Check anfragen</span></a>
+    <a href="#contact" class="nav-cta"><span>Kontakt</span></a>
     <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
@@ -1113,7 +1119,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <div id="mobile-menu">
   <ul>
     <li><a href="#hero"><i>01</i>Start</a></li>
-    <li><a href="#contact"><i>02</i>Hof-Check anfragen</a></li>
+    <li><a href="#contact"><i>02</i>Kontakt</a></li>
   </ul>
   <div class="mm-foot">
     <span>Kontakt</span>
@@ -1157,13 +1163,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
         <h1 class="hero-h1" id="hero-h1">Die Erde <em>nähren</em>,<br>nicht ausbeuten</h1>
         <p class="hero-sub" data-hero-fade>Bio-Pilzanbau im Container-System — für Höfe, die Verantwortung übernehmen wollen.</p>
         <div class="hero-actions" data-hero-fade>
-          <a href="#contact" class="btn btn-primary"><span>Kostenlosen Hof-Check anfragen</span><span class="btn-arrow">→</span></a>
-          <a href="#contact" class="btn btn-ghost"><span>Kontakt</span></a>
+          <a href="#heimat" class="btn btn-primary"><span>Mehr erfahren</span><span class="btn-arrow">→</span></a>
+          <a href="#contact" class="btn btn-ghost"><span>Kontaktiere uns</span></a>
         </div>
       </div>
     </div>
 
-    <div class="hero-step">
+    <div class="hero-step" id="heimat">
       <figure class="hero-step-media">
         <img src="container-hof.webp" alt="Pilzanbau-Container mit grüner Beleuchtung auf einem Biohof in den Alpen" width="1200" height="800" loading="lazy" decoding="async">
       </figure>
@@ -1171,7 +1177,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <h2 class="hero-step-title">Mitten in der <em>DACH-Region</em></h2>
       <p class="hero-step-sub">Geerntet heute, geliefert morgen — an Märkte und Küchen in Österreich, Deutschland und der Schweiz.</p>
       <div class="hero-actions">
-        <a href="#contact" class="btn btn-primary"><span>Hof-Check anfragen</span><span class="btn-arrow">→</span></a>
+        <a href="#contact" class="btn btn-primary"><span>Kontaktiere uns</span><span class="btn-arrow">→</span></a>
       </div>
     </div>
   </div>
@@ -1181,36 +1187,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <!-- ═══ CONTACT ═══ -->
 <section id="contact">
   <div class="container">
-    <div class="contact-inner">
-      <div data-reveal="left">
-        <p class="section-eyebrow">Kontakt</p>
-        <div class="section-divider"></div>
-        <h2 class="section-title">Jetzt ins<br>Gespräch kommen</h2>
-        <p class="section-body">Erzählen Sie uns kurz von Ihrem Hof. Wir melden uns innerhalb von 48 Stunden und prüfen gemeinsam, ob ein Pilz-Container passt.</p>
-        <p class="team-line"><span class="m-avatar">TW</span><span class="m-avatar">JS</span>Gegründet von Tobias Willi &amp; Jakob Schreiber — zwei Ingenieure aus Vorarlberg.</p>
-        <p class="contact-mail">Oder direkt: <a href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a></p>
+    <div class="contact-simple" data-reveal>
+      <p class="section-eyebrow">Kontakt</p>
+      <div class="section-divider"></div>
+      <h2 class="section-title">Jetzt ins<br>Gespräch kommen</h2>
+      <p class="section-body">Investition, Partnerschaft oder Förderung? Schreib uns direkt — wir melden uns innerhalb von 48 Stunden.</p>
+      <div class="contact-links">
+        <a class="contact-big" href="mailto:hallo@pilzboks.com">hallo@pilzboks.com</a>
       </div>
-      <div data-reveal="right">
-        <form class="contact-form" id="contact-form" novalidate>
-          <div class="form-group">
-            <label class="form-label" for="name">Name</label>
-            <input class="form-input" type="text" id="name" name="name" placeholder="Ihr Name" autocomplete="name" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="email">E-Mail</label>
-            <input class="form-input" type="email" id="email" name="email" placeholder="ihre@email.com" autocomplete="email" inputmode="email" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="hof">Betrieb (optional)</label>
-            <input class="form-input" type="text" id="hof" name="hof" placeholder="Biohof ..." autocomplete="organization">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="message">Nachricht</label>
-            <textarea class="form-textarea" id="message" name="message" placeholder="Wo liegt Ihr Hof, was bauen Sie an?" required></textarea>
-          </div>
-          <button type="submit" class="form-submit" id="submit-btn">Hof-Check anfragen</button>
-        </form>
-      </div>
+      <p class="team-line"><span class="m-avatar">TW</span><span class="m-avatar">JS</span>Gegründet von Tobias Willi &amp; Jakob Schreiber — zwei Ingenieure aus Vorarlberg.</p>
     </div>
   </div>
 </section>
