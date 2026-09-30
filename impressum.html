@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#050d07">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
 <meta name="description" content="Impressum von Pilzboks – Bio-Pilzanbau im Container-System, Vorarlberg, Österreich.">
 <meta name="robots" content="noindex">
 <title>Impressum – Pilzboks</title>
@@ -17,19 +18,34 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#050d07;
-  --bg2:#091410;
-  --bg3:#0d1f12;
-  --green:#4ade80;
-  --green-light:#86efac;
-  --green-deep:#16a34a;
-  --green-glow:rgba(74,222,128,0.14);
-  --green-glow2:rgba(74,222,128,0.05);
-  --text:#e8f5ec;
-  --text-muted:rgba(232,245,236,0.48);
-  --text-dim:rgba(232,245,236,0.26);
-  --border:rgba(74,222,128,0.12);
-  --border-bright:rgba(74,222,128,0.32);
+  /* ══ PILZBOKS CORPORATE DESIGN ══ (Quelle: BRAND.md)
+     Pilzboks-Grün  CMYK 92/37/100/36  →  #0A5B2C
+     Pilzboks-Braun CMYK 39/73/91/57   →  #61351A
+     Umrechnung: Coated FOGRA39 → sRGB, relativ farbmetrisch + Tiefenkompensierung */
+  color-scheme:light;
+  --brand-green:#0A5B2C;
+  --brand-brown:#61351A;
+  --brand-ink:#231F20;
+  --green-rgb:10,91,44;
+  --bg-rgb:255,255,255;
+  --surface-rgb:243,247,244;
+  --text-rgb:23,35,27;
+  --bg:#FFFFFF;
+  --bg2:#F3F7F4;
+  --bg3:#E9F1EC;
+  --bg-card:#FFFFFF;
+  --green:var(--brand-green);
+  --green-light:#3D8A5C;
+  --green-deep:#07431F;
+  --green-dim:#4F7A60;
+  --green-glow:rgba(var(--green-rgb),0.10);
+  --green-glow2:rgba(var(--green-rgb),0.04);
+  --text:#17231B;
+  --text-muted:rgba(var(--text-rgb),0.74);
+  --text-dim:rgba(var(--text-rgb),0.66);
+  --border:rgba(var(--green-rgb),0.16);
+  --border-bright:rgba(var(--green-rgb),0.38);
+  --shadow:16,40,24;
   --ease:cubic-bezier(0.16,1,0.3,1);
   --ease-soft:cubic-bezier(0.4,0,0.2,1);
   --nav-h:72px;
@@ -63,15 +79,13 @@ a{font-family:inherit}
 .ambient{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(74,222,128,0.07),transparent 60%),
-    radial-gradient(ellipse 60% 50% at 10% 40%,rgba(22,163,74,0.05),transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(74,222,128,0.04),transparent 60%);
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(var(--green-rgb),0.05),transparent 60%);
 }
 .grid-tex{
-  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22;
   background-image:
-    linear-gradient(rgba(74,222,128,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(74,222,128,0.025) 1px,transparent 1px);
+    linear-gradient(rgba(var(--green-rgb),0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--green-rgb),0.025) 1px,transparent 1px);
   background-size:64px 64px;
   mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
   -webkit-mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
@@ -83,7 +97,7 @@ nav{
   display:flex;align-items:center;justify-content:space-between;
   padding:1.1rem var(--gut);
   height:var(--nav-h);
-  background:rgba(5,13,7,0.78);
+  background:rgba(var(--bg-rgb),0.78);
   backdrop-filter:blur(18px) saturate(180%);
   -webkit-backdrop-filter:blur(18px) saturate(180%);
   border-bottom:1px solid var(--border);
@@ -95,9 +109,8 @@ nav{
 }
 .nav-logo:hover{transform:scale(1.04)}
 .nav-logo img{
-  height:40px;width:auto;
-  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
-}
+  height:34px;width:auto;
+  }
 .nav-back{
   position:relative;
   font-size:0.72rem;font-weight:500;letter-spacing:0.13em;
@@ -134,7 +147,7 @@ main{
 }
 .section-body{
   font-size:clamp(0.92rem,2.2vw,1.02rem);font-weight:300;
-  color:rgba(232,245,236,0.8);max-width:56ch;
+  color:rgba(var(--text-rgb),0.84);max-width:56ch;
 }
 
 .impressum-grid{
@@ -155,9 +168,9 @@ main{
   font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
   color:var(--green);font-weight:600;margin-bottom:0.7rem;
 }
-.impressum-block p{font-size:0.86rem;color:rgba(232,245,236,0.8);line-height:1.75}
+.impressum-block p{font-size:0.86rem;color:rgba(var(--text-rgb),0.84);line-height:1.75}
 .impressum-block a{
-  color:var(--green-light);text-decoration:none;
+  color:var(--green);text-decoration:none;
   border-bottom:1px solid var(--border-bright);transition:color 0.3s;
 }
 .impressum-block a:hover{color:var(--green)}
@@ -173,12 +186,11 @@ footer{
   padding:2.3rem var(--gut);
   display:flex;align-items:center;justify-content:space-between;
   gap:1.3rem;flex-wrap:wrap;
-  background:rgba(5,13,7,0.7);
+  background:rgba(var(--bg-rgb),0.7);
 }
 .footer-logo img{
-  height:30px;width:auto;
-  filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(80deg);
-  opacity:0.62;transition:opacity 0.4s;
+  height:28px;width:auto;
+  opacity:1;transition:opacity 0.4s;
 }
 .footer-logo:hover img{opacity:1}
 .footer-text{font-size:0.74rem;color:var(--text-dim);letter-spacing:0.03em}
@@ -192,7 +204,7 @@ footer{
   font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
   color:var(--green);border:1px solid var(--border);
   padding:0.42rem 0.9rem;border-radius:100px;
-  background:rgba(74,222,128,0.04);
+  background:rgba(var(--green-rgb),0.04);
 }
 
 /* ══ FOCUS ══ */
@@ -223,7 +235,7 @@ a:focus-visible{
 <!-- ═══ NAV ═══ -->
 <nav>
   <a href="index.html" class="nav-logo" aria-label="Zurück zur Pilzboks Startseite">
-    <img src="pilzboks-logo.webp" alt="Pilzboks" width="276" height="120" decoding="async">
+    <img src="pilzboks-logo.svg" alt="Pilzboks" width="491" height="157" decoding="async">
   </a>
   <a href="index.html" class="nav-back">← Zurück zur Startseite</a>
 </nav>
@@ -263,7 +275,7 @@ a:focus-visible{
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <a href="index.html" class="footer-logo" aria-label="Zurück zur Startseite">
-    <img src="pilzboks-logo.webp" alt="Pilzboks" width="276" height="120" decoding="async">
+    <img src="pilzboks-logo.svg" alt="Pilzboks" width="491" height="157" decoding="async">
   </a>
   <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
   <div class="footer-links" aria-label="Rechtliches">
