@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#EEF3EA">
 <meta name="color-scheme" content="light">
 <meta name="description" content="Datenschutzerklärung von Pilzboks – Bio-Pilzanbau im Container-System, Vorarlberg, Österreich.">
 <meta name="robots" content="noindex">
@@ -27,12 +27,12 @@
   --brand-brown:#61351A;
   --brand-ink:#231F20;
   --green-rgb:10,91,44;
-  --bg-rgb:255,255,255;
-  --surface-rgb:243,247,244;
+  --bg-rgb:238,243,234;
+  --surface-rgb:255,255,255;
   --text-rgb:23,35,27;
-  --bg:#FFFFFF;
-  --bg2:#F3F7F4;
-  --bg3:#E9F1EC;
+  --bg:#EEF3EA;           /* Salbei-Hauch: Seitenhintergrund */
+  --bg2:#E5ECE0;
+  --bg3:#DCE6D6;
   --bg-card:#FFFFFF;
   --green:var(--brand-green);
   --green-light:#3D8A5C;
@@ -42,7 +42,9 @@
   --green-glow2:rgba(var(--green-rgb),0.04);
   --text:#17231B;
   --text-muted:rgba(var(--text-rgb),0.74);
-  --text-dim:rgba(var(--text-rgb),0.66);
+  --text-dim:rgba(var(--text-rgb),0.70);
+  --on-green:#FFFFFF;
+  --card:#FFFFFF;
   --border:rgba(var(--green-rgb),0.16);
   --border-bright:rgba(var(--green-rgb),0.38);
   --shadow:16,40,24;
@@ -73,7 +75,7 @@ body{
 }
 img{max-width:100%;display:block}
 a{font-family:inherit}
-::selection{background:var(--green);color:var(--bg)}
+::selection{background:var(--green);color:var(--on-green)}
 
 /* ══ AMBIENT BACKGROUND ══ */
 .ambient{
@@ -82,7 +84,7 @@ a{font-family:inherit}
     radial-gradient(ellipse 80% 50% at 50% -10%,rgba(var(--green-rgb),0.05),transparent 60%);
 }
 .grid-tex{
-  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22;
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;
   background-image:
     linear-gradient(rgba(var(--green-rgb),0.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(var(--green-rgb),0.025) 1px,transparent 1px);
@@ -138,7 +140,7 @@ main{
   text-transform:uppercase;color:var(--green);margin-bottom:1.1rem;
 }
 .section-divider{
-  width:40px;height:1px;background:var(--green);margin-bottom:1.8rem;
+  width:40px;height:2px;background:var(--brand-brown);margin-bottom:1.8rem;
 }
 .section-title{
   font-size:clamp(1.85rem,5vw,3.1rem);font-weight:700;
@@ -156,12 +158,12 @@ main{
 }
 .impressum-block{
   border:1px solid var(--border);border-radius:14px;
-  padding:1.3rem 1.5rem;background:var(--green-glow2);
+  padding:1.3rem 1.5rem;background:var(--card);
   transition:border-color 0.35s,background 0.35s,transform 0.35s var(--ease);
 }
 .impressum-block:hover{
-  border-color:var(--border-bright);background:var(--green-glow);
-  transform:translateY(-2px);
+  border-color:var(--border-bright);background:var(--card);
+  transform:translateY(-2px);box-shadow:0 10px 30px rgba(var(--shadow),0.07);
 }
 .impressum-block h3{
   font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
@@ -186,7 +188,7 @@ footer{
   padding:2.3rem var(--gut);
   display:flex;align-items:center;justify-content:space-between;
   gap:1.3rem;flex-wrap:wrap;
-  background:rgba(var(--bg-rgb),0.7);
+  background:var(--bg2);
 }
 .footer-logo img{
   height:28px;width:auto;
@@ -204,7 +206,7 @@ footer{
   font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
   color:var(--green);border:1px solid var(--border);
   padding:0.42rem 0.9rem;border-radius:100px;
-  background:rgba(var(--green-rgb),0.04);
+  background:var(--card);
 }
 
 /* ══ FOCUS ══ */

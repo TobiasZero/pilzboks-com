@@ -1,6 +1,6 @@
 # Pilzboks – Corporate Design
 
-Stand: 30.09.2026 · Quelle der Farben: `20260809_Logo-Varianten-PilzFarbe.pdf` (Adobe Illustrator, CMYK)
+Stand: 30.09.2026 (V2: Salbei-Hintergrund) · Quelle der Farben: `20260809_Logo-Varianten-PilzFarbe.pdf` (Adobe Illustrator, CMYK)
 Die gleiche Beschreibung liegt im Pilzboks-Gehirn (`15_Corporate_Design.md`). Bei Widerspruch gilt das Gehirn.
 
 ## Farben
@@ -10,7 +10,7 @@ Die gleiche Beschreibung liegt im Pilzboks-Gehirn (`15_Corporate_Design.md`). Be
 | **Pilzboks-Grün** | Hauptfarbe: Schriftzug, Buttons, Links, Akzente | 92 / 37 / 100 / 36 | 10 / 91 / 44 | `#0A5B2C` |
 | **Pilzboks-Braun** | Pilzkappe im Logo, sparsamer Zweitakzent | 39 / 73 / 91 / 57 | 97 / 53 / 26 | `#61351A` |
 | **Kontur** | Stiel und Kappenrand im Logo | 0 / 0 / 0 / 100 | 35 / 31 / 32 | `#231F20` |
-| **Weiß** | Hintergrund (Website ist hell) | 0 / 0 / 0 / 0 | 255 / 255 / 255 | `#FFFFFF` |
+| **Weiß** | Karten, Buttons, Labels auf dem Salbei-Hintergrund | 0 / 0 / 0 / 0 | 255 / 255 / 255 | `#FFFFFF` |
 
 Die CMYK-Werte sind das Original. Die HEX-Werte sind daraus umgerechnet (Coated FOGRA39 → sRGB,
 relativ farbmetrisch mit Tiefenkompensierung – die Standardeinstellung von Adobe in Europa).
@@ -20,13 +20,14 @@ Für Druck immer CMYK verwenden, für Bildschirm, Web, Canva, Figma und PowerPoi
 
 | Name | HEX | Wofür |
 |---|---|---|
+| **Salbei-Hauch** | `#EEF3EA` | Seitenhintergrund der Website (zartes Grün statt reinem Weiß) |
+| Salbei dunkler | `#E5ECE0` | Footer, abgesetzte Bereiche |
 | Text | `#17231B` | Fließtext und Überschriften (fast Schwarz, leicht grün) |
 | Grün dunkel | `#07431F` | Hover-Zustand von Buttons |
 | Grün hell | `#3D8A5C` | nur Deko (Verläufe, Linien) – nicht für Text |
-| Fläche hell | `#F3F7F4` | Kacheln, abgesetzte Bereiche |
-| Grün-Tönung | `#E9F1EC` | Hover-Flächen, Badges |
+| Salbei Hover | `#DCE6D6` | Hover-Flächen |
 
-Kontrast auf Weiß (WCAG): Grün 8,2 : 1 · Braun 10,3 : 1 · Text 16,2 : 1 – alle für kleine Schrift geeignet.
+Kontrast auf Salbei-Hauch (WCAG): Grün 7,3 : 1 · Braun 9,2 : 1 · Text 14,4 : 1 – alle für kleine Schrift geeignet (auf Weiß noch etwas höher).
 Weiße Schrift auf Pilzboks-Grün ist ebenfalls gut lesbar (8,2 : 1).
 
 ## Logo
@@ -45,7 +46,9 @@ Weiße Schrift auf Pilzboks-Grün ist ebenfalls gut lesbar (8,2 : 1).
 
 ## Website-Regeln
 
-- Hintergrund Weiß, Text `#17231B`, Akzente nur in Pilzboks-Grün (und sparsam Braun).
+- Hintergrund Salbei-Hauch `#EEF3EA`, Karten/Labels/Buttons weiß, Text `#17231B`.
+- Akzente in Pilzboks-Grün; Braun sparsam für kleine Details (Punkte, Trennstriche).
+- Globus: Ozean in gedämpftem Seegrün-Blau, heller Rand – keine Neon-Effekte.
 - Kein Neon-Grün mehr (früher `#4ADE80`), kein Dark Mode.
 - Die Farbwerte stehen als CSS-Variablen im `:root` jeder Seite (`--brand-green`, `--brand-brown` …).
   Neue Farben immer dort ergänzen, nie direkt im CSS hartkodieren.
@@ -55,7 +58,8 @@ Weiße Schrift auf Pilzboks-Grün ist ebenfalls gut lesbar (8,2 : 1).
   --brand-green:#0A5B2C;  /* CMYK 92/37/100/36 */
   --brand-brown:#61351A;  /* CMYK 39/73/91/57 */
   --brand-ink:#231F20;    /* CMYK 0/0/0/100 */
-  --bg:#FFFFFF;
+  --bg:#EEF3EA;   /* Salbei-Hauch */
+  --card:#FFFFFF;
   --text:#17231B;
 }
 ```
