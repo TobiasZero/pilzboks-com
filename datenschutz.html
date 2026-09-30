@@ -20,16 +20,17 @@
   --bg:#050d07;
   --bg2:#091410;
   --bg3:#0d1f12;
-  --green:#4ade80;
-  --green-light:#86efac;
-  --green-deep:#16a34a;
-  --green-glow:rgba(74,222,128,0.14);
-  --green-glow2:rgba(74,222,128,0.05);
+  --green:#59C084;
+  --green-light:#97D8B2;
+  --green-deep:#0A5B2C;
+  --green-fill:#0A5B2C;   /* Pilzboks-Grün (CMYK 92/37/100/36) für Flächen/Buttons */
+  --green-glow:rgba(89,192,132,0.14);
+  --green-glow2:rgba(89,192,132,0.05);
   --text:#e8f5ec;
   --text-muted:rgba(232,245,236,0.48);
   --text-dim:rgba(232,245,236,0.26);
-  --border:rgba(74,222,128,0.12);
-  --border-bright:rgba(74,222,128,0.32);
+  --border:rgba(89,192,132,0.12);
+  --border-bright:rgba(89,192,132,0.32);
   --ease:cubic-bezier(0.16,1,0.3,1);
   --ease-soft:cubic-bezier(0.4,0,0.2,1);
   --nav-h:72px;
@@ -57,21 +58,21 @@ body{
 }
 img{max-width:100%;display:block}
 a{font-family:inherit}
-::selection{background:var(--green);color:var(--bg)}
+::selection{background:var(--green-fill);color:#fff}
 
 /* ══ AMBIENT BACKGROUND ══ */
 .ambient{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(74,222,128,0.07),transparent 60%),
-    radial-gradient(ellipse 60% 50% at 10% 40%,rgba(22,163,74,0.05),transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(74,222,128,0.04),transparent 60%);
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(89,192,132,0.07),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 40%,rgba(10,91,44,0.05),transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(89,192,132,0.04),transparent 60%);
 }
 .grid-tex{
   position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35;
   background-image:
-    linear-gradient(rgba(74,222,128,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(74,222,128,0.025) 1px,transparent 1px);
+    linear-gradient(rgba(89,192,132,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(89,192,132,0.025) 1px,transparent 1px);
   background-size:64px 64px;
   mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
   -webkit-mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 30%,transparent 75%);
@@ -192,7 +193,7 @@ footer{
   font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
   color:var(--green);border:1px solid var(--border);
   padding:0.42rem 0.9rem;border-radius:100px;
-  background:rgba(74,222,128,0.04);
+  background:rgba(89,192,132,0.04);
 }
 
 /* ══ FOCUS ══ */
