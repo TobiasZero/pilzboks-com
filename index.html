@@ -120,15 +120,17 @@ nav.scrolled{
 }
 .nav-logo{
   display:flex;align-items:center;text-decoration:none;
+  background:#FAF6EE;padding:6px 12px 5px;border-radius:10px;
+  box-shadow:0 0 0 1px rgba(74,222,128,0.28),0 0 22px rgba(74,222,128,0.16),0 8px 24px rgba(0,0,0,0.45);
   transition:transform 0.4s var(--ease),opacity 0.3s;
   flex-shrink:0;
 }
 .nav-logo:hover{transform:scale(1.04)}
 .nav-logo img{
-  height:34px;width:auto;
+  height:30px;width:auto;
   transition:height 0.45s var(--ease-soft),filter 0.35s;
 }
-nav.scrolled .nav-logo img{height:28px}
+nav.scrolled .nav-logo img{height:25px}
 
 .nav-links{display:flex;gap:2.2rem;list-style:none;align-items:center}
 .nav-links a{
@@ -909,9 +911,12 @@ footer{
 }
 /* Platz für den fixierten Nach-oben-Button, damit er das Badge nicht überdeckt */
 @media(min-width:641px){footer{padding-right:max(calc(var(--gut) + 64px), var(--edge))}}
+.footer-logo{display:inline-flex;background:#FAF6EE;padding:5px 10px 4px;border-radius:8px;
+  box-shadow:0 0 0 1px rgba(74,222,128,0.2);opacity:0.9;transition:opacity 0.4s}
+.footer-logo:hover{opacity:1}
 .footer-logo img{
-  height:26px;width:auto;
-  opacity:0.62;transition:opacity 0.4s;
+  height:22px;width:auto;
+  opacity:1;transition:opacity 0.4s;
 }
 .footer-logo:hover img{opacity:1}
 .footer-text{font-size:0.74rem;color:rgba(232,245,236,0.55);letter-spacing:0.03em}
@@ -1111,7 +1116,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <!-- ═══ NAV ═══ -->
 <nav id="nav">
   <a href="#hero" class="nav-logo" aria-label="Pilzboks Startseite">
-    <img src="pilzboks-logo-weiss.svg" alt="Pilzboks" width="491" height="157" decoding="async">
+    <img src="pilzboks-logo.svg" alt="Pilzboks" width="491" height="157" decoding="async">
   </a>
   <div class="nav-right">
     <a href="#contact" class="nav-cta"><span>Kontakt</span></a>
@@ -1223,7 +1228,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <a href="#hero" class="footer-logo" aria-label="Nach oben">
-    <img src="pilzboks-logo-weiss.svg" alt="Pilzboks" width="491" height="157" decoding="async">
+    <img src="pilzboks-logo.svg" alt="Pilzboks" width="491" height="157" decoding="async">
   </a>
   <span class="footer-text">© 2026 Pilzboks · Bio-Pilze direkt vom Hof · Vorarlberg</span>
   <div class="footer-links" aria-label="Rechtliches">
